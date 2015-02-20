@@ -193,7 +193,7 @@ public class ProductList extends ListActivity implements AdapterView.OnItemLongC
 
         switch (requestCode) {
             case RESULT_EDIT_PRODUCT:
-                if (resultCode == ProductEdit.RESULT_SAVED)
+                if (resultCode == EditActivity.RESULT_SAVED)
                     load();
                 break;
             case RESULT_START_BUY:

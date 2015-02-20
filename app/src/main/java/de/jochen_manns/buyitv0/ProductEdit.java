@@ -12,8 +12,6 @@ import org.json.JSONObject;
 
 public class ProductEdit extends EditActivity {
 
-    public static final int RESULT_SAVED = 1;
-
     private static final int RESULT_SELECT_MARKET = 1;
 
     public static final String ARG_ITEM_ID = "id";
@@ -78,40 +76,25 @@ public class ProductEdit extends EditActivity {
         startActivityForResult(showSelector, RESULT_SELECT_MARKET);
     }
 
-    public void onUpdate(View view) {
-        Editable name = getName();
-        if ((name == null) || (name.length() < 1))
-            return;
-
+    @Override
+    protected boolean updateItem(Database database) {
         Editable description = m_description.getText();
+        String market = (String) m_market.getTag();
+        Editable name = getName();
+
         if ((description != null) && (description.length() < 1))
             description = null;
 
-        String market = (String) m_market.getTag();
+        Products.update(database, m_identifier, name.toString(), (description == null) ? null : description.toString(), market);
 
-        Database database = Database.create(this);
-        try {
-            Products.update(database, m_identifier, name.toString(), (description == null) ? null : description.toString(), market);
-        } finally {
-            database.close();
-        }
-
-        setResult(RESULT_SAVED);
-
-        finish();
+        return true;
     }
 
-    public void onDelete(View view) {
-        Database database = Database.create(this);
-        try {
-            Products.delete(database, m_identifier);
-        } finally {
-            database.close();
-        }
+    @Override
+    protected boolean deleteItem(Database database) {
+        Products.delete(database, m_identifier);
 
-        setResult(RESULT_SAVED);
-
-        finish();
+        return true;
     }
 
     @Override

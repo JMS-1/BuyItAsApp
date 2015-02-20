@@ -15,6 +15,8 @@ import org.json.JSONObject;
 
 public abstract class EditActivity extends Activity {
 
+    public static final int RESULT_SAVED = 1;
+
     private Button m_save;
 
     private Button m_delete;
@@ -30,6 +32,10 @@ public abstract class EditActivity extends Activity {
     protected abstract JSONObject queryItem(Database database) throws JSONException;
 
     protected abstract void initializeFromItem(JSONObject item);
+
+    protected abstract boolean deleteItem(Database database);
+
+    protected abstract boolean updateItem(Database database);
 
     protected Editable getName() {
         return m_name.getText();
@@ -58,6 +64,43 @@ public abstract class EditActivity extends Activity {
             finish();
             return;
         }
+
+        m_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isValidName(getName()))
+                    return;
+
+                Database database = Database.create(EditActivity.this);
+                try {
+                    if (!updateItem(database))
+                        return;
+                } finally {
+                    database.close();
+                }
+
+                setResult(RESULT_SAVED);
+
+                finish();
+            }
+        });
+
+        m_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Database database = Database.create(EditActivity.this);
+                try {
+                    if (!deleteItem(database))
+                        return;
+                } finally {
+                    database.close();
+                }
+
+                setResult(RESULT_SAVED);
+
+                finish();
+            }
+        });
 
         m_name.addTextChangedListener(new TextWatcher() {
             @Override
