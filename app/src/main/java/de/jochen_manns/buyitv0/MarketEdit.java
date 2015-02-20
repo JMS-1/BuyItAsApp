@@ -1,30 +1,16 @@
 package de.jochen_manns.buyitv0;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashSet;
 
-public class MarketEdit extends Activity {
-    public static final int RESULT_SAVED = 1;
-
+public class MarketEdit extends EditActivity<JSONObject[]> {
     public static final String ARG_MARKET_NAME = "market";
-
-    private Button m_save;
-
-    private Button m_delete;
-
-    private EditText m_name;
 
     private String m_market;
 
@@ -32,104 +18,61 @@ public class MarketEdit extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_market_edit);
-
-        m_save = (Button) findViewById(R.id.button_save);
-        m_delete = (Button) findViewById(R.id.button_delete);
-        m_name = (EditText) findViewById(R.id.edit_name);
-
-        Intent startInfo = getIntent();
-        if (startInfo == null) {
-            finish();
-            return;
-        }
-
-        if (!startInfo.hasExtra(ARG_MARKET_NAME)) {
-            finish();
-            return;
-        }
-
-        m_market = startInfo.getStringExtra(ARG_MARKET_NAME);
-
-        if (m_market == null)
-            m_delete.setVisibility(View.INVISIBLE);
-
-        m_name.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                m_save.setEnabled((s != null) && (s.length() > 0) && !m_forbiddenNames.contains(s.toString().toUpperCase()));
-            }
-        });
-
-        new AsyncTask<Void, Void, JSONObject[]>() {
-            @Override
-            protected JSONObject[] doInBackground(Void... params) {
-                Database database = Database.create(MarketEdit.this);
-                try {
-                    return Markets.query(database);
-                } catch (JSONException e) {
-                    return null;
-                } finally {
-                    database.close();
-                }
-            }
-
-            @Override
-            protected void onPostExecute(JSONObject[] markets) {
-                super.onPostExecute(markets);
-
-                for (JSONObject market : markets)
-                    try {
-                        String originalName = Markets.getOriginalName(market);
-                        String name = Markets.getName(market);
-
-                        if ((m_market != null) && m_market.equals(originalName))
-                            m_name.setText(name);
-                        else
-                            m_forbiddenNames.add(name.toUpperCase());
-                    } catch (JSONException e) {
-                        continue;
-                    }
-            }
-        }.execute();
+        super.onCreate(R.layout.activity_market_edit, savedInstanceState);
     }
 
-    public void onUpdate(View view) {
-        Editable name = m_name.getText();
-        if ((name == null) || (name.length() < 1))
-            return;
+    @Override
+    protected boolean initializeFromIntent(Intent intent) {
+        if (!intent.hasExtra(ARG_MARKET_NAME))
+            return false;
 
-        Database database = Database.create(this);
-        try {
-            Markets.update(database, m_market, name.toString());
-        } finally {
-            database.close();
-        }
+        m_market = intent.getStringExtra(ARG_MARKET_NAME);
 
-        setResult(RESULT_SAVED);
-
-        finish();
+        return true;
     }
 
-    public void onDelete(View view) {
-        Database database = Database.create(this);
-        try {
-            Markets.delete(database, m_market);
-        } finally {
-            database.close();
-        }
+    @Override
+    protected boolean creatingNewItem() {
+        return (m_market == null);
+    }
 
-        setResult(RESULT_SAVED);
+    @Override
+    protected boolean isValidName(Editable newName) {
+        return ((newName != null) && (newName.length() > 0) && !m_forbiddenNames.contains(newName.toString().toUpperCase()));
+    }
 
-        finish();
+    @Override
+    protected JSONObject[] queryItem(Database database) throws JSONException {
+        return Markets.query(database);
+    }
+
+    @Override
+    protected void initializeFromItem(JSONObject[] markets) {
+        for (JSONObject market : markets)
+            try {
+                String originalName = Markets.getOriginalName(market);
+                String name = Markets.getName(market);
+
+                if ((m_market != null) && m_market.equals(originalName))
+                    setName(name);
+                else
+                    m_forbiddenNames.add(name.toUpperCase());
+            } catch (JSONException e) {
+                continue;
+            }
+    }
+
+    @Override
+    protected boolean updateItem(Database database) {
+        Markets.update(database, m_market, getName().toString());
+
+        return true;
+    }
+
+    @Override
+    protected boolean deleteItem(Database database) {
+        Markets.delete(database, m_market);
+
+        return true;
     }
 }

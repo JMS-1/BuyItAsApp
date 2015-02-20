@@ -11,9 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-public abstract class EditActivity extends Activity {
+public abstract class EditActivity<TProtocolType> extends Activity {
 
     public static final int RESULT_SAVED = 1;
 
@@ -29,9 +28,9 @@ public abstract class EditActivity extends Activity {
 
     protected abstract boolean isValidName(Editable newName);
 
-    protected abstract JSONObject queryItem(Database database) throws JSONException;
+    protected abstract TProtocolType queryItem(Database database) throws JSONException;
 
-    protected abstract void initializeFromItem(JSONObject item);
+    protected abstract void initializeFromItem(TProtocolType item);
 
     protected abstract boolean deleteItem(Database database);
 
@@ -120,9 +119,9 @@ public abstract class EditActivity extends Activity {
         if (creatingNewItem())
             m_delete.setVisibility(View.INVISIBLE);
         else
-            new AsyncTask<Void, Void, JSONObject>() {
+            new AsyncTask<Void, Void, TProtocolType>() {
                 @Override
-                protected JSONObject doInBackground(Void... params) {
+                protected TProtocolType doInBackground(Void... params) {
                     Database database = Database.create(EditActivity.this);
                     try {
                         return queryItem(database);
@@ -134,7 +133,7 @@ public abstract class EditActivity extends Activity {
                 }
 
                 @Override
-                protected void onPostExecute(JSONObject jsonObject) {
+                protected void onPostExecute(TProtocolType jsonObject) {
                     super.onPostExecute(jsonObject);
 
                     if (jsonObject == null)

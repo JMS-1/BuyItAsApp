@@ -10,7 +10,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ProductEdit extends EditActivity {
+public class ProductEdit extends EditActivity<JSONObject> {
 
     private static final int RESULT_SELECT_MARKET = 1;
 
