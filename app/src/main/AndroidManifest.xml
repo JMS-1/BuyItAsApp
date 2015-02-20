@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.jochen_manns.buyitv0" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".ProductList"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ProductEdit"
+            android:label="@string/title_activity_product_edit" >
+        </activity>
+        <activity
+            android:name=".MarketList"
+            android:label="@string/title_activity_market_list" >
+        </activity>
+        <activity
+            android:name=".MarketEdit"
+            android:label="@string/title_activity_market_edit" >
+        </activity>
+    </application>
+
+</manifest>

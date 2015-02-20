@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Mein kleiner Einkaufshelfer</string>
+
+    <string name="editLabel_save">Speichern</string>
+    <string name="editLabel_delete">Löschen</string>
+
+    <string name="editLabel_item_product">Produkt:</string>
+    <string name="editLabel_item_market">Markt:</string>
+    <string name="editLabel_item_description">Beschreibung:</string>
+
+    <string name="editLabel_market_name">Name des Marktes:</string>
+
+    <string name="action_new">Neu</string>
+    <string name="action_sync">Abgleich</string>
+    <string name="action_logon">Anmelden</string>
+    <string name="action_start">Einkaufen</string>
+    <string name="editSelect_item_nomarket">(Egal)</string>
+    <string name="title_activity_product_edit">ProductEdit</string>
+    <string name="title_activity_market_list">MarketList</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_market_edit">MarketEdit</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

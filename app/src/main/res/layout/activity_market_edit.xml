@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+
+    <Button
+        android:id="@id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/editLabel_save"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:enabled="false"
+        android:onClick="onUpdate" />
+
+    <Button
+        android:id="@id/button_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/editLabel_delete"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/button_save"
+        android:onClick="onDelete" />
+
+    <TextView
+        android:id="@+id/edit_market_name_label"
+        android:text="@string/editLabel_market_name"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/button_save"
+        style="@android:style/TextAppearance.Large" />
+
+    <EditText
+        android:id="@id/edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        style="@android:style/TextAppearance.Large"
+        android:singleLine="true"
+        android:layout_below="@id/edit_market_name_label" />
+</RelativeLayout>

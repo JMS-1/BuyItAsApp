@@ -1,0 +1,82 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <Button
+        android:id="@id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/editLabel_save"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:enabled="false"
+        android:onClick="onUpdate" />
+
+    <Button
+        android:id="@id/button_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/editLabel_delete"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/button_save"
+        android:onClick="onDelete" />
+
+    <TextView
+        android:id="@+id/edit_item_product_label"
+        android:text="@string/editLabel_item_product"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/button_save"
+        style="@android:style/TextAppearance.Large" />
+
+    <EditText
+        android:id="@id/edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        style="@android:style/TextAppearance.Large"
+        android:singleLine="true"
+        android:layout_below="@id/edit_item_product_label" />
+
+    <TextView
+        android:id="@+id/edit_item_market_label"
+        android:text="@string/editLabel_item_market"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_name"
+        style="@android:style/TextAppearance.Large" />
+
+    <Button
+        android:id="@+id/edit_item_market"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/edit_item_market_label"
+        android:text="@string/editSelect_item_nomarket"
+        android:onClick="onSelectMarket"
+        android:tag="@null" />
+
+    <TextView
+        android:id="@+id/edit_item_description_label"
+        android:text="@string/editLabel_item_description"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_item_market"
+        style="@android:style/TextAppearance.Large" />
+
+    <EditText
+        android:id="@+id/edit_item_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/edit_item_description_label"
+        style="@android:style/TextAppearance.Large" />
+
+</RelativeLayout>
