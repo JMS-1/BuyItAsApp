@@ -1,6 +1,5 @@
 package de.jochen_manns.buyitv0;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.widget.ListView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MarketList extends ListActivity implements AdapterView.OnItemLongClickListener {
+public class MarketList extends ListActivity {
 
     private static final int RESULT_EDIT_MARKET = 1;
 
@@ -25,7 +24,7 @@ public class MarketList extends ListActivity implements AdapterView.OnItemLongCl
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(ListView.CHOICE_MODE_SINGLE, savedInstanceState);
 
         m_market = null;
 
@@ -44,10 +43,6 @@ public class MarketList extends ListActivity implements AdapterView.OnItemLongCl
             finish();
             return;
         }
-
-        ListView view = getListView();
-        view.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        view.setOnItemLongClickListener(MarketList.this);
 
         load();
     }
@@ -112,21 +107,10 @@ public class MarketList extends ListActivity implements AdapterView.OnItemLongCl
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        ListView listView = getListView();
-        if (listView != parent)
-            return false;
-
-        try {
-            JSONObject market = (JSONObject) listView.getItemAtPosition(position);
-            String marketName = Markets.getOriginalName(market);
-            if (marketName == null)
-                return true;
-
+    protected boolean startEdit(JSONObject market) throws JSONException {
+        String marketName = Markets.getOriginalName(market);
+        if (marketName != null)
             onEdit(marketName);
-        } catch (JSONException e) {
-            finish();
-        }
 
         return true;
     }

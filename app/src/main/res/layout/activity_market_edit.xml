@@ -10,8 +10,7 @@
         android:text="@string/editLabel_save"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:enabled="false"
-        android:onClick="onUpdate" />
+        android:enabled="false" />
 
     <Button
         android:id="@id/button_delete"
@@ -19,8 +18,7 @@
         android:layout_height="wrap_content"
         android:text="@string/editLabel_delete"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/button_save"
-        android:onClick="onDelete" />
+        android:layout_toLeftOf="@id/button_save" />
 
     <TextView
         android:id="@+id/edit_market_name_label"
