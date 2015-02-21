@@ -12,31 +12,18 @@ import java.util.Calendar;
 
 class Products {
     private static final String Table = "items";
-
-    private static final String Identifier = "id";
-
-    private static final String State = "state";
-
-    private static final String Name = "name";
-
-    private static final String Description = "description";
-
-    private static final String CreateTime = "created";
-
-    private static final String BuyTime = "bought";
-
-    private static final String BuyMarket = "market";
-
-    private static final String Order = "priority";
-
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER)";
-
     public static final String DropSql = "DROP TABLE IF EXISTS " + Table;
-
     public static final String CleanupSql = "DELETE FROM " + Table;
-
+    private static final String Identifier = "id";
+    private static final String State = "state";
+    private static final String Name = "name";
+    private static final String Description = "description";
+    private static final String CreateTime = "created";
+    private static final String BuyTime = "bought";
+    private static final String BuyMarket = "market";
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket};
-
+    private static final String Order = "priority";
+    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER)";
     private final static String[] s_ItemLimitColumns = {"COUNT(*)", "MIN(" + Identifier + ")", "MAX(" + Order + ")"};
 
     private static JSONObject[] build(Cursor query) throws JSONException {

@@ -10,19 +10,12 @@ import org.json.JSONObject;
 
 class Markets {
     private static final String Table = "markets";
-
-    private static final String Deleted = "deleted";
-
-    private static final String Name = "name";
-
-    private static final String OriginalName = "originalName";
-
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Name + " TEXT, " + OriginalName + " TEXT, " + Deleted + " INTEGER)";
-
     public static final String DropSql = "DROP TABLE IF EXISTS " + Table;
-
     public static final String CleanupSql = "DELETE FROM " + Table;
-
+    private static final String Deleted = "deleted";
+    private static final String Name = "name";
+    private static final String OriginalName = "originalName";
+    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Name + " TEXT, " + OriginalName + " TEXT, " + Deleted + " INTEGER)";
     private final static String[] s_MarketListColumns = {Name, OriginalName};
 
     private static JSONObject[] build(Cursor query) throws JSONException {
@@ -139,15 +132,15 @@ class Markets {
         }
     }
 
-    public static String getName(JSONObject market) throws JSONException{
-       return Tools.getStringFromJSON(market, Name);
+    public static String getName(JSONObject market) throws JSONException {
+        return Tools.getStringFromJSON(market, Name);
     }
 
     public static void setName(JSONObject market, String name) throws JSONException {
         market.put(Name, name);
     }
 
-    public static String getOriginalName(JSONObject market) throws JSONException{
+    public static String getOriginalName(JSONObject market) throws JSONException {
         return Tools.getStringFromJSON(market, OriginalName);
     }
 

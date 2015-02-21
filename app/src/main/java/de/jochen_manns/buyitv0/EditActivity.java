@@ -12,7 +12,11 @@ import android.widget.EditText;
 
 import org.json.JSONException;
 
-public abstract class EditActivity<TProtocolType> extends Activity {
+import java.io.Serializable;
+
+public abstract class EditActivity<TIdentifierType extends Serializable, TProtocolType> extends Activity {
+
+    public static final String ARG_EXTRA_ID = "id";
 
     public static final int RESULT_SAVED = 1;
 
@@ -22,19 +26,17 @@ public abstract class EditActivity<TProtocolType> extends Activity {
 
     private EditText m_name;
 
-    protected abstract boolean initializeFromIntent(Intent intent);
-
-    protected abstract boolean creatingNewItem();
+    private TIdentifierType m_identifier;
 
     protected abstract boolean isValidName(Editable newName);
 
-    protected abstract TProtocolType queryItem(Database database) throws JSONException;
+    protected abstract TProtocolType queryItem(Database database, TIdentifierType item) throws JSONException;
 
     protected abstract void initializeFromItem(TProtocolType item);
 
-    protected abstract boolean deleteItem(Database database);
+    protected abstract void deleteItem(Database database, TIdentifierType item);
 
-    protected abstract boolean updateItem(Database database);
+    protected abstract void updateItem(Database database, TIdentifierType item);
 
     protected Editable getName() {
         return m_name.getText();
@@ -42,6 +44,10 @@ public abstract class EditActivity<TProtocolType> extends Activity {
 
     protected void setName(String name) {
         m_name.setText(name);
+    }
+
+    protected TIdentifierType getIdentifier() {
+        return m_identifier;
     }
 
     protected void onCreate(int layout, Bundle savedInstanceState) {
@@ -53,16 +59,21 @@ public abstract class EditActivity<TProtocolType> extends Activity {
         m_save = (Button) findViewById(R.id.button_save);
         m_name = (EditText) findViewById(R.id.edit_name);
 
+        m_save.setText(R.string.button_save);
+        m_delete.setText(R.string.button_delete);
+
         Intent startInfo = getIntent();
         if (startInfo == null) {
             finish();
             return;
         }
 
-        if (!initializeFromIntent(startInfo)) {
+        if (!startInfo.hasExtra(ARG_EXTRA_ID)) {
             finish();
             return;
         }
+
+        m_identifier = (TIdentifierType) startInfo.getSerializableExtra(ARG_EXTRA_ID);
 
         m_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,8 +83,7 @@ public abstract class EditActivity<TProtocolType> extends Activity {
 
                 Database database = Database.create(EditActivity.this);
                 try {
-                    if (!updateItem(database))
-                        return;
+                    updateItem(database, m_identifier);
                 } finally {
                     database.close();
                 }
@@ -89,8 +99,7 @@ public abstract class EditActivity<TProtocolType> extends Activity {
             public void onClick(View v) {
                 Database database = Database.create(EditActivity.this);
                 try {
-                    if (!deleteItem(database))
-                        return;
+                    deleteItem(database, m_identifier);
                 } finally {
                     database.close();
                 }
@@ -116,7 +125,7 @@ public abstract class EditActivity<TProtocolType> extends Activity {
             }
         });
 
-        if (creatingNewItem())
+        if (m_identifier == null)
             m_delete.setVisibility(View.INVISIBLE);
         else
             new AsyncTask<Void, Void, TProtocolType>() {
@@ -124,7 +133,7 @@ public abstract class EditActivity<TProtocolType> extends Activity {
                 protected TProtocolType doInBackground(Void... params) {
                     Database database = Database.create(EditActivity.this);
                     try {
-                        return queryItem(database);
+                        return queryItem(database, m_identifier);
                     } catch (JSONException e) {
                         return null;
                     } finally {

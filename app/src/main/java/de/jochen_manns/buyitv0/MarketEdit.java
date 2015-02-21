@@ -1,6 +1,5 @@
 package de.jochen_manns.buyitv0;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 
@@ -9,11 +8,7 @@ import org.json.JSONObject;
 
 import java.util.HashSet;
 
-public class MarketEdit extends EditActivity<JSONObject[]> {
-    public static final String ARG_MARKET_NAME = "market";
-
-    private String m_market;
-
+public class MarketEdit extends EditActivity<String, JSONObject[]> {
     private final HashSet<String> m_forbiddenNames = new HashSet<String>();
 
     @Override
@@ -22,38 +17,25 @@ public class MarketEdit extends EditActivity<JSONObject[]> {
     }
 
     @Override
-    protected boolean initializeFromIntent(Intent intent) {
-        if (!intent.hasExtra(ARG_MARKET_NAME))
-            return false;
-
-        m_market = intent.getStringExtra(ARG_MARKET_NAME);
-
-        return true;
-    }
-
-    @Override
-    protected boolean creatingNewItem() {
-        return (m_market == null);
-    }
-
-    @Override
     protected boolean isValidName(Editable newName) {
         return ((newName != null) && (newName.length() > 0) && !m_forbiddenNames.contains(newName.toString().toUpperCase()));
     }
 
     @Override
-    protected JSONObject[] queryItem(Database database) throws JSONException {
+    protected JSONObject[] queryItem(Database database, String market) throws JSONException {
         return Markets.query(database);
     }
 
     @Override
     protected void initializeFromItem(JSONObject[] markets) {
+        String preSelected = getIdentifier();
+
         for (JSONObject market : markets)
             try {
                 String originalName = Markets.getOriginalName(market);
                 String name = Markets.getName(market);
 
-                if ((m_market != null) && m_market.equals(originalName))
+                if ((preSelected != null) && preSelected.equals(originalName))
                     setName(name);
                 else
                     m_forbiddenNames.add(name.toUpperCase());
@@ -63,16 +45,12 @@ public class MarketEdit extends EditActivity<JSONObject[]> {
     }
 
     @Override
-    protected boolean updateItem(Database database) {
-        Markets.update(database, m_market, getName().toString());
-
-        return true;
+    protected void updateItem(Database database, String market) {
+        Markets.update(database, market, getName().toString());
     }
 
     @Override
-    protected boolean deleteItem(Database database) {
-        Markets.delete(database, m_market);
-
-        return true;
+    protected void deleteItem(Database database, String market) {
+        Markets.delete(database, market);
     }
 }

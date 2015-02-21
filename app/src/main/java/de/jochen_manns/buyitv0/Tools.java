@@ -13,6 +13,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 class Tools {
+    private static final TimeZone UniversalTimeZone = TimeZone.getTimeZone("UTC");
+    private static final String IsoDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssZZ";
+    private static final String[] IsoDateTimeFormatArray = {IsoDateTimeFormat};
+
     public static String responseStreamToString(InputStream stream) throws IOException {
         if (stream == null)
             throw new NullPointerException("stream");
@@ -50,13 +54,6 @@ class Tools {
         return new String(all, "UTF-8");
     }
 
-    private static final TimeZone UniversalTimeZone = TimeZone.getTimeZone("UTC");
-
-    private static final String IsoDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssZZ";
-
-    private static final String[] IsoDateTimeFormatArray = {IsoDateTimeFormat};
-
-
     public static String dateToISOString(Date date) {
         if (date == null)
             return null;
@@ -68,8 +65,7 @@ class Tools {
         return df.format(date);
     }
 
-    public static Date dateFromISOString(String date) throws DateParseException
-    {
+    public static Date dateFromISOString(String date) throws DateParseException {
         if (date == null)
             return null;
 

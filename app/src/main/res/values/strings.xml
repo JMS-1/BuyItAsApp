@@ -3,8 +3,8 @@
 
     <string name="app_name">Mein kleiner Einkaufshelfer</string>
 
-    <string name="editLabel_save">Speichern</string>
-    <string name="editLabel_delete">Löschen</string>
+    <string name="button_save">Speichern</string>
+    <string name="button_delete">Löschen</string>
 
     <string name="editLabel_item_product">Produkt:</string>
     <string name="editLabel_item_market">Markt:</string>

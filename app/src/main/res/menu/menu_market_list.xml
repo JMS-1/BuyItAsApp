@@ -3,8 +3,7 @@
     tools:context=".MarketList">
 
     <item
-        android:id="@+id/action_new_market"
-        android:title="@string/action_new"
+        android:id="@id/action_new"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
 </menu>

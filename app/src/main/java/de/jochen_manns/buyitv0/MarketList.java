@@ -1,20 +1,15 @@
 package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MarketList extends ListActivity {
-
-    private static final int RESULT_EDIT_MARKET = 1;
+public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> {
 
     public final static String ARG_MARKET_NAME = "market";
 
@@ -23,8 +18,18 @@ public class MarketList extends ListActivity {
     private String m_market;
 
     @Override
+    protected String getIdentifier(JSONObject item) throws JSONException {
+        return Markets.getOriginalName(item);
+    }
+
+    @Override
+    protected boolean canEdit(String identifier) {
+        return identifier != null;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(ListView.CHOICE_MODE_SINGLE, savedInstanceState);
+        super.onCreate(ListView.CHOICE_MODE_SINGLE, R.menu.menu_market_list, savedInstanceState);
 
         m_market = null;
 
@@ -44,45 +49,29 @@ public class MarketList extends ListActivity {
             return;
         }
 
-        load();
-    }
+        if (m_market != null)
+            getListAdapter().registerDataSetObserver(new DataSetObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
 
-    private void load() {
-        new AsyncTask<Void, Void, MarketAdapter>() {
-            @Override
-            protected MarketAdapter doInBackground(Void... params) {
-                MarketAdapter adapter = (MarketAdapter) getListAdapter();
+                    ListView view = getListView();
+                    for (int i = 0; i < view.getCount(); i++)
+                        try {
+                            JSONObject market = (JSONObject) view.getItemAtPosition(i);
+                            String name = Markets.getName(market);
 
-                adapter.refresh();
-
-                return adapter;
-            }
-
-            @Override
-            protected void onPostExecute(MarketAdapter adapter) {
-                super.onPostExecute(adapter);
-
-                if (adapter != null)
-                    adapter.notifyDataSetChanged();
-
-                if (m_market == null)
-                    return;
-
-                ListView view = getListView();
-                for (int i = 0; i < view.getCount(); i++)
-                    try {
-                        JSONObject market = (JSONObject) view.getItemAtPosition(i);
-                        String name = Markets.getName(market);
-
-                        if (m_market.equals(name)) {
-                            view.setItemChecked(i, true);
-                            break;
+                            if (m_market.equals(name)) {
+                                view.setItemChecked(i, true);
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            continue;
                         }
-                    } catch (JSONException e) {
-                        continue;
-                    }
-            }
-        }.execute();
+                }
+            });
+
+        load();
     }
 
     @Override
@@ -104,49 +93,5 @@ public class MarketList extends ListActivity {
         }
 
         finish();
-    }
-
-    @Override
-    protected boolean startEdit(JSONObject market) throws JSONException {
-        String marketName = Markets.getOriginalName(market);
-        if (marketName != null)
-            onEdit(marketName);
-
-        return true;
-    }
-
-    private void onEdit(String originalName) {
-        Intent openForEdit = new Intent(this, MarketEdit.class);
-        openForEdit.putExtra(MarketEdit.ARG_MARKET_NAME, originalName);
-        startActivityForResult(openForEdit, RESULT_EDIT_MARKET);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case RESULT_EDIT_MARKET:
-                if (resultCode == MarketEdit.RESULT_SAVED)
-                    load();
-                break;
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_market_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_new_market:
-                onEdit(null);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

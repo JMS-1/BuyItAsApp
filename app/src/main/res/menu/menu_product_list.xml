@@ -9,8 +9,7 @@
         android:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_new_product"
-        android:title="@string/action_new"
+        android:id="@id/action_new"
         android:orderInCategory="101"
         android:showAsAction="ifRoom" />
 

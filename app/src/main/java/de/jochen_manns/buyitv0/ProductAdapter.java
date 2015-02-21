@@ -4,13 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class ProductAdapter extends BaseAdapter {
+class ProductAdapter extends ItemAdapter {
     private final LayoutInflater m_inflater;
 
     private JSONObject[] m_products = null;
@@ -61,6 +60,7 @@ class ProductAdapter extends BaseAdapter {
         return m_products[position];
     }
 
+    @Override
     public void refresh() {
         Database database = Database.create(m_inflater.getContext());
         try {

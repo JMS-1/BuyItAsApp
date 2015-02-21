@@ -10,36 +10,20 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ProductEdit extends EditActivity<JSONObject> {
+public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     private static final int RESULT_SELECT_MARKET = 1;
-
-    public static final String ARG_ITEM_ID = "id";
 
     private EditText m_description;
 
     private Button m_market;
 
-    private long m_identifier;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, savedInstanceState);
-    }
 
-    @Override
-    protected boolean initializeFromIntent(Intent intent) {
         m_market = (Button) findViewById(R.id.edit_item_market);
         m_description = (EditText) findViewById(R.id.edit_item_description);
-
-        m_identifier = intent.getLongExtra(ARG_ITEM_ID, Long.MAX_VALUE);
-
-        return (m_identifier != Long.MAX_VALUE);
-    }
-
-    @Override
-    protected boolean creatingNewItem() {
-        return (m_identifier == Long.MIN_VALUE);
     }
 
     @Override
@@ -48,8 +32,8 @@ public class ProductEdit extends EditActivity<JSONObject> {
     }
 
     @Override
-    protected JSONObject queryItem(Database database) throws JSONException {
-        return Products.query(database, m_identifier);
+    protected JSONObject queryItem(Database database, Long identifier) throws JSONException {
+        return Products.query(database, identifier);
     }
 
     @Override
@@ -77,7 +61,7 @@ public class ProductEdit extends EditActivity<JSONObject> {
     }
 
     @Override
-    protected boolean updateItem(Database database) {
+    protected void updateItem(Database database, Long identifier) {
         Editable description = m_description.getText();
         String market = (String) m_market.getTag();
         Editable name = getName();
@@ -85,16 +69,12 @@ public class ProductEdit extends EditActivity<JSONObject> {
         if ((description != null) && (description.length() < 1))
             description = null;
 
-        Products.update(database, m_identifier, name.toString(), (description == null) ? null : description.toString(), market);
-
-        return true;
+        Products.update(database, identifier, name.toString(), (description == null) ? null : description.toString(), market);
     }
 
     @Override
-    protected boolean deleteItem(Database database) {
-        Products.delete(database, m_identifier);
-
-        return true;
+    protected void deleteItem(Database database, Long identifier) {
+        Products.delete(database, identifier);
     }
 
     @Override
