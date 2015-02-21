@@ -127,29 +127,26 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
         if (m_identifier == null)
             m_delete.setVisibility(View.INVISIBLE);
-        else
-            new AsyncTask<Void, Void, TProtocolType>() {
-                @Override
-                protected TProtocolType doInBackground(Void... params) {
-                    Database database = Database.create(EditActivity.this);
-                    try {
-                        return queryItem(database, m_identifier);
-                    } catch (JSONException e) {
-                        return null;
-                    } finally {
-                        database.close();
-                    }
-                }
 
-                @Override
-                protected void onPostExecute(TProtocolType jsonObject) {
-                    super.onPostExecute(jsonObject);
-
-                    if (jsonObject == null)
-                        finish();
-                    else
-                        initializeFromItem(jsonObject);
+        new AsyncTask<Void, Void, TProtocolType>() {
+            @Override
+            protected TProtocolType doInBackground(Void... params) {
+                Database database = Database.create(EditActivity.this);
+                try {
+                    return queryItem(database, m_identifier);
+                } catch (JSONException e) {
+                    return null;
+                } finally {
+                    database.close();
                 }
-            }.execute();
+            }
+
+            @Override
+            protected void onPostExecute(TProtocolType jsonObject) {
+                super.onPostExecute(jsonObject);
+
+                initializeFromItem(jsonObject);
+            }
+        }.execute();
     }
 }

@@ -33,25 +33,26 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     @Override
     protected JSONObject queryItem(Database database, Long identifier) throws JSONException {
-        return Products.query(database, identifier);
+        return (identifier == null) ? null : Products.query(database, identifier);
     }
 
     @Override
     protected void initializeFromItem(JSONObject item) {
-        try {
-            String market = Products.getMarket(item);
-            if ((market != null) && (market.length() > 0)) {
-                m_market.setText(market);
-                m_market.setTag(market);
+        if (item != null)
+            try {
+                String market = Products.getMarket(item);
+                if ((market != null) && (market.length() > 0)) {
+                    m_market.setText(market);
+                    m_market.setTag(market);
+                }
+
+                m_description.setText(Products.getDescription(item));
+                setName(Products.getName(item));
+
+            } catch (JSONException e) {
+                setName("### ERROR ###");
+                m_description.setText("### ERROR ###");
             }
-
-            m_description.setText(Products.getDescription(item));
-            setName(Products.getName(item));
-
-        } catch (JSONException e) {
-            setName("### ERROR ###");
-            m_description.setText("### ERROR ###");
-        }
     }
 
     public void onSelectMarket(View view) {
