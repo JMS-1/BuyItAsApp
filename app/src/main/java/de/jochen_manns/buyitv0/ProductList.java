@@ -98,19 +98,22 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     }
 
     public void onSynchronize() {
-        try {
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (User.load(this) == null)
+            onLogon();
+        else
+            try {
+                ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo == null)
-                return;
-            if (!networkInfo.isConnected())
-                return;
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                if (networkInfo == null)
+                    return;
+                if (!networkInfo.isConnected())
+                    return;
 
-            synchronize(false);
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG);
-        }
+                synchronize(false);
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG);
+            }
     }
 
     @Override
