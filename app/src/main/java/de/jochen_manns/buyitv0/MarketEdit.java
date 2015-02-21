@@ -17,6 +17,11 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
     }
 
     @Override
+    protected int getTitle(boolean forNew) {
+        return forNew ? R.string.market_edit_create : R.string.market_edit_modify;
+    }
+
+    @Override
     protected boolean isValidName(Editable newName) {
         return ((newName != null) && (newName.length() > 0) && !m_forbiddenNames.contains(newName.toString().toUpperCase()));
     }

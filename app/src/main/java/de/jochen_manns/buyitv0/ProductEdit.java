@@ -27,6 +27,11 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     }
 
     @Override
+    protected int getTitle(boolean forNew) {
+        return forNew ? R.string.product_edit_create : R.string.product_edit_modify;
+    }
+
+    @Override
     protected boolean isValidName(Editable newName) {
         return ((newName != null) && (newName.length() > 0));
     }

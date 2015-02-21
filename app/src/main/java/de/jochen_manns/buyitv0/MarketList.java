@@ -42,6 +42,8 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
                     m_market = getResources().getString(R.string.editSelect_item_nomarket);
             }
 
+        setTitle((m_market == null) ? R.string.market_list_forBuy : R.string.market_list_forEdit);
+
         try {
             setListAdapter(new MarketAdapter(this, m_market != null));
         } catch (JSONException e) {

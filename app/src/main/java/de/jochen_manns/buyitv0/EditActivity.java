@@ -38,6 +38,8 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
     protected abstract void updateItem(Database database, TIdentifierType item);
 
+    protected abstract int getTitle(boolean forNew);
+
     protected Editable getName() {
         return m_name.getText();
     }
@@ -54,6 +56,8 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         super.onCreate(savedInstanceState);
 
         setContentView(layout);
+
+        getActionBar().setIcon(android.R.color.transparent);
 
         m_delete = (Button) findViewById(R.id.button_delete);
         m_save = (Button) findViewById(R.id.button_save);
@@ -74,6 +78,8 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         }
 
         m_identifier = (TIdentifierType) startInfo.getSerializableExtra(ARG_EXTRA_ID);
+
+        setTitle(getTitle(m_identifier == null));
 
         m_save.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -20,6 +21,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     private static final int RESULT_START_BUY = 2;
 
     private static final int DIALOG_LOGON = 1;
+
+    private String m_market;
 
     @Override
     protected Long getIdentifier(JSONObject item) throws JSONException {
@@ -182,6 +185,14 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                     onStartBuy(data.getStringExtra(MarketList.ARG_MARKET_NAME));
                 break;
         }
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        if (m_market == null)
+            onBuy();
     }
 
     private class ItemSynchronize extends SynchronizeTask {

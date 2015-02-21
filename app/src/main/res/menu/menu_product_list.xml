@@ -3,25 +3,25 @@
     tools:context=".ProductList">
 
     <item
-        android:id="@+id/action_start_buy"
-        android:title="@string/action_start"
+        android:id="@id/action_new"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
 
     <item
-        android:id="@id/action_new"
-        android:orderInCategory="101"
-        android:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_synchronize"
-        android:title="@string/action_sync"
-        android:orderInCategory="102"
-        android:showAsAction="ifRoom" />
+        android:orderInCategory="101"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_sync" />
 
     <item
         android:id="@+id/action_logon"
-        android:title="@string/action_logon"
+        android:orderInCategory="102"
+        android:showAsAction="never"
+        android:title="@string/action_logon" />
+
+    <item
+        android:id="@+id/action_start_buy"
         android:orderInCategory="103"
-        android:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/action_start" />
 </menu>

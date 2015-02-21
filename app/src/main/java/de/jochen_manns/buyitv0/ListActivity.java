@@ -29,6 +29,8 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         super.onCreate(savedInstanceState);
 
+        getActionBar().setIcon(android.R.color.transparent);
+
         ListView view = getListView();
         view.setChoiceMode(choiceMode);
         view.setOnItemLongClickListener(this);
