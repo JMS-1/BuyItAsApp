@@ -107,7 +107,7 @@ class Products {
         return (items.length == 1) ? items[0] : null;
     }
 
-    public static void update(Database database, long identifier, String name, String description, String market) {
+    public static void update(Database database, Long identifier, String name, String description, String market) {
         SQLiteDatabase db = database.getWritableDatabase();
         try {
             db.beginTransaction();
@@ -117,7 +117,7 @@ class Products {
                 values.put(Description, description);
                 values.put(BuyMarket, market);
 
-                if (identifier == Long.MIN_VALUE) {
+                if (identifier == null) {
                     Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
                     try {
                         values.put(State, ProductStates.NewlyCreated.ordinal());
