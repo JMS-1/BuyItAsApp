@@ -1,11 +1,15 @@
 package de.jochen_manns.buyitv0;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,6 +18,8 @@ import org.json.JSONObject;
 
 public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter> {
     private static final int RESULT_START_BUY = 2;
+
+    private static final int DIALOG_LOGON = 1;
 
     @Override
     protected Long getIdentifier(JSONObject item) throws JSONException {
@@ -107,23 +113,60 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         }
     }
 
-    public void onLogon() {
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+
         User user = User.load(this);
-        String userId = (user == null) ? "8E34D0C5" : user.Identifier;
+        if (user == null)
+            return;
 
-        try {
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        AlertDialog alert = (AlertDialog) dialog;
+        EditText userid = (EditText) alert.findViewById(R.id.dialog_register_userid);
 
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo == null)
-                return;
-            if (!networkInfo.isConnected())
-                return;
+        userid.setText(user.Identifier);
+    }
 
-            new LogonTask(this, userId).start();
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG);
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_LOGON:
+                return
+                        new AlertDialog.Builder(this)
+                                .setView(getLayoutInflater().inflate(R.layout.dialog_register_user, null))
+                                .setPositiveButton(R.string.button_register, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        AlertDialog alert = (AlertDialog) dialog;
+                                        EditText key = (EditText) alert.findViewById(R.id.dialog_register_userid);
+
+                                        new LogonTask(ProductList.this, key.getText().toString()).start();
+
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create();
         }
+
+        return super.onCreateDialog(id);
+    }
+
+    public void onLogon() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo == null)
+            return;
+        if (!networkInfo.isConnected())
+            return;
+
+        showDialog(DIALOG_LOGON);
     }
 
     @Override

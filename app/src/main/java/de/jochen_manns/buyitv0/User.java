@@ -35,11 +35,15 @@ class User {
     }
 
     public static void save(String userIdentifier, JSONObject response, Context context) throws JSONException {
+        String userName = Tools.getStringFromJSON(response, Name_Name);
+        if ((userName == null) || (userName.length() < 1))
+            return;
+
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
 
         SharedPreferences.Editor changes = preferences.edit();
         changes.putString(Name_Identifier, userIdentifier);
-        changes.putString(Name_Name, Tools.getStringFromJSON(response, Name_Name));
+        changes.putString(Name_Name, userName);
         changes.commit();
     }
 }

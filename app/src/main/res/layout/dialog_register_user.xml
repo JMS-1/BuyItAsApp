@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/dialog_register_label"
+        android:text="@string/dialog_register_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        style="@android:style/TextAppearance.Large" />
+
+    <EditText
+        android:id="@+id/dialog_register_userid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/dialog_register_hint"
+        style="@android:style/TextAppearance.Large"
+        android:singleLine="true"
+        android:layout_below="@id/dialog_register_label" />
+</RelativeLayout>
