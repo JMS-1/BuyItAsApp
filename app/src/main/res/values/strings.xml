@@ -3,7 +3,8 @@
 
     <string name="app_name">Mein kleiner Einkaufshelfer</string>
 
-    <string name="button_save">Speichern</string>
+    <string name="button_save">Ändern</string>
+    <string name="button_new">Anlegen</string>
     <string name="button_delete">Löschen</string>
     <string name="button_register">Anmelden</string>
     <string name="button_cancel">Abbrechen</string>

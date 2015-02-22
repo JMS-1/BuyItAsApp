@@ -58,7 +58,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         Class editActivity = (Class) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 
         Intent openForEdit = new Intent(this, editActivity);
-        openForEdit.putExtra(EditActivity.ARG_EXTRA_ID, id);
+        openForEdit.putExtra(EditActivity.EXTRA_IDENTIFIER, id);
 
         startActivityForResult(openForEdit, RESULT_EDIT_ITEM);
 
