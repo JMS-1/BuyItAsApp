@@ -15,8 +15,6 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
 
     public final static String EXTRA_PRODUCT_IDENTIFIER = "forBuy";
 
-    public final static int RESULT_SELECTED = 1;
-
     private String m_market;
 
     private Long m_product;
@@ -96,7 +94,7 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
             result.putExtra(EXTRA_MARKET_NAME, (market == null) ? null : Markets.getName(market));
             result.putExtra(EXTRA_PRODUCT_IDENTIFIER, m_product);
 
-            setResult(RESULT_SELECTED, result);
+            setResult(RESULT_OK, result);
         } catch (JSONException e) {
         }
 

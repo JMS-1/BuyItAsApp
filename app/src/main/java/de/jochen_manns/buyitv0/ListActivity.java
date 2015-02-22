@@ -71,7 +71,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         switch (requestCode) {
             case RESULT_EDIT_ITEM:
-                if (resultCode == EditActivity.RESULT_SAVED)
+                if (resultCode == RESULT_OK)
                     load();
                 break;
         }

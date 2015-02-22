@@ -23,9 +23,6 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
     // Die Intentdaten mit der eindeutigen Identifikation der betroffenen Entität.
     public static final String EXTRA_IDENTIFIER = "id";
 
-    // Das Intentergebnis nach einer erfolgreichen Änderungen - es kann sich auch um ein Entfernen handeln.
-    public static final int RESULT_SAVED = 1;
-
     // Das Eingabefeld mit dem Namen der Entität.
     private EditText m_name;
 
@@ -170,7 +167,7 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         }
 
         // Vermutlich wurde eine Änderung durchgeführt
-        setResult(RESULT_SAVED);
+        setResult(RESULT_OK);
 
         // Diese Aktivität kann nun beendet werden
         finish();

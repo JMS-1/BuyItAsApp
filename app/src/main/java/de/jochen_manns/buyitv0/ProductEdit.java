@@ -90,7 +90,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         if (data != null)
             switch (requestCode) {
                 case RESULT_SELECT_MARKET:
-                    if (resultCode == MarketList.RESULT_SELECTED) {
+                    if (resultCode == RESULT_OK) {
                         String market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
 
                         m_market.setTag(market);
