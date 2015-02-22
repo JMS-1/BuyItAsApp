@@ -14,22 +14,18 @@ class MarketAdapter extends ItemAdapter {
 
     private JSONObject[] m_markets = null;
 
-    private JSONObject m_noMarket;
+    private JSONObject m_noMarket = new JSONObject();
 
-    public MarketAdapter(Context context, boolean withEmpty) throws JSONException {
-        if (withEmpty) {
-            m_noMarket = new JSONObject();
-
-            Markets.setName(m_noMarket, context.getResources().getString(R.string.editSelect_item_nomarket));
-            Markets.setOriginalName(m_noMarket, null);
-        }
+    public MarketAdapter(Context context, String emptyName) throws JSONException {
+        Markets.setName(m_noMarket, emptyName);
+        Markets.setOriginalName(m_noMarket, null);
 
         m_inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return ((m_noMarket == null) ? 0 : 1) + ((m_markets == null) ? 0 : m_markets.length);
+        return (m_markets == null) ? 0 : (1 + m_markets.length);
     }
 
     @Override
@@ -56,9 +52,7 @@ class MarketAdapter extends ItemAdapter {
 
     @Override
     public Object getItem(int position) {
-        if (m_noMarket == null)
-            return m_markets[position];
-        else if (position < 1)
+        if (position < 1)
             return m_noMarket;
         else
             return m_markets[position - 1];

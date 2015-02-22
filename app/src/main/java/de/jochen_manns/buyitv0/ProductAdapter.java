@@ -35,10 +35,16 @@ class ProductAdapter extends ItemAdapter {
             String market = Products.getMarket(product);
             String name = Products.getName(product);
 
-            if ((market != null) && (market.length() > 0))
-                name = market + ": " + name;
+            int res = 0;
+            if (Products.isBought(product))
+                res = R.string.product_suffix_bought;
+            else if ((market != null) && (market.length() > 0))
+                res = R.string.product_prefix_market;
 
-            textView.setText(name);
+            if (res > 0)
+                textView.setText(m_inflater.getContext().getResources().getString(res, name, market));
+            else
+                textView.setText(name);
         } catch (JSONException e) {
             textView.setText("### ERROR ###");
         }

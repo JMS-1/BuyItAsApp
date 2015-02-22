@@ -62,7 +62,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     public void onSelectMarket(View view) {
         Intent showSelector = new Intent(this, MarketList.class);
-        showSelector.putExtra(MarketList.ARG_MARKET_NAME, (String) m_market.getTag());
+        showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
         startActivityForResult(showSelector, RESULT_SELECT_MARKET);
     }
 
@@ -91,7 +91,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
             switch (requestCode) {
                 case RESULT_SELECT_MARKET:
                     if (resultCode == MarketList.RESULT_SELECTED) {
-                        String market = data.getStringExtra(MarketList.ARG_MARKET_NAME);
+                        String market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
 
                         m_market.setTag(market);
 

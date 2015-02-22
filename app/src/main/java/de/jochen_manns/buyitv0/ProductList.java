@@ -79,10 +79,6 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
             case R.id.action_logon:
                 onLogon();
                 return true;
-
-            case R.id.action_start_buy:
-                onBuy();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -90,14 +86,6 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
     public void synchronize(boolean clearDatabase) {
         new ItemSynchronize(clearDatabase).start();
-    }
-
-    private void onBuy() {
-        Intent selectMarket = new Intent(this, MarketList.class);
-        startActivityForResult(selectMarket, RESULT_START_BUY);
-    }
-
-    private void onStartBuy(String market) {
     }
 
     public void onSynchronize() {
@@ -179,20 +167,34 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case RESULT_START_BUY:
-                if (data != null)
-                    onStartBuy(data.getStringExtra(MarketList.ARG_MARKET_NAME));
-                break;
-        }
+        if (data != null)
+            switch (requestCode) {
+                case RESULT_START_BUY:
+                    Long id = (Long) data.getSerializableExtra(MarketList.EXTRA_PRODUCT_IDENTIFIER);
+
+                    m_market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
+
+                    Database database = Database.create(this);
+                    try {
+                        Products.buy(database, id, m_market);
+                    } finally {
+                        database.close();
+                    }
+
+                    load();
+
+                    break;
+            }
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        if (m_market == null)
-            onBuy();
+        Intent selectMarket = new Intent(this, MarketList.class);
+        selectMarket.putExtra(MarketList.EXTRA_MARKET_NAME, m_market);
+        selectMarket.putExtra(MarketList.EXTRA_PRODUCT_IDENTIFIER, new Long(id));
+        startActivityForResult(selectMarket, RESULT_START_BUY);
     }
 
     private class ItemSynchronize extends SynchronizeTask {

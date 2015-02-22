@@ -21,7 +21,7 @@ class Products {
     private static final String CreateTime = "created";
     private static final String BuyTime = "bought";
     private static final String BuyMarket = "market";
-    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket};
+    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime};
     private static final String Order = "priority";
     public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER)";
     private final static String[] s_ItemLimitColumns = {"COUNT(*)", "MIN(" + Identifier + ")", "MAX(" + Order + ")"};
@@ -150,6 +150,30 @@ class Products {
         }
     }
 
+    public static void buy(Database database, Long identifier, String market) {
+        SQLiteDatabase db = database.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
+                values.put(BuyMarket, market);
+
+                if ((market == null) || (market.length() < 1))
+                    values.put(BuyTime, (String) null);
+                else
+                    values.put(BuyTime, Tools.dateToISOString(Calendar.getInstance().getTime()));
+
+                db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        } finally {
+            db.close();
+        }
+    }
+
     public static void delete(Database database, long identifier) {
         SQLiteDatabase db = database.getWritableDatabase();
         try {
@@ -188,18 +212,24 @@ class Products {
     }
 
     public static String getMarket(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, Products.BuyMarket);
+        return Tools.getStringFromJSON(item, BuyMarket);
     }
 
     public static String getName(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, Products.Name);
+        return Tools.getStringFromJSON(item, Name);
+    }
+
+    public static boolean isBought(JSONObject item) throws JSONException {
+        String time = Tools.getStringFromJSON(item, BuyTime);
+
+        return ((time != null) && (time.length() > 0));
     }
 
     public static String getDescription(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, Products.Description);
+        return Tools.getStringFromJSON(item, Description);
     }
 
     public static int getIdentifier(JSONObject item) throws JSONException {
-        return item.getInt(Products.Identifier);
+        return item.getInt(Identifier);
     }
 }

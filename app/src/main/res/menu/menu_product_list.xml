@@ -18,10 +18,4 @@
         android:orderInCategory="102"
         android:showAsAction="never"
         android:title="@string/action_logon" />
-
-    <item
-        android:id="@+id/action_start_buy"
-        android:orderInCategory="103"
-        android:showAsAction="never"
-        android:title="@string/action_start" />
 </menu>
