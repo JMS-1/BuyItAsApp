@@ -20,7 +20,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(R.layout.activity_product_edit, savedInstanceState);
+        super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
 
         m_market = (Button) findViewById(R.id.edit_item_market);
         m_description = (EditText) findViewById(R.id.edit_item_description);

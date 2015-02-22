@@ -111,8 +111,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         getMenuInflater().inflate(m_menu, menu);
 
         MenuItem newItem = menu.findItem(R.id.action_new);
-        if (newItem != null)
-            newItem.setTitle(R.string.action_new);
+        newItem.setTitle(R.string.action_new);
 
         return true;
     }

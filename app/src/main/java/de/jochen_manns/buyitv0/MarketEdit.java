@@ -13,7 +13,7 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(R.layout.activity_market_edit, savedInstanceState);
+        super.onCreate(R.layout.activity_market_edit, R.menu.menu_market_edit, savedInstanceState);
     }
 
     @Override

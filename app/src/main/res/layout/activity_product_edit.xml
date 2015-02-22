@@ -3,49 +3,34 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <Button
-        android:id="@id/button_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:enabled="false" />
-
-    <Button
-        android:id="@id/button_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/button_save" />
-
     <TextView
         android:id="@+id/edit_item_product_label"
-        android:text="@string/editLabel_item_product"
-        android:layout_marginTop="10dp"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/button_save"
-        style="@android:style/TextAppearance.Large" />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/editLabel_item_product" />
 
     <EditText
         android:id="@id/edit_name"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        style="@android:style/TextAppearance.Large"
-        android:singleLine="true"
-        android:layout_below="@id/edit_item_product_label" />
+        android:layout_below="@id/edit_item_product_label"
+        android:singleLine="true" />
 
     <TextView
         android:id="@+id/edit_item_market_label"
-        android:text="@string/editLabel_item_market"
-        android:layout_marginTop="10dp"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
-        android:layout_alignParentLeft="true"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_below="@id/edit_name"
-        style="@android:style/TextAppearance.Large" />
+        android:layout_marginTop="10dp"
+        android:text="@string/editLabel_item_market" />
 
     <Button
         android:id="@+id/edit_item_market"
@@ -53,26 +38,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/edit_item_market_label"
-        android:text="@string/editSelect_item_nomarket"
         android:onClick="onSelectMarket"
-        android:tag="@null" />
+        android:tag="@null"
+        android:text="@string/editSelect_item_nomarket" />
 
     <TextView
         android:id="@+id/edit_item_description_label"
-        android:text="@string/editLabel_item_description"
-        android:layout_marginTop="10dp"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
-        android:layout_alignParentLeft="true"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_below="@id/edit_item_market"
-        style="@android:style/TextAppearance.Large" />
+        android:layout_marginTop="10dp"
+        android:text="@string/editLabel_item_description" />
 
     <EditText
         android:id="@+id/edit_item_description"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_item_description_label"
-        style="@android:style/TextAppearance.Large" />
+        android:layout_below="@id/edit_item_description_label" />
 
 </RelativeLayout>

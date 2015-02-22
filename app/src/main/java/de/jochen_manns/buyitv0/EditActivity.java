@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import org.json.JSONException;
@@ -20,13 +20,11 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
     public static final int RESULT_SAVED = 1;
 
-    private Button m_save;
-
-    private Button m_delete;
-
     private EditText m_name;
 
     private TIdentifierType m_identifier;
+
+    private int m_menu;
 
     protected abstract boolean isValidName(Editable newName);
 
@@ -52,19 +50,16 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         return m_identifier;
     }
 
-    protected void onCreate(int layout, Bundle savedInstanceState) {
+    protected void onCreate(int layout, int menu, Bundle savedInstanceState) {
+        m_menu = menu;
+
         super.onCreate(savedInstanceState);
 
         setContentView(layout);
 
         getActionBar().setIcon(android.R.color.transparent);
 
-        m_delete = (Button) findViewById(R.id.button_delete);
-        m_save = (Button) findViewById(R.id.button_save);
         m_name = (EditText) findViewById(R.id.edit_name);
-
-        m_save.setText(R.string.button_save);
-        m_delete.setText(R.string.button_delete);
 
         Intent startInfo = getIntent();
         if (startInfo == null) {
@@ -81,41 +76,6 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
         setTitle(getTitle(m_identifier == null));
 
-        m_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isValidName(getName()))
-                    return;
-
-                Database database = Database.create(EditActivity.this);
-                try {
-                    updateItem(database, m_identifier);
-                } finally {
-                    database.close();
-                }
-
-                setResult(RESULT_SAVED);
-
-                finish();
-            }
-        });
-
-        m_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Database database = Database.create(EditActivity.this);
-                try {
-                    deleteItem(database, m_identifier);
-                } finally {
-                    database.close();
-                }
-
-                setResult(RESULT_SAVED);
-
-                finish();
-            }
-        });
-
         m_name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -127,12 +87,9 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
             @Override
             public void afterTextChanged(Editable s) {
-                m_save.setEnabled(isValidName(s));
+                invalidateOptionsMenu();
             }
         });
-
-        if (m_identifier == null)
-            m_delete.setVisibility(View.INVISIBLE);
 
         new AsyncTask<Void, Void, TProtocolType>() {
             @Override
@@ -154,5 +111,48 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
                 initializeFromItem(jsonObject);
             }
         }.execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Database database = Database.create(EditActivity.this);
+        try {
+            switch (item.getItemId()) {
+                case R.id.button_save:
+                    updateItem(database, m_identifier);
+                    break;
+                case R.id.button_delete:
+                    deleteItem(database, m_identifier);
+                    break;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
+        } finally {
+            database.close();
+        }
+
+        setResult(RESULT_SAVED);
+
+        finish();
+
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(m_menu, menu);
+
+        MenuItem saveItem = menu.findItem(R.id.button_save);
+        MenuItem deleteItem = menu.findItem(R.id.button_delete);
+
+        saveItem.setTitle(R.string.button_save);
+        saveItem.setEnabled(isValidName(m_name.getText()));
+
+        if (m_identifier == null)
+            deleteItem.setVisible(false);
+        else
+            deleteItem.setTitle(R.string.button_delete);
+
+        return true;
     }
 }
