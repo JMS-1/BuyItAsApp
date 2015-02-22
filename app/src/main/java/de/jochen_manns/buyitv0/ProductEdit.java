@@ -2,7 +2,6 @@ package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,57 +9,73 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+    Die Aktivität zum Ändern der Daten eines existierenden Produktes respektive
+    zum Anlegen eines neuen Produktes.
+ */
 public class ProductEdit extends EditActivity<Long, JSONObject> {
 
+    // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
 
+    // Das Eingabefeld mit der Beschreibung des Produktes.
     private EditText m_description;
 
+    // Die Schaltfläche zur Auswahl eines Marktes.
     private Button m_market;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
 
+        // Wir benötigen noch die speziellen Eingabefelder für die Produktdaten
         m_market = (Button) findViewById(R.id.edit_item_market);
         m_description = (EditText) findViewById(R.id.edit_item_description);
     }
 
     @Override
     protected int getTitle(boolean forNew) {
+        // Die Überschrift der Aktivität hängt von der Aufrufsituation ab
         return forNew ? R.string.product_edit_create : R.string.product_edit_modify;
     }
 
     @Override
-    protected boolean isValidName(Editable newName) {
-        return ((newName != null) && (newName.length() > 0));
+    protected boolean isValidName(String newName) {
+        // Der Name eines Produktes darf nicht leer sein
+        return (newName.length() > 0);
     }
 
     @Override
     protected JSONObject queryItem(Database database, Long identifier) throws JSONException {
+        // Ermittelt die Daten des zu bearbeitenden Produktes - sofern keines neu angelegt werden soll
         return (identifier == null) ? null : Products.query(database, identifier);
     }
 
     @Override
     protected void initializeFromItem(JSONObject item) {
-        if (item != null)
-            try {
-                String market = Products.getMarket(item);
-                if ((market != null) && (market.length() > 0)) {
-                    m_market.setText(market);
-                    m_market.setTag(market);
-                }
+        // Wenn wir ein neues Produkt anlegen, brauchen wir nichts zu tun
+        if (item == null)
+            return;
 
-                m_description.setText(Products.getDescription(item));
-                setName(Products.getName(item));
-
-            } catch (JSONException e) {
-                setName("### ERROR ###");
-                m_description.setText("### ERROR ###");
+        try {
+            // Wenn ein Markt zugeordnet ist, so wird dieser vermerket
+            String market = Products.getMarket(item);
+            if ((market != null) && (market.length() > 0)) {
+                m_market.setText(market);
+                m_market.setTag(market);
             }
+
+            // Name und Beschreibung können direkt übernommen werden
+            m_description.setText(Products.getDescription(item));
+            setName(Products.getName(item));
+        } catch (Exception e) {
+            // Fehler werden letztlich ignoriert
+            setName("### ERROR ###");
+        }
     }
 
     public void onSelectMarket(View view) {
+        // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
         Intent showSelector = new Intent(this, MarketList.class);
         showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
         startActivityForResult(showSelector, RESULT_SELECT_MARKET);
@@ -68,14 +83,13 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     @Override
     protected void updateItem(Database database, Long identifier) {
-        Editable description = m_description.getText();
+        // Daten aus der Oberfläche auslesen - man beachte, dass für den Markt der Anzeigename vom gespeicherten Namen abweicht, wenn kein Markt zugeordnet wurde
+        String description = m_description.getText().toString();
         String market = (String) m_market.getTag();
-        Editable name = getName();
+        String name = getName();
 
-        if ((description != null) && (description.length() < 1))
-            description = null;
-
-        Products.update(database, identifier, name.toString(), (description == null) ? null : description.toString(), market);
+        // Daten in die lokale Datenbank übertragen
+        Products.update(database, identifier, name, (description.length() < 1) ? null : description, market);
     }
 
     @Override
@@ -87,20 +101,26 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null)
-            switch (requestCode) {
-                case RESULT_SELECT_MARKET:
-                    if (resultCode == RESULT_OK) {
-                        String market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
+        // Ohne Antwortdaten können wir gar nichts tun
+        if (data == null)
+            return;
 
-                        m_market.setTag(market);
+        switch (requestCode) {
+            case RESULT_SELECT_MARKET:
+                // Wenn eine Auswahl stattgefunden hat, müssen wir diese respektieren
+                if (resultCode == RESULT_OK) {
+                    // Den Anzeigenamen auf die Schaltfläche übertragen - der Name, der auch null sein kann, wird im Tag verwaltet
+                    String market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
 
-                        if (market == null)
-                            m_market.setText(R.string.editSelect_item_nomarket);
-                        else
-                            m_market.setText(market);
-                    }
-                    break;
-            }
+                    m_market.setTag(market);
+
+                    // Den Anzeigenamen der Schaltfläche entsprechend anpassen - eventuell abweichend von der tatsächlichen Auswahl
+                    if (market == null)
+                        m_market.setText(R.string.editSelect_item_nomarket);
+                    else
+                        m_market.setText(market);
+                }
+                break;
+        }
     }
 }

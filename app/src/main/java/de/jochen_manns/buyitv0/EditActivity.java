@@ -33,7 +33,7 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
     private int m_menu;
 
     // Meldet, ob der aktuelle Name gültig ist.
-    protected abstract boolean isValidName(Editable newName);
+    protected abstract boolean isValidName(String newName);
 
     // Ermittelt Informationen zum aktuellen Änderungsvorgang, in einfachsten Fall die aktuelle Entität.
     protected abstract TProtocolType queryItem(Database database, TIdentifierType item) throws JSONException;
@@ -51,8 +51,8 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
     protected abstract int getTitle(boolean forNew);
 
     // Meldet den aktuellen Namen der Entität, so wie er in der Oberfläche angezeigt wird.
-    protected Editable getName() {
-        return m_name.getText();
+    protected String getName() {
+        return m_name.getText().toString().trim();
     }
 
     // Überträgt einen Namen in die Oberfläche.
