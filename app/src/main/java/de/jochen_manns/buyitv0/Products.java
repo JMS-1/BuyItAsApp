@@ -105,27 +105,21 @@ class Products {
 
     // Führt eine Sucht auf der Produkttabelle aus.
     private static JSONObject[] query(Database database, String[] columns, String filter, String[] filterArgs, String order) throws JSONException {
-        // Auch wenn hier nur ein SQL Befehl ausgeführt wird, so verwenden wir doch eine Lesetransaktion
         SQLiteDatabase db = database.getReadableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Abruf der Datensätze und Umwandeln in eine JSON Repräsentation
-                return build(db.query(Table, columns, filter, filterArgs, null, null, order));
-            } finally {
-                db.endTransaction();
-            }
+            // Abruf der Datensätze und Umwandeln in eine JSON Repräsentation
+            return build(db.query(Table, columns, filter, filterArgs, null, null, order));
         } finally {
             db.close();
         }
     }
 
     // Ermittelt alle Produkte, die bei einer Synchronisation an den Web Service übermittelt werden müssen
-    public static JSONArray queryForUpdate(Database database) throws JSONException {
+    public static JSONArray queryForUpdate(SQLiteDatabase database) throws JSONException {
         JSONArray items = new JSONArray();
 
         // Wir nehmen alle Produkte, die verändert respektive neu anlegt wurden
-        for (JSONObject item : query(database, null, State + "<>?", new String[]{Integer.toString(ProductStates.Unchanged.ordinal())}, null))
+        for (JSONObject item : build(database.query(Table, null, State + "<>?", new String[]{Integer.toString(ProductStates.Unchanged.ordinal())}, null, null, null)))
             items.put(item);
 
         return items;
@@ -143,6 +137,7 @@ class Products {
     }
 
     // Ermittelt ein einzelnes Produkt.
+
     public static JSONObject query(Database database, long id) throws JSONException {
         // Die direkte Suche nach der eindeutigen Identifikation des Produktes
         JSONObject[] items = query(database, null, Identifier + "=?", new String[]{Long.toString(id)}, null);
@@ -152,53 +147,45 @@ class Products {
 
     // Ändert die Daten eines existierenden Produktes in der lokalen Datenbank - oder legt lokal ein neues Produkt an.
     public static void update(Database database, Long identifier, String name, String description, String market) {
-        // Auch wenn nur ein SQL Befehl ausgeführt wird, so verwenden wir hier doch eine Transaktion
         SQLiteDatabase db = database.getWritableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Die Eckdaten des Produktes, die verändert werden können
-                ContentValues values = new ContentValues();
-                values.put(Name, name);
-                values.put(Description, description);
-                values.put(BuyMarket, market);
+            // Die Eckdaten des Produktes, die verändert werden können
+            ContentValues values = new ContentValues();
+            values.put(Name, name);
+            values.put(Description, description);
+            values.put(BuyMarket, market);
 
-                if (identifier == null) {
-                    // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
-                    values.put(State, ProductStates.NewlyCreated.ordinal());
-                    values.put(CreateTime, Tools.dateToISOString(Calendar.getInstance().getTime()));
+            if (identifier == null) {
+                // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
+                values.put(State, ProductStates.NewlyCreated.ordinal());
+                values.put(CreateTime, JSONTools.dateToISOString(Calendar.getInstance().getTime()));
 
-                    // Bei neuen Produken müssen wir noch eine neue eindeutige Identifikation und eine Wichtigket ermitteln
-                    Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
-                    try {
-                        if (findMax.moveToNext() && (findMax.getLong(0) > 0)) {
-                            // Es gibt mindestens ein anders Produkt und wir ordnen uns dahinter an
-                            values.put(Order, findMax.getInt(2) + 1);
+                // Bei neuen Produken müssen wir noch eine neue eindeutige Identifikation und eine Wichtigket ermitteln
+                Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
+                try {
+                    if (findMax.moveToNext() && (findMax.getLong(0) > 0)) {
+                        // Es gibt mindestens ein anders Produkt und wir ordnen uns dahinter an
+                        values.put(Order, findMax.getInt(2) + 1);
 
-                            // Bis zur Synchronisation mit dem Online Datenbestand wird eine neue eindeutige Kennung vergeben - beginnend mit -1 und absteigend
-                            values.put(Identifier, Math.min(findMax.getInt(1), 0) - 1);
-                        } else {
-                            // Für das erste Produkt ist das alles viel einfacher
-                            values.put(Order, 0);
-                            values.put(Identifier, -1);
-                        }
-                    } finally {
-                        findMax.close();
+                        // Bis zur Synchronisation mit dem Online Datenbestand wird eine neue eindeutige Kennung vergeben - beginnend mit -1 und absteigend
+                        values.put(Identifier, Math.min(findMax.getInt(1), 0) - 1);
+                    } else {
+                        // Für das erste Produkt ist das alles viel einfacher
+                        values.put(Order, 0);
+                        values.put(Identifier, -1);
                     }
-
-                    // Legt das Produkt neu an
-                    db.insert(Table, null, values);
-                } else {
-                    // Neue Produkte bleiben einfach nur neu, bei allen anderen erfolgt die explizite Markierung als verändert
-                    values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
-
-                    // Lokale Datenbank geeignet aktualisieren
-                    db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
+                } finally {
+                    findMax.close();
                 }
 
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
+                // Legt das Produkt neu an
+                db.insert(Table, null, values);
+            } else {
+                // Neue Produkte bleiben einfach nur neu, bei allen anderen erfolgt die explizite Markierung als verändert
+                values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
+
+                // Lokale Datenbank geeignet aktualisieren
+                db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
             }
         } finally {
             db.close();
@@ -207,28 +194,21 @@ class Products {
 
     // Ein Produkt wird als eingekauft markiert.
     public static void buy(Database database, Long identifier, String market) {
-        // Wieder setzten wir trotz des einzelnen SQL Befehls auf eine Transaktion
         SQLiteDatabase db = database.getWritableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Ähnlich wie bei der allgemeinen Änderung eines existierenden Produktes, nur werden hier weniger Informationen verändert
-                ContentValues values = new ContentValues();
-                values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
-                values.put(BuyMarket, market);
+            // Ähnlich wie bei der allgemeinen Änderung eines existierenden Produktes, nur werden hier weniger Informationen verändert
+            ContentValues values = new ContentValues();
+            values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
+            values.put(BuyMarket, market);
 
-                // Die Zeit des Einkaufs muss nun allerdings korrekt eingepflegt werden
-                if ((market == null) || (market.length() < 1))
-                    values.put(BuyTime, (String) null);
-                else
-                    values.put(BuyTime, Tools.dateToISOString(Calendar.getInstance().getTime()));
+            // Die Zeit des Einkaufs muss nun allerdings korrekt eingepflegt werden
+            if ((market == null) || (market.length() < 1))
+                values.put(BuyTime, (String) null);
+            else
+                values.put(BuyTime, JSONTools.dateToISOString(Calendar.getInstance().getTime()));
 
-                // Die lokalen Datenbank wird schließlich aktualisiert
-                db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
+            // Die lokalen Datenbank wird schließlich aktualisiert
+            db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
         } finally {
             db.close();
         }
@@ -236,21 +216,15 @@ class Products {
 
     // Markiert ein existierendes Produkt als gelöscht.
     public static void delete(Database database, long identifier) {
-        // Der zugehörige SQL Befehl wird in eine eigene Transaktion gekapselt
         SQLiteDatabase db = database.getWritableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Hier setzen wir einfach die Markierung - auch für lokal neu angelegte Produkte, der Web Service ist darauf entsprechend vorbereitet
-                ContentValues values = new ContentValues();
-                values.put(State, ProductStates.Deleted.ordinal());
+            // Hier setzen wir einfach die Markierung - auch für lokal neu angelegte Produkte, der Web Service ist darauf entsprechend vorbereitet
+            ContentValues values = new ContentValues();
+            values.put(State, ProductStates.Deleted.ordinal());
 
-                // Markierung in der lokalen Datenbank einstellen
-                db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
+            // Markierung in der lokalen Datenbank einstellen
+            db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
+            db.setTransactionSuccessful();
         } finally {
             db.close();
         }
@@ -265,11 +239,11 @@ class Products {
             ContentValues values = new ContentValues();
             values.put(Identifier, item.getInt(Identifier));
             values.put(State, item.getInt(State));
-            values.put(Name, Tools.getStringFromJSON(item, Name));
-            values.put(Description, Tools.getStringFromJSON(item, Description));
-            values.put(CreateTime, Tools.getStringFromJSON(item, CreateTime));
-            values.put(BuyTime, Tools.getStringFromJSON(item, BuyTime));
-            values.put(BuyMarket, Tools.getStringFromJSON(item, BuyMarket));
+            values.put(Name, JSONTools.getStringFromJSON(item, Name));
+            values.put(Description, JSONTools.getStringFromJSON(item, Description));
+            values.put(CreateTime, JSONTools.getStringFromJSON(item, CreateTime));
+            values.put(BuyTime, JSONTools.getStringFromJSON(item, BuyTime));
+            values.put(BuyMarket, JSONTools.getStringFromJSON(item, BuyMarket));
             values.put(Order, item.getInt(Order));
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
@@ -279,24 +253,24 @@ class Products {
 
     // Meldet den Namen des Marktes zu einem Produkt.
     public static String getMarket(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, BuyMarket);
+        return JSONTools.getStringFromJSON(item, BuyMarket);
     }
 
     // Meldet den Namen eines Produktes.
     public static String getName(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, Name);
+        return JSONTools.getStringFromJSON(item, Name);
     }
 
     // Prüft und meldet, ob ein Produkt bereits eingekauft wurde.
     public static boolean isBought(JSONObject item) throws JSONException {
-        String time = Tools.getStringFromJSON(item, BuyTime);
+        String time = JSONTools.getStringFromJSON(item, BuyTime);
 
         return ((time != null) && (time.length() > 0));
     }
 
     // Meldet die Beschreibung eines Produktes.
     public static String getDescription(JSONObject item) throws JSONException {
-        return Tools.getStringFromJSON(item, Description);
+        return JSONTools.getStringFromJSON(item, Description);
     }
 
     // Meldet die eindeutige Identifikation eines Produktes.

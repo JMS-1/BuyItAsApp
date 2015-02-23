@@ -71,27 +71,20 @@ class Markets {
 
     // Führt eine Suche über die Datenbanktabelle der Märkte aus.
     private static JSONObject[] query(Database database, String[] columns, String selection, String order) throws JSONException {
-        // Wir verwenden hier eine Lesetransaktion - eigentlich überflüssig, da nur ein SQL Befehl ausgeführt wird
         SQLiteDatabase db = database.getReadableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Suche ausführen
-                return build(db.query(Table, columns, selection, null, null, null, order));
-            } finally {
-                db.endTransaction();
-            }
+            return build(db.query(Table, columns, selection, null, null, null, order));
         } finally {
             db.close();
         }
     }
 
     // Ermittelt alle Märkte zur Übertragung an den Web Service.
-    public static JSONArray queryForUpdate(Database database) throws JSONException {
+    public static JSONArray queryForUpdate(SQLiteDatabase database) throws JSONException {
         JSONArray markets = new JSONArray();
 
         // In diesem Fall fordern wir alle Spalten (JSON Eigenschaften) aus der Datenbanktabelle an
-        for (JSONObject market : query(database, null, null, null))
+        for (JSONObject market : build(database.query(Table, null, null, null, null, null, null)))
             markets.put(market);
 
         return markets;
@@ -105,53 +98,38 @@ class Markets {
 
     // Aktualisiert die Daten eines Marktes oder legt einen neuen Markt an
     public static void update(Database database, String originalName, String name) {
-        // Auch hier kann man technisch auf die Transaktion verzichten, da nur ein SQL Befehl abgesetzt wird
         SQLiteDatabase db = database.getWritableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Auf jeden Fall wird der Name an die Datenbank übertragen
-                ContentValues values = new ContentValues();
-                values.put(Name, name);
+            // Auf jeden Fall wird der Name an die Datenbank übertragen
+            ContentValues values = new ContentValues();
+            values.put(Name, name);
 
-                // Je nach Exisitenz des Marktes müssen wir aber nun unterschiedlich agieren
-                if (originalName == null) {
-                    // Beim Neuanlegen wird auch ein neuer Name vergeben - TODO: theoretisch kann es hier zu Kollisionen mit eigenartigen Effekten bei der Auswahl kommen
-                    values.put(OriginalName, name);
-                    values.put(Deleted, 0);
+            // Je nach Exisitenz des Marktes müssen wir aber nun unterschiedlich agieren
+            if (originalName == null) {
+                // Beim Neuanlegen wird auch ein neuer Name vergeben - TODO: theoretisch kann es hier zu Kollisionen mit eigenartigen Effekten bei der Auswahl kommen
+                values.put(OriginalName, name);
+                values.put(Deleted, 0);
 
-                    db.insert(Table, null, values);
-                } else {
-                    // Das Aktualisieren ist hingegen unkritisch
-                    db.update(Table, values, OriginalName + "=?", new String[]{originalName});
-                }
-
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
+                db.insert(Table, null, values);
+            } else {
+                // Das Aktualisieren ist hingegen unkritisch
+                db.update(Table, values, OriginalName + "=?", new String[]{originalName});
             }
         } finally {
             db.close();
         }
+
     }
 
     // Entfernt einen Markt aus der Datenbank
     public static void delete(Database database, String originalName) {
-        // Wieder verwenden wir für einen einzelnen SQL Befehl eine Transaktion
         SQLiteDatabase db = database.getWritableDatabase();
         try {
-            db.beginTransaction();
-            try {
-                // Lokal wird niemals wirklich gelöscht, sondern nur eine entsprechende Markierung gesetzt - nur der Web Service darf Märkte wirklich löschen
-                ContentValues values = new ContentValues();
-                values.put(Deleted, 1);
+            // Lokal wird niemals wirklich gelöscht, sondern nur eine entsprechende Markierung gesetzt - nur der Web Service darf Märkte wirklich löschen
+            ContentValues values = new ContentValues();
+            values.put(Deleted, 1);
 
-                db.update(Table, values, OriginalName + "=?", new String[]{originalName});
-
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
+            db.update(Table, values, OriginalName + "=?", new String[]{originalName});
         } finally {
             db.close();
         }
@@ -164,8 +142,8 @@ class Markets {
 
             // Dazu werden die Daten vom Web Service in die entsprechenden Spalten der lokalen Datenbank übertragen - im Moment wird eine einfache Namensgleichheit von Spalten und JSON Eigenschaften verwendet
             ContentValues values = new ContentValues();
-            values.put(Name, Tools.getStringFromJSON(market, Name));
-            values.put(OriginalName, Tools.getStringFromJSON(market, OriginalName));
+            values.put(Name, JSONTools.getStringFromJSON(market, Name));
+            values.put(OriginalName, JSONTools.getStringFromJSON(market, OriginalName));
             values.put(Deleted, market.getBoolean(Deleted) ? 1 : 0);
 
             database.insert(Table, null, values);
@@ -174,7 +152,7 @@ class Markets {
 
     // Meldet den Anzeigenamen eines Marktes.
     public static String getName(JSONObject market) throws JSONException {
-        return Tools.getStringFromJSON(market, Name);
+        return JSONTools.getStringFromJSON(market, Name);
     }
 
     // Ändert den Anzeigenamen eines Marktes.
@@ -184,7 +162,7 @@ class Markets {
 
     // Meldet den Online Namen und damit eindeutigen Schlüssel eines Marktes.
     public static String getOriginalName(JSONObject market) throws JSONException {
-        return Tools.getStringFromJSON(market, OriginalName);
+        return JSONTools.getStringFromJSON(market, OriginalName);
     }
 
     // Ändert den Online Namen und damit eindeutigen Schlüssel eines Marktes.

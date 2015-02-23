@@ -62,6 +62,7 @@ class Database extends SQLiteOpenHelper {
 
     // Entfernt alle Inhalte aus der Datenbank.
     public void reset() {
+        // Hier brauchen wir nun wirklich eine Transaktion, um alle Tabellen konsistent zu leeren
         SQLiteDatabase db = getWritableDatabase();
         try {
             db.beginTransaction();
