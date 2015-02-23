@@ -4,18 +4,21 @@
 
     <item
         android:id="@id/action_new"
+        android:icon="@drawable/ic_action_new"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_synchronize"
+        android:icon="@drawable/ic_action_refresh"
         android:orderInCategory="101"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always|withText"
         android:title="@string/action_sync" />
 
     <item
         android:id="@+id/action_logon"
+        android:icon="@drawable/ic_action_person"
         android:orderInCategory="102"
-        android:showAsAction="never"
+        android:showAsAction="never|withText"
         android:title="@string/action_logon" />
 </menu>
