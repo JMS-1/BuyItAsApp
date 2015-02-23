@@ -1,15 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/edit_item_product_label"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_product" />
 
@@ -18,17 +16,12 @@
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_item_product_label"
         android:singleLine="true" />
 
     <TextView
-        android:id="@+id/edit_item_market_label"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_name"
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_market" />
 
@@ -36,19 +29,14 @@
         android:id="@+id/edit_item_market"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_item_market_label"
         android:onClick="onSelectMarket"
         android:tag="@null"
         android:text="@string/editSelect_item_nomarket" />
 
     <TextView
-        android:id="@+id/edit_item_description_label"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_item_market"
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_description" />
 
@@ -56,8 +44,6 @@
         android:id="@+id/edit_item_description"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_item_description_label" />
+        android:layout_height="wrap_content" />
 
-</RelativeLayout>
+</LinearLayout>

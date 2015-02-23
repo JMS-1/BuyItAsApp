@@ -1,14 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/dialog_register_label"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:text="@string/dialog_register_label" />
 
     <EditText
@@ -16,8 +15,6 @@
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/dialog_register_label"
         android:hint="@string/dialog_register_hint"
         android:singleLine="true" />
-</RelativeLayout>
+</LinearLayout>

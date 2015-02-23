@@ -1,15 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/edit_market_name_label"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_market_name" />
 
@@ -18,7 +16,5 @@
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/edit_market_name_label"
         android:singleLine="true" />
-</RelativeLayout>
+</LinearLayout>
