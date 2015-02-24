@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,24 +12,30 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
+/*
+    Repräsentiert eine Aktivität mit einer Liste von Elementen.
+ */
 public abstract class ListActivity<TIdentifierType extends Serializable, TEditType extends EditActivity<TIdentifierType, ?>, TAdapterType extends ItemAdapter> extends android.app.ListActivity {
+    // Die Kennung für die Antwortdaten zum Ändern oder Anlegen eines Elementes.
     private static final int RESULT_EDIT_ITEM = 1;
 
+    // Die zu verwendende ActionBar.
     private int m_menu;
 
+    // Ermittelt die eindeutige Identifikation eines Elementes.
     protected abstract TIdentifierType getIdentifier(JSONObject item) throws JSONException;
 
+    // Prüft, ob ein Element verändert werden darf.
     protected abstract boolean canEdit(TIdentifierType identifier);
 
+    // Initialisiert eine neue Aktivität.
     protected void onCreate(int choiceMode, int menu, Bundle savedInstanceState) {
         m_menu = menu;
 
         super.onCreate(savedInstanceState);
 
-        getActionBar().setIcon(android.R.color.transparent);
-
-        ListView view = getListView();
-        view.setChoiceMode(choiceMode);
+        // Liste einrichten
+        getListView().setChoiceMode(choiceMode);
     }
 
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
@@ -46,12 +51,16 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         }
     }
 
+    // Ändert ein existierendes Element oder legt ein neues an.
     protected boolean startEdit(TIdentifierType id) {
+        // Die Art der Aktivität zum Ändern, extrahiert aus den generischen Parametern der Basisklasse
         Class editActivity = (Class) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 
+        // Aufruf vorbereiten
         Intent openForEdit = new Intent(this, editActivity);
         openForEdit.putExtra(EditActivity.EXTRA_IDENTIFIER, id);
 
+        // Aktivität zum Ändern starten
         startActivityForResult(openForEdit, RESULT_EDIT_ITEM);
 
         return true;
@@ -63,6 +72,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         switch (requestCode) {
             case RESULT_EDIT_ITEM:
+                // Nach der Aktualisierung der lokalen Datenbank sollte die Liste aktualisiert werden - TODO: hier ist noch Optimierungspotential
                 if (resultCode == RESULT_OK)
                     load();
                 break;
@@ -73,6 +83,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_new:
+                // Nach Auswahl aus der ActionBar wird das Neuanlegen angestossen
                 startEdit(null);
                 return true;
         }
@@ -80,30 +91,36 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         return super.onOptionsItemSelected(item);
     }
 
+    // Liest die Elemente der Liste aus der lokalen Datenbank.
     protected void load() {
-        new AsyncTask<TAdapterType, Void, TAdapterType>() {
-            @Override
-            protected TAdapterType doInBackground(TAdapterType... params) {
-                params[0].refresh();
-                return params[0];
+        new AsyncTask<Void, Void, JSONObject[]>() {
+            private TAdapterType getAdapter() {
+                return (TAdapterType) ListActivity.this.getListAdapter();
             }
 
             @Override
-            protected void onPostExecute(TAdapterType adapter) {
-                super.onPostExecute(adapter);
-
-                if (adapter != null)
-                    adapter.notifyDataSetChanged();
+            protected JSONObject[] doInBackground(Void... params) {
+                // Daten aus der lokalen Datenbank auslesen
+                return getAdapter().load();
             }
-        }.execute((TAdapterType) ListActivity.this.getListAdapter());
+
+            @Override
+            protected void onPostExecute(JSONObject[] items) {
+                super.onPostExecute(items);
+
+                // Daten übernehmen
+                getAdapter().refresh(items);
+            }
+        }.execute();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // ActionBar erzeugen
         getMenuInflater().inflate(m_menu, menu);
 
-        MenuItem newItem = menu.findItem(R.id.action_new);
-        newItem.setTitle(R.string.action_new);
+        // Standardbeschriftung setzen
+        menu.findItem(R.id.action_new).setTitle(R.string.action_new);
 
         return true;
     }

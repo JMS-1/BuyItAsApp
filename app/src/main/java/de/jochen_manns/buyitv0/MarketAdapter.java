@@ -13,9 +13,6 @@ class MarketAdapter extends ItemAdapter {
     // Der Platzhalter für die Auswahl keines Marktes
     private final JSONObject m_noMarket = new JSONObject();
 
-    // Die Liste aller bekannten Märkte
-    private JSONObject[] m_markets = null;
-
     // Erstellt eine neue Liste
     public MarketAdapter(ListActivity<?, ?, ?> context, String emptyName) throws JSONException {
         super(context);
@@ -28,7 +25,7 @@ class MarketAdapter extends ItemAdapter {
     @Override
     public int getCount() {
         // Bei der Anzahl der Märkte muss die Leerauswahl berücksichtigt werden
-        return (m_markets == null) ? 0 : (1 + m_markets.length);
+        return (m_items == null) ? 0 : (1 + m_items.length);
     }
 
     @Override
@@ -50,19 +47,19 @@ class MarketAdapter extends ItemAdapter {
         if (position < 1)
             return m_noMarket;
         else
-            return m_markets[position - 1];
+            return m_items[position - 1];
     }
 
     @Override
-    public void refresh() {
+    public JSONObject[] load() {
         // Zugriff auf die lokale Datenhaltung vorbereiten
         Database database = createDatabase();
         try {
             // Die Liste aller aktuell bekannten Märkte einlesen
-            m_markets = Markets.query(database);
+            return Markets.query(database);
         } catch (Exception e) {
             // Alle Fehler werden ignoriert
-            m_markets = null;
+            return null;
         } finally {
             database.close();
         }

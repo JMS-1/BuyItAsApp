@@ -76,9 +76,6 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         // Oberfläche laden
         setContentView(layout);
 
-        // Wir wollen soviel Platz in der ActionBar wie möglich und verzichten daher auf das Icon der App
-        getActionBar().setIcon(android.R.color.transparent);
-
         // Das Eingabefeld mit dem Namen der Enttität
         m_name = (EditText) findViewById(R.id.edit_name);
 

@@ -9,9 +9,6 @@ import org.json.JSONObject;
     Verwaltet die Liste aller Produkte.
  */
 class ProductAdapter extends ItemAdapter {
-    // Die aktuell bekannten Produkte.
-    private JSONObject[] m_products = null;
-
     // Erstellt eine neue Liste.
     public ProductAdapter(ListActivity<?, ?, ?> context) {
         super(context);
@@ -19,7 +16,7 @@ class ProductAdapter extends ItemAdapter {
 
     @Override
     public int getCount() {
-        return (m_products == null) ? 0 : m_products.length;
+        return (m_items == null) ? 0 : m_items.length;
     }
 
     @Override
@@ -49,7 +46,7 @@ class ProductAdapter extends ItemAdapter {
     public long getItemId(int position) {
         try {
             // Hier verwenden wir die eindeutige Kennung, die jedes Produkt hat - negative Werte werden dabei für nur lokal bekannte Produkte verwendet
-            return Products.getIdentifier(m_products[position]);
+            return Products.getIdentifier(m_items[position]);
         } catch (Exception e) {
             // Fehler werden geeignet gemeldet
             return Long.MAX_VALUE;
@@ -58,19 +55,19 @@ class ProductAdapter extends ItemAdapter {
 
     @Override
     public Object getItem(int position) {
-        return m_products[position];
+        return m_items[position];
     }
 
     @Override
-    public void refresh() {
+    public JSONObject[] load() {
         // Verbindung zu Datenbank herstellen
         Database database = createDatabase();
         try {
             // Die Liste aller Produkte aus der lokalen Datenbank auslesen
-            m_products = Products.query(database, true);
+            return Products.query(database, true);
         } catch (Exception e) {
             // Fehler werden ignoriert
-            m_products = null;
+            return null;
         } finally {
             database.close();
         }

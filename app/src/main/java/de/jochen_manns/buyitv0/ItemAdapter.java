@@ -19,13 +19,25 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     // Erzeugt Views.
     private final LayoutInflater m_inflater;
 
+    // Die verwalteten Elemente
+    protected JSONObject[] m_items = null;
+
     // Initialisiert eine neue Verwaltung.
     protected ItemAdapter(ListActivity<?, ?, ?> context) {
         m_inflater = LayoutInflater.from(context);
     }
 
     // Fordert eine Aktualisierung der Liste gemäß dem aktuellen Stand der Datenbank an
-    public abstract void refresh();
+    public abstract JSONObject[] load();
+
+    // Übernimmt die neuen Elemente.
+    public void refresh(JSONObject[] items) {
+        // Liste erneuern
+        m_items = items;
+
+        // Alle Interessenten über die neuen Daten informieren
+        notifyDataSetChanged();
+    }
 
     protected abstract boolean initializeView(TextView text, JSONObject item) throws JSONException;
 
