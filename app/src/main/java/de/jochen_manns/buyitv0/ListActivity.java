@@ -5,8 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONException;
@@ -15,7 +13,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
-public abstract class ListActivity<TIdentifierType extends Serializable, TEditType extends EditActivity<TIdentifierType, ?>, TAdapterType extends ItemAdapter> extends android.app.ListActivity implements AdapterView.OnItemLongClickListener {
+public abstract class ListActivity<TIdentifierType extends Serializable, TEditType extends EditActivity<TIdentifierType, ?>, TAdapterType extends ItemAdapter> extends android.app.ListActivity {
     private static final int RESULT_EDIT_ITEM = 1;
 
     private int m_menu;
@@ -33,25 +31,19 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         ListView view = getListView();
         view.setChoiceMode(choiceMode);
-        view.setOnItemLongClickListener(this);
     }
 
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        ListView listView = getListView();
-        if (listView != parent)
-            return false;
-
+    // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
+    public void onEdit(JSONObject item) {
         try {
-            JSONObject item = (JSONObject) listView.getItemAtPosition(position);
+            // Eindeutige Identifikation ermitteln
             TIdentifierType identifier = getIdentifier(item);
 
+            // Und den Änderungsvorgang starten, sofern dies möglich ist
             if (canEdit(identifier))
-                return startEdit(identifier);
+                startEdit(identifier);
         } catch (JSONException e) {
-            finish();
         }
-
-        return true;
     }
 
     protected boolean startEdit(TIdentifierType id) {

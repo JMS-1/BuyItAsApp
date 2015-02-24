@@ -1,26 +1,20 @@
 package de.jochen_manns.buyitv0;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /*
     Verwaltet die Liste aller Produkte.
  */
 class ProductAdapter extends ItemAdapter {
-    // Erzeugt Views.
-    private final LayoutInflater m_inflater;
-
     // Die aktuell bekannten Produkte.
     private JSONObject[] m_products = null;
 
     // Erstellt eine neue Liste.
-    public ProductAdapter(Context context) {
-        m_inflater = LayoutInflater.from(context);
+    public ProductAdapter(ListActivity<?, ?, ?> context) {
+        super(context);
     }
 
     @Override
@@ -29,38 +23,26 @@ class ProductAdapter extends ItemAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Wird ein neuer View benötigt, so erzeugen wir diesen hier - bei einer Wiederverwendung müssen wir nur initialisieren
-        if (convertView == null)
-            convertView = m_inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+    protected boolean initializeView(TextView text, JSONObject product) throws JSONException {
+        // Name des Produktes und des optionalen Marktes ermitteln
+        String market = Products.getMarket(product);
+        String name = Products.getName(product);
 
-        // Ziel- und Quellobjekte ermitteln
-        TextView textView = (TextView) convertView;
-        JSONObject product = m_products[position];
+        // Abhängig vom Einkaufsstand kann die Anzeige leicht variieren
+        int res = 0;
+        if (Products.isBought(product))
+            res = R.string.product_suffix_bought;
+        else if ((market != null) && (market.length() > 0))
+            res = R.string.product_prefix_market;
 
-        try {
-            // Name des Produktes und des optionalen Marktes ermitteln
-            String market = Products.getMarket(product);
-            String name = Products.getName(product);
+        // Im einfachsten Fall wird nur der Name des Produktes ausgegeben, ansonsten muss der Markt noch geeignet eingemischt werden
+        if (res > 0)
+            text.setText(getContext().getResources().getString(res, name, market));
+        else
+            text.setText(name);
 
-            // Abhängig vom Einkaufsstand kann die Anzeige leich variieren
-            int res = 0;
-            if (Products.isBought(product))
-                res = R.string.product_suffix_bought;
-            else if ((market != null) && (market.length() > 0))
-                res = R.string.product_prefix_market;
-
-            // Im einfachsten Fall wird nur der Name des Produktes ausgegeben, ansonsten muss der Markt noch geeignet eingemischt werden
-            if (res > 0)
-                textView.setText(m_inflater.getContext().getResources().getString(res, name, market));
-            else
-                textView.setText(name);
-        } catch (Exception e) {
-            // Fehler werden letztlich alle ignoriert
-            textView.setText("### ERROR ###");
-        }
-
-        return convertView;
+        // Produkte können immer verändert werden
+        return true;
     }
 
     @Override
@@ -82,7 +64,7 @@ class ProductAdapter extends ItemAdapter {
     @Override
     public void refresh() {
         // Verbindung zu Datenbank herstellen
-        Database database = Database.create(m_inflater.getContext());
+        Database database = createDatabase();
         try {
             // Die Liste aller Produkte aus der lokalen Datenbank auslesen
             m_products = Products.query(database, true);

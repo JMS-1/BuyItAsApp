@@ -224,7 +224,6 @@ class Products {
 
             // Markierung in der lokalen Datenbank einstellen
             db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
-            db.setTransactionSuccessful();
         } finally {
             db.close();
         }
