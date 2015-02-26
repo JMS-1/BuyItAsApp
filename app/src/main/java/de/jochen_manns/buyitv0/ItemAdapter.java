@@ -39,12 +39,15 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         notifyDataSetChanged();
     }
 
+    // Bereitet ein visuelles Element zur Anzeige vor.
     protected abstract boolean initializeView(TextView text, JSONObject item) throws JSONException;
 
+    // Meldet die Anzeigeumgebung.
     protected ListActivity<?, ?, ?> getContext() {
         return (ListActivity<?, ?, ?>) m_inflater.getContext();
     }
 
+    // Erstellt einen Zugriff auf die lokale Datenablage.
     protected Database createDatabase() {
         return Database.create(getContext());
     }

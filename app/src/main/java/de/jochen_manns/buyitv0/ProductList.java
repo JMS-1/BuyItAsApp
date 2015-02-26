@@ -45,7 +45,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(ListView.CHOICE_MODE_NONE, R.menu.menu_product_list, savedInstanceState);
+        super.onCreate(R.menu.menu_product_list, savedInstanceState);
 
         // Wenn der Anwender sich neu anmeldet, dann müssen wir alle Daten neu anfordern
         getSharedPreferences(User.PREFERENCES_NAME, 0)

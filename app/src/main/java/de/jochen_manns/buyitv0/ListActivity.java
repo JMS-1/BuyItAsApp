@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,13 +30,13 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     protected abstract boolean canEdit(TIdentifierType identifier);
 
     // Initialisiert eine neue Aktivität.
-    protected void onCreate(int choiceMode, int menu, Bundle savedInstanceState) {
+    protected void onCreate(int menu, Bundle savedInstanceState) {
         m_menu = menu;
 
         super.onCreate(savedInstanceState);
 
         // Liste einrichten
-        getListView().setChoiceMode(choiceMode);
+        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
     }
 
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.

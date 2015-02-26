@@ -13,9 +13,14 @@ class MarketAdapter extends ItemAdapter {
     // Der Platzhalter für die Auswahl keines Marktes
     private final JSONObject m_noMarket = new JSONObject();
 
+    // Der Name des vorausgewählten Marktes.
+    private final String m_defaultName;
+
     // Erstellt eine neue Liste
-    public MarketAdapter(ListActivity<?, ?, ?> context, String emptyName) throws JSONException {
+    public MarketAdapter(ListActivity<?, ?, ?> context, String emptyName, String preselected) throws JSONException {
         super(context);
+
+        m_defaultName = preselected;
 
         // Der Anzeigename der leeren Auswahl ist von der Situation des Aufrufs abhängig
         Markets.setName(m_noMarket, emptyName);
@@ -30,7 +35,10 @@ class MarketAdapter extends ItemAdapter {
 
     @Override
     protected boolean initializeView(TextView text, JSONObject market) throws JSONException {
-        text.setText(Markets.getName(market));
+        String marketName = Markets.getName(market);
+
+        text.setActivated((m_defaultName != null) && m_defaultName.equals(marketName));
+        text.setText(marketName);
 
         return (Markets.getOriginalName(market) != null);
     }

@@ -1,7 +1,6 @@
 package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -41,7 +40,7 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(ListView.CHOICE_MODE_SINGLE, R.menu.menu_market_list, savedInstanceState);
+        super.onCreate(R.menu.menu_market_list, savedInstanceState);
 
         // Diese Aktivität kann nur mit einem Intent gestartet werden
         Intent startInfo = getIntent();
@@ -66,39 +65,12 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
 
         // Nun kann die Verwaltung der Liste vorbereitet werden
         try {
-            setListAdapter(new MarketAdapter(this, emptyName));
+            setListAdapter(new MarketAdapter(this, emptyName, m_market));
         } catch (Exception e) {
             // Alle Fehler führen zum frühzeitigen Beenden der Aktivität
             finish();
             return;
         }
-
-        // Wenn eine Vorauswahl angegeben wurde, so müssen wir auf Veränderungen an der Liste der Märkte reagieren können
-        if (m_market != null)
-            getListAdapter().registerDataSetObserver(new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-
-                    // Die Liste der Märkte absuchen - der erste Eintrag ist die Leerauswahl, die kann ignoriert werden
-                    ListView view = getListView();
-                    for (int i = 1; i < view.getCount(); i++)
-                        try {
-                            // Daten des Marktes auswählen
-                            JSONObject market = (JSONObject) view.getItemAtPosition(i);
-                            String name = Markets.getName(market);
-
-                            // Vorauswahl auf Wunsch aktivieren und in den sichtbaren Bereich fahren - der MarketAdapter verwendet dazu ein geeignetes Item Template
-                            if (m_market.equals(name)) {
-                                view.setItemChecked(i, true);
-                                view.smoothScrollToPosition(i);
-                                break;
-                            }
-                        } catch (Exception e) {
-                            // Fehler interessieren hier nicht
-                        }
-                }
-            });
 
         // Im Hintergrund die Liste der Märkte laden
         load();
