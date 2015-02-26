@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.graphics.Typeface;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -37,7 +38,7 @@ class MarketAdapter extends ItemAdapter {
     protected boolean initializeView(TextView text, JSONObject market) throws JSONException {
         String marketName = Markets.getName(market);
 
-        text.setActivated((m_defaultName != null) && m_defaultName.equals(marketName));
+        text.setTypeface(null, ((m_defaultName != null) && m_defaultName.equals(marketName)) ? Typeface.BOLD : Typeface.NORMAL);
         text.setText(marketName);
 
         return (Markets.getOriginalName(market) != null);
