@@ -22,7 +22,6 @@
         android:id="@+id/listitem_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:src="@drawable/ic_action_edit" />
+        android:src="@drawable/edit_indicator" />
 
 </LinearLayout>
