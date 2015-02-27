@@ -25,13 +25,11 @@
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_market" />
 
-    <Button
+    <include
         android:id="@+id/edit_item_market"
+        layout="@layout/editable_list_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onSelectMarket"
-        android:tag="@null"
-        android:text="@string/editSelect_item_nomarket" />
+        android:layout_height="wrap_content" />
 
     <TextView
         style="@android:style/TextAppearance.Large"

@@ -2,9 +2,10 @@ package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
     Die Aktivität zum Ändern der Daten eines existierenden Produktes respektive
     zum Anlegen eines neuen Produktes.
  */
-public class ProductEdit extends EditActivity<Long, JSONObject> {
+public class ProductEdit extends EditActivity<Long, JSONObject> implements View.OnTouchListener {
 
     // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
@@ -22,15 +23,32 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     private EditText m_description;
 
     // Die Schaltfläche zur Auswahl eines Marktes.
-    private Button m_market;
+    private TextView m_market;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
 
         // Wir benötigen noch die speziellen Eingabefelder für die Produktdaten
-        m_market = (Button) findViewById(R.id.edit_item_market);
+        View market = findViewById(R.id.edit_item_market);
+        View edit = market.findViewById(R.id.listitem_edit);
+
+        edit.setOnTouchListener(this);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
+                Intent showSelector = new Intent(ProductEdit.this, MarketList.class);
+                showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
+                startActivityForResult(showSelector, RESULT_SELECT_MARKET);
+            }
+        });
+
+        m_market = (TextView) market.findViewById(R.id.listitem_text);
         m_description = (EditText) findViewById(R.id.edit_item_description);
+
+        m_market.setText(R.string.editSelect_item_nomarket);
+        m_market.setTag((String) null);
     }
 
     @Override
@@ -74,13 +92,6 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         }
     }
 
-    public void onSelectMarket(View view) {
-        // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
-        Intent showSelector = new Intent(this, MarketList.class);
-        showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
-        startActivityForResult(showSelector, RESULT_SELECT_MARKET);
-    }
-
     @Override
     protected void updateItem(Database database, Long identifier) {
         // Daten aus der Oberfläche auslesen - man beachte, dass für den Markt der Anzeigename vom gespeicherten Namen abweicht, wenn kein Markt zugeordnet wurde
@@ -122,5 +133,21 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        // Wir wollen auch ein bißchen visuelles Feedback haben
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                v.setActivated(true);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                v.setActivated(false);
+                break;
+        }
+
+        return false;
     }
 }
