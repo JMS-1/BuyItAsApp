@@ -20,7 +20,7 @@ class ProductAdapter extends ItemAdapter {
     }
 
     @Override
-    protected boolean initializeView(TextView text, JSONObject product) throws JSONException {
+    protected boolean initializeTextView(TextView text, JSONObject product) throws JSONException {
         // Name des Produktes und des optionalen Marktes ermitteln
         String market = Products.getMarket(product);
         String name = Products.getName(product);

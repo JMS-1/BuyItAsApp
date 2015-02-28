@@ -2,8 +2,6 @@ package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,16 +75,11 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
+    public void onClick(JSONObject market) {
         try {
-            // Daten der aktuellen Auswahl ermitteln
-            JSONObject market = (position < 1) ? null : (JSONObject) l.getItemAtPosition(position);
-
             // Aktuelle Auswahl in eine Antwortstruktur packen - hierbei wir immer der aktuelle Anzeigename verwendet
             Intent result = new Intent();
-            result.putExtra(EXTRA_MARKET_NAME, (market == null) ? null : Markets.getName(market));
+            result.putExtra(EXTRA_MARKET_NAME, (Markets.getOriginalName(market) == null) ? null : Markets.getName(market));
             result.putExtra(EXTRA_PRODUCT_IDENTIFIER, m_product);
 
             // Diese Aktivität mit einem entsprechenden Antwortcode beenden

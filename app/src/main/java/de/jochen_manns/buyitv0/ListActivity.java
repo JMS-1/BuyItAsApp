@@ -40,6 +40,9 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     }
 
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
+    public abstract void onClick(JSONObject item);
+
+    // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
     public void onEdit(JSONObject item) {
         try {
             // Eindeutige Identifikation ermitteln

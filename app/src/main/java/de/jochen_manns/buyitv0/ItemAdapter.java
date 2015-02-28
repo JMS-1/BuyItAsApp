@@ -40,7 +40,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     }
 
     // Bereitet ein visuelles Element zur Anzeige vor.
-    protected abstract boolean initializeView(TextView text, JSONObject item) throws JSONException;
+    protected abstract boolean initializeTextView(TextView text, JSONObject item) throws JSONException;
 
     // Meldet die Anzeigeumgebung.
     protected ListActivity<?, ?, ?> getContext() {
@@ -64,13 +64,15 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         JSONObject item = (JSONObject) getItem(position);
 
         // Für den Aufruf der Änderung vorbereiten
+        textView.setTag(new Integer(position));
+        textView.setOnClickListener(this);
         editView.setTag(new Integer(position));
         editView.setOnClickListener(this);
         editView.setOnTouchListener(this);
 
         // Daten in die Anzeige übertragen
         try {
-            editView.setVisibility(initializeView(textView, item) ? View.VISIBLE : View.INVISIBLE);
+            editView.setVisibility(initializeTextView(textView, item) ? View.VISIBLE : View.INVISIBLE);
         } catch (Exception e) {
             // Fehler werden letztlich alle ignoriert
             textView.setText("### ERROR ###");
@@ -85,7 +87,10 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         JSONObject item = (JSONObject) getItem(position);
 
         // Änderunganfrage an die Liste durchreichen
-        getContext().onEdit(item);
+        if (v instanceof TextView)
+            getContext().onClick(item);
+        else
+            getContext().onEdit(item);
     }
 
     @Override
