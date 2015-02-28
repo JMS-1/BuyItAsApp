@@ -56,8 +56,8 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
         switch (ev.getAction()) {
             // Eine Geste beginnt
             case MotionEvent.ACTION_DOWN:
-                m_downPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
                 m_downX = ev.getX();
+                m_downPosition = pointToPosition((int) m_downX, (int) ev.getY());
                 m_swipe = false;
                 break;
             // Eine Geste wird beendet
