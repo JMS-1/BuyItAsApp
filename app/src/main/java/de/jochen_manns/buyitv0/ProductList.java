@@ -8,12 +8,8 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +19,7 @@ import org.json.JSONObject;
     in alle anderen Bereiche der Anwendung. Sie ist der Einzige Zugangspunkt in
     die Anwendung.
  */
-public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter> implements GestureDetector.OnGestureListener {
+public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter> {
     // Die Antwortkennung bei der Auswahl eine Marktes, bei dem ein Produkt eingekauft wurde.
     private static final int RESULT_SELECT_MARKET = 1;
 
@@ -32,9 +28,6 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
     // Der Markt, bei dem zuletzt ein Produkt gekauft wurde - vermutlich auch der als nächstes verwendete Markt.
     private String m_market;
-
-    // Wir erlauben auch einige Gesten
-    private GestureDetector m_gestures;
 
     @Override
     protected Long getIdentifier(JSONObject item) throws JSONException {
@@ -51,16 +44,6 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.menu.menu_product_list, savedInstanceState);
-
-        // Überwachung der Gesten vorbereiten
-        m_gestures = new GestureDetector(this, this);
-
-        getListView().setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return m_gestures.onTouchEvent(event);
-            }
-        });
 
         // Wenn der Anwender sich neu anmeldet, dann müssen wir alle Daten neu anfordern
         getSharedPreferences(User.PREFERENCES_NAME, 0)
@@ -252,47 +235,6 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         } catch (Exception e) {
             // Im Moment ignorieren wir alle Fehler
         }
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        // Schauen wir mal, ob wir ein bestimmtes Produkt verschieben
-        float x = e1.getX();
-        float y = e1.getY();
-        ListView list = getListView();
-        int position = list.pointToPosition((int) x, (int) y);
-        if (position < 0)
-            return false;
-
-        // So einen Mindestabstand wollen wir schon haben
-        float delta = e2.getX() - x;
-        if (Math.abs(delta) < 200)
-            return false;
-
-        return true;
     }
 
     /*

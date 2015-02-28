@@ -1,11 +1,11 @@
 package de.jochen_manns.buyitv0;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,12 +16,14 @@ import java.lang.reflect.ParameterizedType;
 /*
     Repräsentiert eine Aktivität mit einer Liste von Elementen.
  */
-public abstract class ListActivity<TIdentifierType extends Serializable, TEditType extends EditActivity<TIdentifierType, ?>, TAdapterType extends ItemAdapter> extends android.app.ListActivity {
+public abstract class ListActivity<TIdentifierType extends Serializable, TEditType extends EditActivity<TIdentifierType, ?>, TAdapterType extends ItemAdapter> extends Activity {
     // Die Kennung für die Antwortdaten zum Ändern oder Anlegen eines Elementes.
     private static final int RESULT_EDIT_ITEM = 1;
 
     // Die zu verwendende ActionBar.
     private int m_menu;
+    // Das wäre dann unsere Liste.
+    private TouchableListView m_view;
 
     // Ermittelt die eindeutige Identifikation eines Elementes.
     protected abstract TIdentifierType getIdentifier(JSONObject item) throws JSONException;
@@ -35,8 +37,23 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         super.onCreate(savedInstanceState);
 
-        // Liste einrichten
-        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
+        // Liste erzeugen und verwenden
+        setContentView(m_view = (TouchableListView) getLayoutInflater().inflate(R.layout.list, null));
+    }
+
+    // Meldet die Anzeige der Liste.
+    public TouchableListView getListView() {
+        return m_view;
+    }
+
+    // Meldet die Verwaltung der Listenelemente.
+    public TAdapterType getListAdapter() {
+        return (TAdapterType) getListView().getAdapter();
+    }
+
+    // Legt die Verwaltung der Listenelemente fest.
+    public void setListAdapter(TAdapterType adapter) {
+        getListView().setAdapter(adapter);
     }
 
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
@@ -98,14 +115,10 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     // Liest die Elemente der Liste aus der lokalen Datenbank.
     protected void load() {
         new AsyncTask<Void, Void, JSONObject[]>() {
-            private TAdapterType getAdapter() {
-                return (TAdapterType) ListActivity.this.getListAdapter();
-            }
-
             @Override
             protected JSONObject[] doInBackground(Void... params) {
                 // Daten aus der lokalen Datenbank auslesen
-                return getAdapter().load();
+                return ListActivity.this.getListAdapter().load();
             }
 
             @Override
@@ -113,7 +126,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
                 super.onPostExecute(items);
 
                 // Daten übernehmen
-                getAdapter().refresh(items);
+                ListActivity.this.getListAdapter().refresh(items);
             }
         }.execute();
     }
