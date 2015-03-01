@@ -81,6 +81,18 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         return convertView;
     }
 
+    // Verschiebt ein Listenelement.
+    public void moveItem(int position, boolean moveLeft) {
+        // Was nicht geht
+        if (moveLeft && (position <= 0))
+            return;
+        else if (!moveLeft && (position >= getCount() - 1))
+            return;
+
+        // Verschieben ist einfach vertauschen der Ordnung
+        getContext().onSwap(moveLeft ? (position - 1) : position);
+    }
+
     @Override
     public void onClick(View v) {
         Integer position = (Integer) v.getTag();

@@ -43,6 +43,7 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
         initialize(context);
     }
 
+    // Initialisiert die Verwaltung der Gesten.
     private void initialize(Context context) {
         ViewConfiguration configuration = ViewConfiguration.get(context);
 
@@ -87,6 +88,7 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        // Eigene Auswertung der Geste.
         m_gestures.onTouchEvent(ev);
 
         return super.onTouchEvent(ev);
@@ -117,8 +119,13 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        // Erst einmal schauen, ob wir auf einem Listenelement angefangen haben - tatsächlich sollte die Implementierung keine andere Nutzung zulassen.
         if (m_downPosition < 0)
             return false;
+
+        // Dann teilen wir das einfach unserer Listenverwaltung mit.
+        ItemAdapter adapter = (ItemAdapter) getAdapter();
+        adapter.moveItem(m_downPosition, velocityX < 0);
 
         return true;
     }

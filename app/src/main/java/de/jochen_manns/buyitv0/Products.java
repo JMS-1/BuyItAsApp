@@ -229,6 +229,15 @@ class Products {
         }
     }
 
+    // Set die Ordnung eines Elementes.
+    public static void setOrder(SQLiteDatabase database, long identifier, int order) {
+        ContentValues values = new ContentValues();
+        values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
+        values.put(Order, order);
+
+        database.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
+    }
+
     // Übernimmt den Online Datenbestand in die lokale Datenbank
     public static void synchronize(SQLiteDatabase database, JSONArray items) throws JSONException {
         for (int i = 0; i < items.length(); i++) {

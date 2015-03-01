@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -235,6 +236,48 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         } catch (Exception e) {
             // Im Moment ignorieren wir alle Fehler
         }
+    }
+
+    @Override
+    public void onSwap(int leftPosition) {
+        super.onSwap(leftPosition);
+
+        // Wir nummerieren einmal ganz durch
+        Database database = Database.create(this);
+        try {
+            SQLiteDatabase db = database.getWritableDatabase();
+            try {
+                db.beginTransaction();
+                try {
+                    ProductAdapter adapter = getListAdapter();
+
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        long id = adapter.getItemId(i);
+
+                        // Neue Ordnung ermitteln
+                        int position = i;
+                        if (i == leftPosition)
+                            position++;
+                        else if (i == leftPosition + 1)
+                            position--;
+
+                        // Lokal aktualisieren
+                        Products.setOrder(db, id, position);
+                    }
+
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            } finally {
+                db.close();
+            }
+        } finally {
+            database.close();
+        }
+
+        // Und danach wird die Anzeige neu aufgebaut
+        load();
     }
 
     /*
