@@ -108,7 +108,7 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         // Eigene Auswertung der Geste.
-        if (m_inspectTouch)
+        if (m_swipe)
             m_gestures.onTouchEvent(ev);
 
         // Wieder muss die Basisklasse ran
@@ -142,7 +142,12 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // Erst einmal schauen, ob wir auf einem Listenelement angefangen haben - tatsächlich sollte die Implementierung keine andere Nutzung zulassen.
         if (m_downPosition < 0)
-            return false;
+            return true;
+
+        // Aber nur, wenn wir auch auf dem letzten Element gelandet sind
+        int position = pointToPosition((int) e2.getX(), (int) e2.getY());
+        if (position != m_downPosition)
+            return true;
 
         // Dann teilen wir das einfach unserer Listenverwaltung mit.
         ItemAdapter adapter = (ItemAdapter) getAdapter();
