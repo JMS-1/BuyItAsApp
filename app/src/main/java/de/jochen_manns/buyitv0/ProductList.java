@@ -272,6 +272,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
             } finally {
                 db.close();
             }
+        } catch (Exception e) {
+            // Im Moment werden alle Fehler einfach ignoriert
         } finally {
             database.close();
         }

@@ -12,5 +12,5 @@
         android:id="@id/button_delete"
         android:icon="@drawable/ic_action_discard"
         android:orderInCategory="101"
-        android:showAsAction="always|withText" />
+        android:showAsAction="never|withText" />
 </menu>

@@ -63,6 +63,10 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     public void onSwap(int leftPosition) {
     }
 
+    // Wird aufgerufen, nachdem die Liste aktualisiert wurde.
+    protected void afterLoad() {
+    }
+
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
     public void onEdit(JSONObject item) {
         try {
@@ -74,6 +78,11 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
                 startEdit(identifier);
         } catch (JSONException e) {
         }
+    }
+
+    // Deaktiviert die Auswertung von Gesten.
+    public void disableGestures() {
+        getListView().disableGestures();
     }
 
     // Ändert ein existierendes Element oder legt ein neues an.
@@ -122,15 +131,18 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
             @Override
             protected JSONObject[] doInBackground(Void... params) {
                 // Daten aus der lokalen Datenbank auslesen
-                return ListActivity.this.getListAdapter().load();
+                return getListAdapter().load();
             }
 
             @Override
             protected void onPostExecute(JSONObject[] items) {
                 super.onPostExecute(items);
 
-                // Daten übernehmen
-                ListActivity.this.getListAdapter().refresh(items);
+                // Daten in die Oberfläche übernehmen
+                getListAdapter().refresh(items);
+
+                // Benachrichtigung versenden
+                afterLoad();
             }
         }.execute();
     }

@@ -25,6 +25,9 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
     // Die Nummer des Elementes beim Starten einer Geste.
     private int m_downPosition;
 
+    // Gesetzt, wenn Gesten überwacht werden sollen.
+    private boolean m_inspectTouch = true;
+
     // Erstellt eine neue Liste.
     public TouchableListView(Context context) {
         super(context);
@@ -52,45 +55,55 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
         m_gestures = new GestureDetector(context, this);
     }
 
+    // Deaktiviert die Auswertung von Gesten.
+    public void disableGestures() {
+        m_inspectTouch = false;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            // Eine Geste beginnt
-            case MotionEvent.ACTION_DOWN:
-                m_downX = ev.getX();
-                m_downPosition = pointToPosition((int) m_downX, (int) ev.getY());
-                m_swipe = false;
-                break;
-            // Eine Geste wird beendet
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                m_swipe = false;
-                break;
-            // Eine Bewegung findet statt
-            case MotionEvent.ACTION_MOVE:
-                // Wir haben bereits eine Bewegung erkannt
-                if (m_swipe)
-                    return true;
-
-                // Nur prüfen, wenn wir auf einem Element der Liste angefangen haben
-                if (m_downPosition < 0)
+        // Ansonsten schauen wir uns mal an, was der Anwender von uns will
+        if (m_inspectTouch)
+            switch (ev.getAction()) {
+                // Eine Geste beginnt
+                case MotionEvent.ACTION_DOWN:
+                    m_downX = ev.getX();
+                    m_downPosition = pointToPosition((int) m_downX, (int) ev.getY());
+                    m_swipe = false;
                     break;
+                // Eine Geste wird beendet
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    m_swipe = false;
+                    break;
+                // Eine Bewegung findet statt
+                case MotionEvent.ACTION_MOVE:
+                    // Wir haben bereits eine Bewegung erkannt
+                    if (m_swipe)
+                        return true;
 
-                // Abstand ermitteln
-                float delta = Math.abs(m_downX - ev.getX());
+                    // Nur prüfen, wenn wir auf einem Element der Liste angefangen haben
+                    if (m_downPosition < 0)
+                        break;
 
-                // Und Überwachung aktivieren
-                return m_swipe = (delta >= m_threshold);
-        }
+                    // Abstand ermitteln
+                    float delta = Math.abs(m_downX - ev.getX());
 
-        return false;
+                    // Und Überwachung aktivieren
+                    return m_swipe = (delta >= m_threshold);
+            }
+
+        // Das darf dann die Basisklasse machen
+        return super.onInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         // Eigene Auswertung der Geste.
-        m_gestures.onTouchEvent(ev);
+        if (m_inspectTouch)
+            m_gestures.onTouchEvent(ev);
 
+        // Wieder muss die Basisklasse ran
         return super.onTouchEvent(ev);
     }
 

@@ -19,7 +19,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     // Erzeugt Views.
     private final LayoutInflater m_inflater;
 
-    // Die verwalteten Elemente
+    // Die verwalteten Elemente.
     protected JSONObject[] m_items = null;
 
     // Initialisiert eine neue Verwaltung.
@@ -40,7 +40,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     }
 
     // Bereitet ein visuelles Element zur Anzeige vor.
-    protected abstract boolean initializeTextView(TextView text, JSONObject item) throws JSONException;
+    protected abstract boolean initializeTextView(TextView text, JSONObject item, int position) throws JSONException;
 
     // Meldet die Anzeigeumgebung.
     protected ListActivity<?, ?, ?> getContext() {
@@ -72,7 +72,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
 
         // Daten in die Anzeige übertragen
         try {
-            editView.setVisibility(initializeTextView(textView, item) ? View.VISIBLE : View.INVISIBLE);
+            editView.setVisibility(initializeTextView(textView, item, position) ? View.VISIBLE : View.INVISIBLE);
         } catch (Exception e) {
             // Fehler werden letztlich alle ignoriert
             textView.setText("### ERROR ###");

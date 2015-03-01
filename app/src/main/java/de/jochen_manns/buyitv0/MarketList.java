@@ -47,6 +47,9 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
             return;
         }
 
+        // Hier wollen wir keine Gesten verwenden
+        disableGestures();
+
         // Beide Intent Parameter sind optional, wobei für einen fehlenden Parameter auch der Wert null verwendet werden darf
         m_product = (Long) startInfo.getSerializableExtra(EXTRA_PRODUCT_IDENTIFIER);
         m_market = startInfo.getStringExtra(EXTRA_MARKET_NAME);
@@ -89,5 +92,15 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
         } catch (Exception e) {
             // Fehler interessieren hier nicht
         }
+    }
+
+    @Override
+    protected void afterLoad() {
+        super.afterLoad();
+
+        // Schauen wir mal, ob ein Markt vorausgewählt wurde
+        int preSelected = getListAdapter().getActivePosition();
+        if (preSelected >= 0)
+            getListView().smoothScrollToPosition(preSelected);
     }
 }

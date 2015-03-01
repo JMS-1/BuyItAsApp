@@ -28,6 +28,24 @@ class MarketAdapter extends ItemAdapter {
         Markets.setOriginalName(m_noMarket, null);
     }
 
+    // Meldet die Position des aktiven Elementes.
+    public int getActivePosition() {
+        if (m_defaultName != null)
+            for (int i = 0; i < getCount(); i++)
+                try {
+                    // Der Vergleich erfolgt per Name
+                    JSONObject market = (JSONObject) getItem(i);
+                    String marketName = Markets.getName(market);
+                    if (m_defaultName.equals(marketName))
+                        return i;
+                } catch (JSONException e) {
+                    // Das ist uns egal
+                }
+
+        // Es gibt keine Vorauswahl
+        return -1;
+    }
+
     @Override
     public int getCount() {
         // Bei der Anzahl der Märkte muss die Leerauswahl berücksichtigt werden
@@ -35,7 +53,7 @@ class MarketAdapter extends ItemAdapter {
     }
 
     @Override
-    protected boolean initializeTextView(TextView text, JSONObject market) throws JSONException {
+    protected boolean initializeTextView(TextView text, JSONObject market, int position) throws JSONException {
         String marketName = Markets.getName(market);
 
         text.setTypeface(null, ((m_defaultName != null) && m_defaultName.equals(marketName)) ? Typeface.BOLD : Typeface.NORMAL);
