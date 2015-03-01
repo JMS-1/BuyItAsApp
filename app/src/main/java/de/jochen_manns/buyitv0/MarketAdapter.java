@@ -53,7 +53,7 @@ class MarketAdapter extends ItemAdapter {
     }
 
     @Override
-    protected boolean initializeTextView(TextView text, JSONObject market, int position) throws JSONException {
+    protected boolean initializeTextView(TextView text, JSONObject market) throws JSONException {
         String marketName = Markets.getName(market);
 
         text.setTypeface(null, ((m_defaultName != null) && m_defaultName.equals(marketName)) ? Typeface.BOLD : Typeface.NORMAL);
