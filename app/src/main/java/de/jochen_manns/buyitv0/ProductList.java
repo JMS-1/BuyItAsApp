@@ -239,8 +239,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     }
 
     @Override
-    public void onSwap(int leftPosition) {
-        super.onSwap(leftPosition);
+    public void onSwapWithNext(int leftPosition) {
+        super.onSwapWithNext(leftPosition);
 
         // Wir nummerieren einmal ganz durch
         Database database = Database.create(this);

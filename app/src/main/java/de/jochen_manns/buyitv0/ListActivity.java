@@ -22,6 +22,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
     // Die zu verwendende ActionBar.
     private int m_menu;
+
     // Das wäre dann unsere Liste.
     private TouchableListView m_view;
 
@@ -59,8 +60,8 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     // Aktiviert die Veränderung der Informationen des ausgewählten Listeneintrags.
     public abstract void onClick(JSONObject item);
 
-    // Vertauscht ein Element mit dem folgenden.
-    public void onSwap(int leftPosition) {
+    // Vertauscht ein Element mit dem Folgenden.
+    public void onSwapWithNext(int leftPosition) {
     }
 
     // Wird aufgerufen, nachdem die Liste aktualisiert wurde.
@@ -125,7 +126,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         return super.onOptionsItemSelected(item);
     }
 
-    // Liest die Elemente der Liste aus der lokalen Datenbank.
+    // Liest die Liste der Elemente aus der lokalen Datenbank.
     protected void load() {
         new AsyncTask<Void, Void, JSONObject[]>() {
             @Override

@@ -7,16 +7,18 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.ListView;
 
-// Eine Liste mit der Unterstützung von Gesten.
+/*
+    Eine Liste mit der optionalen Unterstützung von Gesten.
+ */
 public class TouchableListView extends ListView implements GestureDetector.OnGestureListener {
 
-    // Wir erlauben auch einige Gesten
+    // Wir erlauben auch einige Gesten und diese Hilfsklasse wertet Elementargesten aus.
     private GestureDetector m_gestures;
 
     // Gesetzt während einer horizontalen Bewegungsgeste.
     private boolean m_swipe;
 
-    // Der Schwellwert für das Erkennen einer Bewegung.
+    // Der Schwellwert für das Erkennen einer horizontalen Bewegung.
     private int m_threshold;
 
     // Die horizontale Position beim Starten einer Geste.
@@ -25,7 +27,7 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
     // Die Nummer des Elementes beim Starten einer Geste.
     private int m_downPosition;
 
-    // Gesetzt, wenn Gesten überwacht werden sollen.
+    // Gesetzt, wenn Gesten überwacht werden sollen - das ist die Voreinstellung.
     private boolean m_inspectTouch = true;
 
     // Erstellt eine neue Liste.
@@ -50,22 +52,23 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
     private void initialize(Context context) {
         ViewConfiguration configuration = ViewConfiguration.get(context);
 
-        // Überwachung von Gesten aktivieren
+        // Überwachung von Gesten vorbereiten
         m_threshold = configuration.getScaledTouchSlop();
         m_gestures = new GestureDetector(context, this);
     }
 
     // Deaktiviert die Auswertung von Gesten.
     public void disableGestures() {
+        // Diese Liste wird nun keine eigene Auswertung von Gesten vornehmen
         m_inspectTouch = false;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // Ansonsten schauen wir uns mal an, was der Anwender von uns will
+        // Wenn wir Gesten auswerten dürfen, dann schauen wir uns an, was der Anwender von uns will
         if (m_inspectTouch)
             switch (ev.getAction()) {
-                // Eine Geste beginnt
+                // Eine interessante Geste beginnt
                 case MotionEvent.ACTION_DOWN:
                     m_downX = ev.getX();
                     m_downPosition = pointToPosition((int) m_downX, (int) ev.getY());
@@ -74,23 +77,28 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
                 // Eine Geste wird beendet
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
+                    m_downPosition = -1;
                     m_swipe = false;
                     break;
                 // Eine Bewegung findet statt
                 case MotionEvent.ACTION_MOVE:
-                    // Wir haben bereits eine Bewegung erkannt
+                    // Sind wird nicht aktiv müssen wir prüfen, ob eine interessante Geste vorliegt
+                    if (!m_swipe) {
+                        // Nur prüfen, wenn wir auf einem Element der Liste angefangen haben
+                        if (m_downPosition < 0)
+                            break;
+
+                        // Den horizontalen Abstand ermitteln
+                        float delta = Math.abs(m_downX - ev.getX());
+
+                        // Und bei Bedarf die eigene Auswertung der Geste aktivieren
+                        m_swipe = (delta >= m_threshold);
+                    }
+
+                    // Wir übernehmen die Auswertung der Geste
                     if (m_swipe)
                         return true;
-
-                    // Nur prüfen, wenn wir auf einem Element der Liste angefangen haben
-                    if (m_downPosition < 0)
-                        break;
-
-                    // Abstand ermitteln
-                    float delta = Math.abs(m_downX - ev.getX());
-
-                    // Und Überwachung aktivieren
-                    return m_swipe = (delta >= m_threshold);
+                    break;
             }
 
         // Das darf dann die Basisklasse machen
@@ -140,6 +148,7 @@ public class TouchableListView extends ListView implements GestureDetector.OnGes
         ItemAdapter adapter = (ItemAdapter) getAdapter();
         adapter.moveItem(m_downPosition, velocityX < 0);
 
+        // Eine weitere Auswertung ist nicht notwendig
         return true;
     }
 }

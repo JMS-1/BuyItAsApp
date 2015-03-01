@@ -11,9 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /*
-    Eigentliche eine Schnittstelle, hier als abstrakte Basisklasse umgesetzt.
-    Die angebotenen Methoden unterstützen die Basisklasse der Auswahllisten
-    bei dem Zugriff auf die Daten.
+    Hilfsklasse zur Implementierung unser Auswahllisten von Produkten
+    und Märkten.
  */
 abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, View.OnTouchListener {
     // Erzeugt Views.
@@ -27,7 +26,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         m_inflater = LayoutInflater.from(context);
     }
 
-    // Fordert eine Aktualisierung der Liste gemäß dem aktuellen Stand der Datenbank an
+    // Fordert eine Aktualisierung der Liste gemäß dem aktuellen Stand der Datenbank an.
     public abstract JSONObject[] load();
 
     // Übernimmt die neuen Elemente.
@@ -42,7 +41,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     // Bereitet ein visuelles Element zur Anzeige vor.
     protected abstract boolean initializeTextView(TextView text, JSONObject item) throws JSONException;
 
-    // Meldet die Anzeigeumgebung.
+    // Meldet die Aktivität, in der die Liste der Elemente tatsächlich angezeigt wird..
     protected ListActivity<?, ?, ?> getContext() {
         return (ListActivity<?, ?, ?>) m_inflater.getContext();
     }
@@ -58,19 +57,21 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         if (convertView == null)
             convertView = m_inflater.inflate(R.layout.editable_list_item, parent, false);
 
-        // Ziel- und Quellobjekte ermitteln
+        // Zielansichten und Quelldaten ermitteln
         TextView textView = (TextView) convertView.findViewById(R.id.listitem_text);
         View editView = convertView.findViewById(R.id.listitem_edit);
         JSONObject item = (JSONObject) getItem(position);
 
-        // Für den Aufruf der Änderung vorbereiten
+        // Jedes visuelle Element weiß, mit welchem Element es verbunden ist
         textView.setTag(new Integer(position));
-        textView.setOnClickListener(this);
         editView.setTag(new Integer(position));
+
+        // Das Anhängen der Listener könnte man auch nur einmalig machen, aber schaden tut es kaum
+        textView.setOnClickListener(this);
         editView.setOnClickListener(this);
         editView.setOnTouchListener(this);
 
-        // Daten in die Anzeige übertragen
+        // Daten in die Anzeige übertragen und bei Bedarf die Änderungsoption ausblenden
         try {
             editView.setVisibility(initializeTextView(textView, item) ? View.VISIBLE : View.INVISIBLE);
         } catch (Exception e) {
@@ -89,8 +90,8 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         else if (!moveLeft && (position >= getCount() - 1))
             return;
 
-        // Verschieben ist einfach vertauschen der Ordnung
-        getContext().onSwap(moveLeft ? (position - 1) : position);
+        // Verschieben ist einfach ein Vertauschen der Ordnung
+        getContext().onSwapWithNext(moveLeft ? (position - 1) : position);
     }
 
     @Override
@@ -98,7 +99,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         Integer position = (Integer) v.getTag();
         JSONObject item = (JSONObject) getItem(position);
 
-        // Änderunganfrage an die Liste durchreichen
+        // Anfrage je nach Kontext an die Liste durchreichen
         if (v instanceof TextView)
             getContext().onClick(item);
         else
@@ -107,7 +108,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        // Wir wollen auch ein bißchen visuelles Feedback haben
+        // Wir wollen auch ein bisschen visuelles Feedback haben, die Steuerung erfolgt über eine StateListDrawable
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 v.setActivated(true);
