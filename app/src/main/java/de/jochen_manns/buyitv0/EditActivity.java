@@ -2,6 +2,9 @@ package de.jochen_manns.buyitv0;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -132,11 +135,11 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
             }
 
             @Override
-            protected void onPostExecute(TProtocolType jsonObject) {
-                super.onPostExecute(jsonObject);
+            protected void onPostExecute(TProtocolType item) {
+                super.onPostExecute(item);
 
                 // Initialisierung abschliessen
-                initializeFromItem(jsonObject);
+                initializeFromItem(item);
             }
         }.execute();
     }
@@ -148,7 +151,7 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         try {
             switch (item.getItemId()) {
                 case R.id.button_save:
-                    // Anlegen oder ändern
+                    // Anlegen oder Ändern
                     updateItem(database, m_identifier);
                     break;
                 case R.id.button_delete:
@@ -163,7 +166,7 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
             database.close();
         }
 
-        // Vermutlich wurde eine Änderung durchgeführt
+        // Vermutlich wurde eine Änderung durchgeführt - TODO: das könnte man im Zusammenspiel mit der Aktualisierung der Anzeige sicher noch optimieren
         setResult(RESULT_OK);
 
         // Diese Aktivität kann nun beendet werden
@@ -178,10 +181,17 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
         MenuItem saveItem = menu.findItem(R.id.button_save);
         MenuItem deleteItem = menu.findItem(R.id.button_delete);
+        Drawable saveIcon = getResources().getDrawable(R.drawable.ic_action_accept);
+
+        // Schauen wir mal, ob wir speichern können
+        boolean canSave = isValidName(getName());
+        if (!canSave)
+            saveIcon.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
 
         // Menüpunkt zum Ändern respektive Anlegen
         saveItem.setTitle((m_identifier == null) ? R.string.button_new : R.string.button_save);
-        saveItem.setEnabled(isValidName(getName()));
+        saveItem.setEnabled(canSave);
+        saveItem.setIcon(saveIcon);
 
         // Menüpunkt zum Löschen
         if (m_identifier == null)
