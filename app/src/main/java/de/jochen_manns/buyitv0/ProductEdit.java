@@ -2,7 +2,6 @@ package de.jochen_manns.buyitv0;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,7 +13,7 @@ import org.json.JSONObject;
     Die Aktivität zum Ändern der Daten eines existierenden Produktes respektive
     zum Anlegen eines neuen Produktes.
  */
-public class ProductEdit extends EditActivity<Long, JSONObject> implements View.OnTouchListener {
+public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
@@ -33,8 +32,8 @@ public class ProductEdit extends EditActivity<Long, JSONObject> implements View.
         View market = findViewById(R.id.edit_item_market);
         View edit = market.findViewById(R.id.listitem_edit);
 
-        edit.setOnTouchListener(this);
-        edit.setOnClickListener(new View.OnClickListener() {
+        edit.setVisibility(View.INVISIBLE);
+        market.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
@@ -133,21 +132,5 @@ public class ProductEdit extends EditActivity<Long, JSONObject> implements View.
                 }
                 break;
         }
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        // Wir wollen auch ein bißchen visuelles Feedback haben
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                v.setActivated(true);
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                v.setActivated(false);
-                break;
-        }
-
-        return false;
     }
 }
