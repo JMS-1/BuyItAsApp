@@ -18,7 +18,7 @@ import java.util.ArrayList;
     Mit Hilfe dieser Basisklasse werden alle Zugriff auf den Web Service der
     App abgewickelt.
  */
-abstract class JsonRequestTask extends AsyncTask<String, Void, JSONObject> {
+abstract class JsonRequestTask extends AsyncTask<Void, Void, JSONObject> {
     // Alle Aufrufe müssen den Registrierungsscchlüssel des Anwenders über eine JSON Eigenschaft mit diesem Namen übermitteln.
     protected final static String REQUEST_USER = "userid";
 
@@ -31,6 +31,7 @@ abstract class JsonRequestTask extends AsyncTask<String, Void, JSONObject> {
     // Initialisiert einen neuen Web Service Aufruf.
     protected JsonRequestTask(Context context, String webService) {
         m_endPoint = "http://mobile.psimarron.net/BuyIt/" + webService;
+
         Context = context;
     }
 
@@ -89,18 +90,18 @@ abstract class JsonRequestTask extends AsyncTask<String, Void, JSONObject> {
 
     // Führt den Aufruf aus.
     public void start() {
-        execute(m_endPoint);
+        execute();
     }
 
     @Override
-    protected JSONObject doInBackground(String... urls) {
+    protected JSONObject doInBackground(Void... urls) {
         try {
             // Aufrufdaten vorbereiten
             JSONObject postData = new JSONObject();
             fillRequest(postData);
 
             // HTTP Aufruf vorbereiten
-            URL url = new URL(urls[0]);
+            URL url = new URL(m_endPoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 // Übertragung der Aufrufdaten vorbereiten

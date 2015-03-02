@@ -10,7 +10,7 @@ import java.util.TimeZone;
 /*
     Einige kleine Hilsmethoden zum Arbeiten mit JSON Repräsentationen.
  */
-class JSONTools {
+class JsonTools {
     // Die globale Zeitzone.
     private static final TimeZone UniversalTimeZone = TimeZone.getTimeZone("UTC");
 

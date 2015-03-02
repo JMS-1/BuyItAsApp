@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="button_save" type="id" />
-    <item name="button_delete" type="id" />
+    <item name="action_save" type="id" />
+    <item name="action_delete" type="id" />
     <item name="edit_name" type="id" />
     <item name="action_new" type="id" />
 </resources>

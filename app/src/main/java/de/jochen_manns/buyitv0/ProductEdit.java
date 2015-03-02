@@ -28,12 +28,13 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
 
-        // Wir benötigen noch die speziellen Eingabefelder für die Produktdaten
-        View market = findViewById(R.id.edit_item_market);
-        View edit = market.findViewById(R.id.listitem_edit);
+        // Der Markt wird ausgewählt, nicht eingegeben
+        m_market = (TextView) findViewById(R.id.edit_product_market);
+        m_description = (EditText) findViewById(R.id.edit_product_description);
 
-        edit.setVisibility(View.INVISIBLE);
-        market.setOnClickListener(new View.OnClickListener() {
+        m_market.setText(R.string.editSelect_item_nomarket);
+        m_market.setTag(null);
+        m_market.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
@@ -42,12 +43,6 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 startActivityForResult(showSelector, RESULT_SELECT_MARKET);
             }
         });
-
-        m_market = (TextView) market.findViewById(R.id.listitem_text);
-        m_description = (EditText) findViewById(R.id.edit_item_description);
-
-        m_market.setText(R.string.editSelect_item_nomarket);
-        m_market.setTag((String) null);
     }
 
     @Override

@@ -153,9 +153,6 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         // ActionBar erzeugen
         getMenuInflater().inflate(m_menu, menu);
 
-        // Standardbeschriftung setzen
-        menu.findItem(R.id.action_new).setTitle(R.string.action_new);
-
         return true;
     }
 }

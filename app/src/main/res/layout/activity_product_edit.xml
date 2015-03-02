@@ -16,6 +16,7 @@
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:inputType="textCapWords"
         android:singleLine="true" />
 
@@ -26,11 +27,14 @@
         android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_market" />
 
-    <include
-        android:id="@+id/edit_item_market"
-        layout="@layout/editable_list_item"
+    <TextView
+        android:id="@+id/edit_product_market"
+        style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:padding="20dp" />
 
     <TextView
         style="@android:style/TextAppearance.Large"
@@ -40,9 +44,10 @@
         android:text="@string/editLabel_item_description" />
 
     <EditText
-        android:id="@+id/edit_item_description"
+        android:id="@+id/edit_product_description"
         style="@android:style/TextAppearance.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
 
 </LinearLayout>

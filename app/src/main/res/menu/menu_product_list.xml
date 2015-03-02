@@ -1,12 +1,11 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ProductList">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@id/action_new"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="100"
-        android:showAsAction="always|withText" />
+        android:showAsAction="always|withText"
+        android:title="@string/action_new" />
 
     <item
         android:id="@+id/action_synchronize"

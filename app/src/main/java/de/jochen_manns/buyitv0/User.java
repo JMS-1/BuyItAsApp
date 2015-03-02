@@ -31,11 +31,11 @@ class User {
     // Ermittelt die lokal abgelegten Benutzerinformationen.
     public static User load(Context context) {
         // Auslesen aus der lokalen Ablage
-        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         // Prüfen, ob Informationen vorhanden sind
         String userId = preferences.getString(Name_Identifier, null);
-        if (userId == null)
+        if ((userId == null) || (userId.length() < 1))
             return null;
 
         // Name des Benutzers auslesen
@@ -48,7 +48,7 @@ class User {
     // Verändert die lokal abgelegten Benutzerinformationen.
     public static void save(String userIdentifier, String userName, Context context) {
         // Lokale Ablage abrufen
-        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         // Änderung eintragen
         SharedPreferences.Editor changes = preferences.edit();
@@ -56,6 +56,6 @@ class User {
         changes.putString(Name_Name, userName);
 
         // Änderung durchführen
-        changes.commit();
+        changes.apply();
     }
 }

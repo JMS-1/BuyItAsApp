@@ -150,11 +150,11 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         Database database = Database.create(EditActivity.this);
         try {
             switch (item.getItemId()) {
-                case R.id.button_save:
+                case R.id.action_save:
                     // Anlegen oder Ändern
                     updateItem(database, m_identifier);
                     break;
-                case R.id.button_delete:
+                case R.id.action_delete:
                     // Entfernen
                     deleteItem(database, m_identifier);
                     break;
@@ -179,8 +179,8 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         // Gewünschte ActionBar laden
         getMenuInflater().inflate(m_menu, menu);
 
-        MenuItem saveItem = menu.findItem(R.id.button_save);
-        MenuItem deleteItem = menu.findItem(R.id.button_delete);
+        MenuItem saveItem = menu.findItem(R.id.action_save);
+        MenuItem deleteItem = menu.findItem(R.id.action_delete);
         Drawable saveIcon = getResources().getDrawable(R.drawable.ic_action_accept);
 
         // Schauen wir mal, ob wir speichern können
@@ -189,15 +189,13 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
             saveIcon.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
 
         // Menüpunkt zum Ändern respektive Anlegen
-        saveItem.setTitle((m_identifier == null) ? R.string.button_new : R.string.button_save);
+        saveItem.setTitle((m_identifier == null) ? R.string.button_new : R.string.action_save);
         saveItem.setEnabled(canSave);
         saveItem.setIcon(saveIcon);
 
         // Menüpunkt zum Löschen
         if (m_identifier == null)
             deleteItem.setVisible(false);
-        else
-            deleteItem.setTitle(R.string.button_delete);
 
         return true;
     }

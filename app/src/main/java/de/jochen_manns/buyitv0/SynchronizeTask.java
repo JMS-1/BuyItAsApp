@@ -28,7 +28,7 @@ abstract class SynchronizeTask extends JsonRequestTask {
     }
 
     @Override
-    protected JSONObject doInBackground(String... urls) {
+    protected JSONObject doInBackground(Void... urls) {
         // Falls der Benutzer seine Anmeldung verändert hat löschen wir auf jeden Fall die Datenbank
         if (m_clear) {
             Database database = Database.create(Context);
