@@ -142,8 +142,8 @@ class Markets {
 
             // Dazu werden die Daten vom Web Service in die entsprechenden Spalten der lokalen Datenbank übertragen - im Moment wird eine einfache Namensgleichheit von Spalten und JSON Eigenschaften verwendet
             ContentValues values = new ContentValues();
-            values.put(Name, xJsonTools.getStringFromJSON(market, Name));
-            values.put(OriginalName, xJsonTools.getStringFromJSON(market, OriginalName));
+            values.put(Name, JsonTools.getStringFromJSON(market, Name));
+            values.put(OriginalName, JsonTools.getStringFromJSON(market, OriginalName));
             values.put(Deleted, market.getBoolean(Deleted) ? 1 : 0);
 
             database.insert(Table, null, values);
@@ -152,7 +152,7 @@ class Markets {
 
     // Meldet den Anzeigenamen eines Marktes.
     public static String getName(JSONObject market) throws JSONException {
-        return xJsonTools.getStringFromJSON(market, Name);
+        return JsonTools.getStringFromJSON(market, Name);
     }
 
     // Ändert den Anzeigenamen eines Marktes.
@@ -162,7 +162,7 @@ class Markets {
 
     // Meldet den Online Namen und damit eindeutigen Schlüssel eines Marktes.
     public static String getOriginalName(JSONObject market) throws JSONException {
-        return xJsonTools.getStringFromJSON(market, OriginalName);
+        return JsonTools.getStringFromJSON(market, OriginalName);
     }
 
     // Ändert den Online Namen und damit eindeutigen Schlüssel eines Marktes.
