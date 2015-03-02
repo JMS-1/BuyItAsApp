@@ -158,7 +158,7 @@ class Products {
             if (identifier == null) {
                 // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
                 values.put(State, ProductStates.NewlyCreated.ordinal());
-                values.put(CreateTime, JsonTools.dateToISOString(Calendar.getInstance().getTime()));
+                values.put(CreateTime, xJsonTools.dateToISOString(Calendar.getInstance().getTime()));
 
                 // Bei neuen Produken müssen wir noch eine neue eindeutige Identifikation und eine Wichtigket ermitteln
                 Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
@@ -205,7 +205,7 @@ class Products {
             if ((market == null) || (market.length() < 1))
                 values.put(BuyTime, (String) null);
             else
-                values.put(BuyTime, JsonTools.dateToISOString(Calendar.getInstance().getTime()));
+                values.put(BuyTime, xJsonTools.dateToISOString(Calendar.getInstance().getTime()));
 
             // Die lokalen Datenbank wird schließlich aktualisiert
             db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
@@ -247,11 +247,11 @@ class Products {
             ContentValues values = new ContentValues();
             values.put(Identifier, item.getInt(Identifier));
             values.put(State, item.getInt(State));
-            values.put(Name, JsonTools.getStringFromJSON(item, Name));
-            values.put(Description, JsonTools.getStringFromJSON(item, Description));
-            values.put(CreateTime, JsonTools.getStringFromJSON(item, CreateTime));
-            values.put(BuyTime, JsonTools.getStringFromJSON(item, BuyTime));
-            values.put(BuyMarket, JsonTools.getStringFromJSON(item, BuyMarket));
+            values.put(Name, xJsonTools.getStringFromJSON(item, Name));
+            values.put(Description, xJsonTools.getStringFromJSON(item, Description));
+            values.put(CreateTime, xJsonTools.getStringFromJSON(item, CreateTime));
+            values.put(BuyTime, xJsonTools.getStringFromJSON(item, BuyTime));
+            values.put(BuyMarket, xJsonTools.getStringFromJSON(item, BuyMarket));
             values.put(Order, item.getInt(Order));
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
@@ -261,24 +261,24 @@ class Products {
 
     // Meldet den Namen des Marktes zu einem Produkt.
     public static String getMarket(JSONObject item) throws JSONException {
-        return JsonTools.getStringFromJSON(item, BuyMarket);
+        return xJsonTools.getStringFromJSON(item, BuyMarket);
     }
 
     // Meldet den Namen eines Produktes.
     public static String getName(JSONObject item) throws JSONException {
-        return JsonTools.getStringFromJSON(item, Name);
+        return xJsonTools.getStringFromJSON(item, Name);
     }
 
     // Prüft und meldet, ob ein Produkt bereits eingekauft wurde.
     public static boolean isBought(JSONObject item) throws JSONException {
-        String time = JsonTools.getStringFromJSON(item, BuyTime);
+        String time = xJsonTools.getStringFromJSON(item, BuyTime);
 
         return ((time != null) && (time.length() > 0));
     }
 
     // Meldet die Beschreibung eines Produktes.
     public static String getDescription(JSONObject item) throws JSONException {
-        return JsonTools.getStringFromJSON(item, Description);
+        return xJsonTools.getStringFromJSON(item, Description);
     }
 
     // Meldet die eindeutige Identifikation eines Produktes.
