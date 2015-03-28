@@ -27,6 +27,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     // Die laufende Nummer des Anmeldetdialogs.
     private static final int DIALOG_LOGON = 1;
 
+    // Der Name des aktuellen Marktes.
+    private static final String STATE_MARKET_NAME = "market";
+
     // Der Markt, bei dem zuletzt ein Produkt gekauft wurde - vermutlich auch der als nächstes verwendete Markt.
     private String m_market;
 
@@ -280,6 +283,20 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
         // Und danach wird die Anzeige neu aufgebaut
         load();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(STATE_MARKET_NAME, m_market);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        m_market = savedInstanceState.getString(STATE_MARKET_NAME);
     }
 
     /*
