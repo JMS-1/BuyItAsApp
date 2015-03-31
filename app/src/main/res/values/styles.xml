@@ -2,4 +2,5 @@
 
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"></style>
 
+    <style name="TextStyle" parent="android:style/TextAppearance.Medium"></style>
 </resources>

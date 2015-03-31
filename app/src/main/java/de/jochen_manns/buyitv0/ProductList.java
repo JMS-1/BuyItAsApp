@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
@@ -32,6 +33,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
     // Der Markt, bei dem zuletzt ein Produkt gekauft wurde - vermutlich auch der als nächstes verwendete Markt.
     private String m_market;
+
+    // Gesetzt, wenn die Synchronisation möglich ist.
+    private boolean m_showSync = true;
 
     @Override
     protected Long getIdentifier(JSONObject item) throws JSONException {
@@ -102,9 +106,26 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!super.onCreateOptionsMenu(menu))
+            return false;
+
+        menu.findItem(R.id.action_synchronize).setVisible(m_showSync);
+
+        return true;
+    }
+
     // Synchronisiert die lokale Datenbank mit dem Online Datenbestand.
     public void synchronize(boolean clearDatabase) {
+        // Die Option steht bis zum Abschluss nicht zur Verfügung
+        m_showSync = false;
+
+        // Aktualsierung im Hintergrund anstossen
         new ProductListSynchronizeTask(clearDatabase).start();
+
+        // Menü neu aufbauen
+        invalidateOptionsMenu();
     }
 
     // Bearbeitet den Wunsch des Anwender zur Synchronisation mit dem Online Datenbestand.
@@ -297,6 +318,17 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         super.onRestoreInstanceState(savedInstanceState);
 
         m_market = savedInstanceState.getString(STATE_MARKET_NAME);
+    }
+
+    @Override
+    protected void afterLoad() {
+        super.afterLoad();
+
+        // Synchronisation erlauben
+        m_showSync = true;
+
+        // Und schnell noch die Menüleiste aktivieren
+        invalidateOptionsMenu();
     }
 
     /*
