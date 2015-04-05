@@ -59,7 +59,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                         new SharedPreferences.OnSharedPreferenceChangeListener() {
                             @Override
                             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                                updateUser(User.Name_Identifier.equals(key));
+                                updateUser();
                             }
                         });
 
@@ -67,14 +67,14 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         setListAdapter(new ProductAdapter(this));
 
         // Aktuelle Benutzerinformationen übernehmen
-        updateUser(false);
+        updateUser();
 
         // Liste der Produkte aus der lokalen Datenbank anfordern
         load();
     }
 
     // Wechselt den Anwender, der die Anwendung gerade bedient.
-    private void updateUser(boolean synchronize) {
+    private void updateUser() {
         // Benutzeranmeldung ermitteln
         User user = User.load(this);
 
@@ -83,12 +83,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
         // Name der Anwendung anpassen
         setTitle(userName);
-
-        // Wird der Anwender gewechselt so müssen wir neu Laden
-        if (synchronize)
-            synchronize(true);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

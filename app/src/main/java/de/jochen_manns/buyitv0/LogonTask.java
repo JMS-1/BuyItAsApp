@@ -1,7 +1,5 @@
 package de.jochen_manns.buyitv0;
 
-import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +13,7 @@ class LogonTask extends JsonRequestTask {
     private final String m_userIdentifier;
 
     // Erstellt einen neuen Aufruf.
-    public LogonTask(Context request, String requestIdentifier) {
+    public LogonTask(ProductList request, String requestIdentifier) {
         super(request, "user.php");
 
         m_userIdentifier = requestIdentifier;
@@ -35,5 +33,8 @@ class LogonTask extends JsonRequestTask {
 
         // Der Name eines bekannten Anwenders wird peristent gespeichert
         User.save(m_userIdentifier, userName, Context);
+
+        // Synchronisation anfordern
+        ((ProductList) Context).synchronize(true);
     }
 }
