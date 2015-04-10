@@ -125,12 +125,17 @@ class Products {
         boolean mustUpdate = false;
 
         // Wir nehmen alle Produkte, der Server muss damit klarkommen
-        for (JSONObject item : build(database.query(Table, null, null, null, null, null, null))) {
+        for (JSONObject item : build(database.query(Table, null, null, null, null, null, Order))) {
+            // Der Index, den wir verwenden würden
+            int order = items.length();
+
+            // Das ist auch der neue Online Stand
+            item.put(Order, order);
+
             // Auf jeden Fall merken wir uns das
             items.put(item);
 
-            // Laufende Nummer an passen und auf Änderung prüfen
-            int order = item.getInt(Order);
+            // Auf Änderung prüfen
             if (order == item.getInt(OriginalOrder))
                 if (item.getInt(State) == ProductStates.Unchanged.ordinal())
                     continue;
