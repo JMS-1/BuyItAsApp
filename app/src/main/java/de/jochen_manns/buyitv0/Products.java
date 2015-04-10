@@ -118,8 +118,8 @@ class Products {
     public static JSONArray queryForUpdate(SQLiteDatabase database) throws JSONException {
         JSONArray items = new JSONArray();
 
-        // Wir nehmen alle Produkte, die verändert respektive neu anlegt wurden
-        for (JSONObject item : build(database.query(Table, null, State + "<>?", new String[]{Integer.toString(ProductStates.Unchanged.ordinal())}, null, null, null)))
+        // Wir nehmen alle Produkte, der Server muss damit klarkommen
+        for (JSONObject item : build(database.query(Table, null, null, null, null, null, null)))
             items.put(item);
 
         return items;
@@ -232,7 +232,6 @@ class Products {
     // Set die Ordnung eines Elementes.
     public static void setOrder(SQLiteDatabase database, long identifier, int order) {
         ContentValues values = new ContentValues();
-        values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
         values.put(Order, order);
 
         database.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
@@ -252,7 +251,9 @@ class Products {
             values.put(CreateTime, JsonTools.getStringFromJSON(item, CreateTime));
             values.put(BuyTime, JsonTools.getStringFromJSON(item, BuyTime));
             values.put(BuyMarket, JsonTools.getStringFromJSON(item, BuyMarket));
-            values.put(Order, item.getInt(Order));
+
+            // Die Sortierung geben wir allerdings fest vor
+            values.put(Order, i);
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
             database.insert(Table, null, values);
