@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 class Database extends SQLiteOpenHelper {
     // Die aktuelle Version des Datenbank Schemas.
-    private static final int Sql_Version = 8;
+    private static final int Sql_Version = 9;
 
     // Der Name, unter dem die Datenbank lokal gespeichert wird.
     private static final String Sql_Database = "BuyIt.db";

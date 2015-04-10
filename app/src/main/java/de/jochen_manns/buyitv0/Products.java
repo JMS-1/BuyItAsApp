@@ -49,12 +49,12 @@ class Products {
 
     // Der Name der Spalte (und JSON Eigenschaft) mit der Wichtigkeit eines Produktes.
     private static final String Order = "priority";
-
-    // Der SQL Befehl zum Anlegen der Produkttabelle.
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER)";
-
     // Die berechneten Spalten, die zur Festlegung der Eckdaten eines lokal neu angelegten produktes benötigt werden.
     private final static String[] s_ItemLimitColumns = {"COUNT(*)", "MIN(" + Identifier + ")", "MAX(" + Order + ")"};
+    // Der Name der Spalte mit der ursprünglichen Wichtigkeit eines Produktes.
+    private static final String OriginalOrder = "originalPriority";
+    // Der SQL Befehl zum Anlegen der Produkttabelle.
+    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER, " + OriginalOrder + " INTEGER)";
 
     // Wertet eine Abfrage an die Produkttabelle aus.
     private static JSONObject[] build(Cursor query) throws JSONException {
@@ -62,6 +62,7 @@ class Products {
             JSONObject[] items = new JSONObject[query.getCount()];
             if (items.length > 0) {
                 // Die laufenden Nummern der Spalten ermitteln - im Allgemeinen werden nicht immer alle Spalten abgerufen
+                int originalOrderColumn = query.getColumnIndex(OriginalOrder);
                 int descriptionColumn = query.getColumnIndex(Description);
                 int createColumn = query.getColumnIndex(CreateTime);
                 int marketColumn = query.getColumnIndex(BuyMarket);
@@ -88,6 +89,8 @@ class Products {
                         item.put(Identifier, query.getInt(idColumn));
                     if (orderColumn >= 0)
                         item.put(Order, query.getInt(orderColumn));
+                    if (originalOrderColumn >= 0)
+                        item.put(OriginalOrder, query.getInt(originalOrderColumn));
                     if (stateColumn >= 0)
                         item.put(State, query.getInt(stateColumn));
                     if (nameColumn >= 0)
@@ -118,11 +121,26 @@ class Products {
     public static JSONArray queryForUpdate(SQLiteDatabase database) throws JSONException {
         JSONArray items = new JSONArray();
 
+        // Schauen wir einmal, ob eine Aktualisierung notwendig ist
+        boolean mustUpdate = false;
+
         // Wir nehmen alle Produkte, der Server muss damit klarkommen
-        for (JSONObject item : build(database.query(Table, null, null, null, null, null, null)))
+        for (JSONObject item : build(database.query(Table, null, null, null, null, null, null))) {
+            // Auf jeden Fall merken wir uns das
             items.put(item);
 
-        return items;
+            // Laufende Nummer an passen und auf Änderung prüfen
+            int order = item.getInt(Order);
+            if (order == item.getInt(OriginalOrder))
+                if (item.getInt(State) == ProductStates.Unchanged.ordinal())
+                    continue;
+
+            // Da müssen wir ran
+            mustUpdate = true;
+        }
+
+        // Je nach Situation melden
+        return mustUpdate ? items : new JSONArray();
     }
 
     // Ermittelt alle Produkte zur Anzeige in der Hauptaktivität.
@@ -157,8 +175,9 @@ class Products {
 
             if (identifier == null) {
                 // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
-                values.put(State, ProductStates.NewlyCreated.ordinal());
                 values.put(CreateTime, JsonTools.dateToISOString(Calendar.getInstance().getTime()));
+                values.put(State, ProductStates.NewlyCreated.ordinal());
+                values.put(OriginalOrder, -1);
 
                 // Bei neuen Produken müssen wir noch eine neue eindeutige Identifikation und eine Wichtigket ermitteln
                 Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
@@ -251,9 +270,8 @@ class Products {
             values.put(CreateTime, JsonTools.getStringFromJSON(item, CreateTime));
             values.put(BuyTime, JsonTools.getStringFromJSON(item, BuyTime));
             values.put(BuyMarket, JsonTools.getStringFromJSON(item, BuyMarket));
-
-            // Die Sortierung geben wir allerdings fest vor
-            values.put(Order, i);
+            values.put(OriginalOrder, item.getInt(Order));
+            values.put(Order, item.getInt(Order));
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
             database.insert(Table, null, values);
