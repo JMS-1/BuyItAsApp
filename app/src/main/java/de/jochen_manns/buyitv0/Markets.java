@@ -93,7 +93,7 @@ class Markets {
     // Ermittelt alle Märkte zur Auswahl durch den Anwender.
     public static JSONObject[] query(Database database) throws JSONException {
         // Hier benötigen wir nur die Märkte, die nicht lokal gelöscht wurden
-        return query(database, s_MarketListColumns, Deleted + "=0", Name);
+        return query(database, s_MarketListColumns, Deleted + "=0", Name + " COLLATE NOCASE");
     }
 
     // Aktualisiert die Daten eines Marktes oder legt einen neuen Markt an
