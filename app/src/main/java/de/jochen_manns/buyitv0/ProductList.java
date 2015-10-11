@@ -320,10 +320,30 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         super.afterLoad();
 
         // Synchronisation erlauben
+        resetSynchronize();
+    }
+
+    private void resetSynchronize() {
+        // Synchronisation erlauben
         m_showSync = true;
 
         // Und schnell noch die Menüleiste aktivieren
         invalidateOptionsMenu();
+    }
+
+    private void loadError() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.error_title_rest)
+                .setMessage(R.string.error_sync)
+                .setPositiveButton(R.string.error_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+
+        // Synchronisation erlauben
+        resetSynchronize();
     }
 
     /*
@@ -340,7 +360,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
             super.onPostExecute(jsonObject);
 
             // Es ist nun an der Zeit, die Anzeige zu aktualisieren
-            if (jsonObject != null)
+            if (jsonObject == null)
+                loadError();
+            else
                 load();
         }
     }

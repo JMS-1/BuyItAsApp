@@ -36,4 +36,8 @@
 
     <string name="product_edit_modify">Produktdaten ändern</string>
     <string name="product_edit_create">Produkt anlegen</string>
+
+    <string name="error_title_rest">Web Zugriff</string>
+    <string name="error_sync">Zurzeit ist eine Synchronisation leider nicht möglich.</string>
+    <string name="error_ok">Schade</string>
 </resources>
