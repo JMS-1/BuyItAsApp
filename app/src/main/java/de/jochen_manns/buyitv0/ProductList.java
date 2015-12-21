@@ -131,6 +131,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         } finally {
             database.close();
         }
+
+        // Und danach wird die Anzeige neu aufgebaut
+        load();
     }
 
     @Override
