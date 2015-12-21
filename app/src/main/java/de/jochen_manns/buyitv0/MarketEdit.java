@@ -35,7 +35,7 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
     @Override
     protected JSONObject[] queryItem(Database database, String market) throws JSONException {
         // Einfach alle Märkte aus der lokalen Datenbank auslesen
-        return Markets.query(database);
+        return Markets.query(database, null);
     }
 
     @Override

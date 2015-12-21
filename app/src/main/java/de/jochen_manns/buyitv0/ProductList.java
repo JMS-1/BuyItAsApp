@@ -96,9 +96,41 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
             case R.id.action_logon:
                 onLogon();
                 return true;
+
+            case R.id.action_sortmarket:
+                onGroupByMarket();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onGroupByMarket() {
+        JSONObject[] items = getListAdapter().load(Products.MarketOrder);
+
+        // Wir nummerieren einmal ganz durch
+        Database database = Database.create(this);
+        try {
+            SQLiteDatabase db = database.getWritableDatabase();
+            try {
+                db.beginTransaction();
+                try {
+                    for (int i = 0; i < items.length; i++) {
+                        Products.setOrder(db, Products.getIdentifier(items[i]), i);
+                    }
+
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            } finally {
+                db.close();
+            }
+        } catch (Exception e) {
+            // Im Moment werden alle Fehler einfach ignoriert
+        } finally {
+            database.close();
+        }
     }
 
     @Override

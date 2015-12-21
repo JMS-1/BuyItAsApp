@@ -44,15 +44,21 @@ class Products {
     // Der Name der Spalte (und JSON Eigenschaft) mit dem Markt, in dem ein Produkt gekauft werden soll oder sogar gekauft wurde.
     private static final String BuyMarket = "market";
 
+    // Die Sortierordnung bei der gruppierung nach dem Markt.
+    public static final String MarketOrder = BuyMarket + " COLLATE NOCASE," + Name;
+
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime};
 
     // Der Name der Spalte (und JSON Eigenschaft) mit der Wichtigkeit eines Produktes.
     private static final String Order = "priority";
+
     // Die berechneten Spalten, die zur Festlegung der Eckdaten eines lokal neu angelegten produktes benötigt werden.
     private final static String[] s_ItemLimitColumns = {"COUNT(*)", "MIN(" + Identifier + ")", "MAX(" + Order + ")"};
+
     // Der Name der Spalte mit der ursprünglichen Wichtigkeit eines Produktes.
     private static final String OriginalOrder = "originalPriority";
+
     // Der SQL Befehl zum Anlegen der Produkttabelle.
     public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER, " + OriginalOrder + " INTEGER)";
 
@@ -149,14 +155,18 @@ class Products {
     }
 
     // Ermittelt alle Produkte zur Anzeige in der Hauptaktivität.
-    public static JSONObject[] query(Database database, boolean all) throws JSONException {
+    public static JSONObject[] query(Database database, boolean all, String order) throws JSONException {
         // Wir können theoretisch auch alle Produkte ausblenden, die bereits eingekauft wurden - TODO: das kann in der Oberfläche noch nicht umgeschaltet werden
         String filter = State + "<>?";
         if (!all)
             filter += " AND " + BuyTime + " IS NULL";
 
+        // Voreinstellung verwenden
+        if (order == null)
+            order = Order;
+
         // Grundsätzlich werden alle nicht als gelöscht markierten Produkte gemeldet
-        return query(database, s_ItemListColumns, filter, new String[]{Integer.toString(ProductStates.Deleted.ordinal())}, Order);
+        return query(database, s_ItemListColumns, filter, new String[]{Integer.toString(ProductStates.Deleted.ordinal())}, order);
     }
 
     // Ermittelt ein einzelnes Produkt.

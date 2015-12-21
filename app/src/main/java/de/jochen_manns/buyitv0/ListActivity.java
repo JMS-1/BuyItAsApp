@@ -132,7 +132,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
             @Override
             protected JSONObject[] doInBackground(Void... params) {
                 // Daten aus der lokalen Datenbank auslesen
-                return getListAdapter().load();
+                return getListAdapter().load(null);
             }
 
             @Override

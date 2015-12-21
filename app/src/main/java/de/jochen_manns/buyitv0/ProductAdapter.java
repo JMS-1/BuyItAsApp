@@ -59,12 +59,12 @@ class ProductAdapter extends ItemAdapter {
     }
 
     @Override
-    public JSONObject[] load() {
+    public JSONObject[] load(String order) {
         // Verbindung zu Datenbank herstellen
         Database database = createDatabase();
         try {
             // Die Liste aller Produkte aus der lokalen Datenbank auslesen
-            return Products.query(database, true);
+            return Products.query(database, true, order);
         } catch (Exception e) {
             // Fehler werden ignoriert
             return null;

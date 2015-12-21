@@ -15,9 +15,16 @@
         android:title="@string/action_sync" />
 
     <item
+        android:id="@+id/action_sortmarket"
+        android:icon="@drawable/ic_menu_paste_holo_dark"
+        android:orderInCategory="102"
+        android:showAsAction="never|withText"
+        android:title="@string/action_sortmarket" />
+
+    <item
         android:id="@+id/action_logon"
         android:icon="@drawable/ic_action_person"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:showAsAction="never|withText"
         android:title="@string/action_logon" />
 </menu>

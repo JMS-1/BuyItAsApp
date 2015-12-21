@@ -24,6 +24,7 @@
     <string name="action_new">Neu</string>
     <string name="action_sync">Abgleich</string>
     <string name="action_logon">Anmelden</string>
+    <string name="action_sortmarket">Gruppieren</string>
 
     <string name="product_prefix_market">%2$s: %1$s</string>
     <string name="product_suffix_bought">%1$s (bei %2$s)</string>
