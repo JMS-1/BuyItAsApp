@@ -45,7 +45,7 @@ class Products {
     private static final String BuyMarket = "market";
 
     // Die Sortierordnung bei der gruppierung nach dem Markt.
-    public static final String MarketOrder = BuyMarket + " COLLATE NOCASE," + Name;
+    public static final String MarketOrder = "ifnull(" + BuyMarket + ", '') COLLATE NOCASE," + Name + " COLLATE NOCASE";
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime};
