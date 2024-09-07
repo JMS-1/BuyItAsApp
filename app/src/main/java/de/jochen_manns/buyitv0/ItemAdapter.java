@@ -63,8 +63,8 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         JSONObject item = (JSONObject) getItem(position);
 
         // Jedes visuelle Element weiß, mit welchem Element es verbunden ist
-        textView.setTag(new Integer(position));
-        editView.setTag(new Integer(position));
+        textView.setTag(Integer.valueOf(position));
+        editView.setTag(Integer.valueOf(position));
 
         // Das Anhängen der Listener könnte man auch nur einmalig machen, aber schaden tut es kaum
         textView.setOnClickListener(this);

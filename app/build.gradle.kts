@@ -9,8 +9,8 @@ android {
     defaultConfig {
         applicationId = "de.jochen_manns.buyitv0"
         minSdk = 33
-        targetSdk = 33
-        versionCode = 5
+        targetSdk = 34
+        versionCode = 6
         versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -28,6 +28,16 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
+                output.outputFileName = "buyit.apk"
+            }
+        }
     }
 }
 
