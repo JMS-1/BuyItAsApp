@@ -88,21 +88,18 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Alle Aktionen werden über die ActionBar angestossen
-        switch (item.getItemId()) {
-            case R.id.action_synchronize:
-                onSynchronize();
-                return true;
+        int itemId = item.getItemId();
 
-            case R.id.action_logon:
-                onLogon();
-                return true;
+        if(itemId == R.id.action_synchronize)
+            onSynchronize();
+        else if(itemId == R.id.action_logon)
+            onLogon();
+        else if(itemId == R.id.action_sortmarket)
+            onGroupByMarket();
+        else
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_sortmarket:
-                onGroupByMarket();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void onGroupByMarket() {

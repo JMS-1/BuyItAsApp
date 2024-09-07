@@ -149,19 +149,17 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         // Das Erzeugen der Datenbankhilfsklasse ist unkritisch, solange wir keine Operationen ausführen
         Database database = Database.create(EditActivity.this);
         try {
-            switch (item.getItemId()) {
-                case R.id.action_save:
-                    // Anlegen oder Ändern
-                    updateItem(database, m_identifier);
-                    break;
-                case R.id.action_delete:
-                    // Entfernen
-                    deleteItem(database, m_identifier);
-                    break;
-                default:
-                    // Alles was wir nicht kennen
-                    return super.onOptionsItemSelected(item);
-            }
+            int itemId =item.getItemId();
+
+            if(itemId == R.id.action_save)
+                // Anlegen oder Ändern
+                updateItem(database, m_identifier);
+            else if (itemId == R.id.action_delete)
+                // Entfernen
+                deleteItem(database, m_identifier);
+            else
+                // Alles was wir nicht kennen
+                return super.onOptionsItemSelected(item);
         } finally {
             database.close();
         }

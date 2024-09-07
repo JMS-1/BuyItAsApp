@@ -116,11 +116,10 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_new:
-                // Nach Auswahl aus der ActionBar wird das Neuanlegen angestossen
-                startEdit(null);
-                return true;
+        if (item.getItemId() == R.id.action_new)  {
+            // Nach Auswahl aus der ActionBar wird das Neuanlegen angestossen
+            startEdit(null);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
