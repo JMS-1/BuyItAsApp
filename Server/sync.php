@@ -27,45 +27,53 @@
 	$con->autocommit(false);
 
 	// Alle Variablen, die wir in Bindungen verwenden, werden vorab definiert - das macht ein paar Abläufe einfacher
-	$description = null;
-	$marketname = null;
-	$priority = null;
-	$oldname = null;
-	$newname = null;
-	$created = null;
 	$bought = null;
-	$state = null;
-	$name = null;
+	$category = null;
+	$created = null;
+	$description = null;
+	$from = null;
 	$id = null;
+	$marketname = null;
+	$name = null;
+	$newname = null;
+	$oldname = null;
+	$permanent = null;
+	$priority = null;
+	$state = null;
+	$to = null;
 
-	// Die einzelnen Befehle zum Anlegen, Löschen, ändern und Auslesen werden vorbereitet
-	$insert = $con->prepare('INSERT INTO buyList (userid, item, description, added, bought, `where`, `priority`) VALUES(?, ?, ?, FROM_UNIXTIME(?), FROM_UNIXTIME(?), ?, ?)');
-	$insert->bind_param('sssiisi', $userid, $name, $description, $created, $bought, $marketname, $priority);
+	// Die einzelnen Befehle zum Anlegen, Löschen, Ändern und Auslesen werden vorbereitet
+	$insert = $con->prepare('INSERT INTO buyList (userid, item, description, added, bought, `where`, `priority`, `validFrom`, `validTo`, `category`, `permanent`) VALUES(?, ?, ?, FROM_UNIXTIME(?), FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)');
+	$insert->bind_param('sssiisisssi', $userid, $name, $description, $created, $bought, $marketname, $priority, $from, $to, $category, $permanent);
 
 	$delete = $con->prepare('DELETE FROM buyList WHERE userid = ? AND id = ?');
 	$delete->bind_param('si', $userid, $id);
-	
-	$update = $con->prepare('UPDATE buyList SET item = ?, description = ?, bought = FROM_UNIXTIME(?), `where` = ?, `priority` = ? WHERE userid = ? AND id = ? AND bought IS NULL');
-	$update->bind_param('ssisisi', $name, $description, $bought, $marketname, $priority, $userid, $id);
-	
+
+	$update = $con->prepare('UPDATE buyList SET item = ?, description = ?, bought = FROM_UNIXTIME(?), `where` = ?, `priority` = ?, `validFrom` = ?, `validTo` = ?, `category` = ?, `permanent` = ? WHERE userid = ? AND id = ? AND bought IS NULL');
+	$update->bind_param('ssisisssisi', $name, $description, $bought, $marketname, $priority, $from, $to, $category, $permanent, $userid, $id);
+
 	$updateOrder = $con->prepare('UPDATE buyList SET `priority` = ? WHERE userid = ? AND id = ? AND bought IS NULL');
 	$updateOrder->bind_param('isi', $priority, $userid, $id);
 
-	$query = $con->prepare('SELECT id, item, description, UNIX_TIMESTAMP(added), `where`, `priority` FROM buyList WHERE userid = ? AND (bought IS NULL OR `where` IS NULL) ORDER BY `priority`, id');
+	$query = $con->prepare('SELECT id, item, description, UNIX_TIMESTAMP(added), `where`, `priority`, `validFrom`, `validTo`, `category`, `permanent` FROM buyList WHERE userid = ? AND (bought IS NULL OR `where` IS NULL) ORDER BY `priority`, id');
 	$query->bind_param('s', $userid);
-	$query->bind_result($id, $name, $description, $created, $marketname, $priority);
+	$query->bind_result($id, $name, $description, $created, $marketname, $priority, $from, $to, $category, $permanent);
 
 	// Alle Offline veränderten Produkte werden untersucht
 	foreach($items as $item){
 		// Wir füllen alle potentiell verwendeten Bindingsvariablen - das macht den Programmcode etwas einfacher
+		$bought = $item['bought'];
+		$category = $item['category'];
 		$created = strtotime($item['created']);
 		$description = $item['description'];
-		$marketname = $item['market'];
-		$priority = $item['priority'];
-		$bought = $item['bought'];
-		$state = $item['state'];
-		$name = $item['name'];
+		$from = $item['from'];
 		$id = $item['id'];
+		$marketname = $item['market'];
+		$name = $item['name'];
+		$permanent = $item['permanent'];
+		$priority = $item['priority'];
+		$state = $item['state'];
+		$to = $item['to'];
 
 		// Ein JSON Datum wird hier in der internen Zahldarstellung verwendet, ist aber optional
 		if($bought != null)
@@ -77,7 +85,7 @@
 				$insert->execute();
 				break;
 			}
-			
+
 			case ItemState::Deleted:{
 				$delete->execute();
 				break;
@@ -129,7 +137,7 @@
 		$newname = $market['name'];
 		$isDeleted = $market['deleted'];
 
-		// Löschen oder ändern
+		// Löschen oder Ändern
 		if ($isDeleted)
 			$deleteMarket->execute();
 		else
@@ -153,14 +161,18 @@
 
 	while ($query->fetch()) {
 		// Einzelergebnis zusammenstellen
-		$resultItem['created'] = date('c', $created);
-		$resultItem['state'] = ItemState::Unchanged;
-		$resultItem['description'] = $description;
-		$resultItem['market'] = $marketname;
-		$resultItem['priority'] = $index++;
 		$resultItem['bought'] = null;
-		$resultItem['name'] = $name;
+		$resultItem['category'] = $category;
+		$resultItem['created'] = date('c', $created);
+		$resultItem['description'] = $description;
+		$resultItem['from'] = $from;
 		$resultItem['id'] = $id;
+		$resultItem['market'] = $marketname;
+		$resultItem['name'] = $name;
+		$resultItem['permanent'] = $permanent;
+		$resultItem['priority'] = $index++;
+		$resultItem['state'] = ItemState::Unchanged;
+		$resultItem['to'] = $to;
 
 		// Und im Gesamtergebnis sammeln
 		array_push($items, $resultItem);
@@ -174,9 +186,9 @@
 
 	while ($queryMarket->fetch()) {
 		// Einzelergebnis zusammenstellen
-		$resultMarket['originalName'] = $oldname;
-		$resultMarket['name'] = $oldname;
 		$resultMarket['deleted'] = false;
+		$resultMarket['name'] = $oldname;
+		$resultMarket['originalName'] = $oldname;
 
 		// Und im Gesamtergebnis sammeln
 		array_push($markets, $resultMarket);
