@@ -7,10 +7,14 @@ CREATE TABLE `buyList` (
  `where` varchar(40) CHARACTER SET latin1 COLLATE latin1_german2_ci DEFAULT NULL,
  `priority` int(11) NOT NULL,
  `added` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+ `validFrom` date DEFAULT NULL,
+ `validTo` date DEFAULT NULL,
+ `category` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+ `permanent` tinyint(1) DEFAULT NULL,
  PRIMARY KEY (`id`),
  KEY `userid` (`userid`),
  CONSTRAINT `buyList_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `buyUsers` (`userid`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6958 DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci
+) ENGINE=InnoDB AUTO_INCREMENT=6988 DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci
 
 CREATE TABLE `buyMarkets` (
  `userid` char(32) COLLATE latin1_german2_ci NOT NULL,
