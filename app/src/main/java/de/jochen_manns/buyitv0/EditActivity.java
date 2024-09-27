@@ -117,31 +117,21 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
             }
         });
 
-        // Der Abruf der Daten für den Vorgang erfolg asynchron
-        new AsyncTask<Void, Void, TProtocolType>() {
-            @Override
-            protected TProtocolType doInBackground(Void... params) {
+        // Der Abruf der Daten für den Vorgang erfolgt asynchron
+        new Thread(() -> {
+            runOnUiThread(()->{
                 // Zugriff auf die lokale Datenbank vorbereiten
                 Database database = Database.create(EditActivity.this);
                 try {
                     // Initialisierunginformationen abrufen
-                    return queryItem(database, m_identifier);
+                    initializeFromItem(queryItem(database, m_identifier));
                 } catch (Exception e) {
                     // Alle Fehler werden ignoriert
-                    return null;
                 } finally {
                     database.close();
                 }
-            }
-
-            @Override
-            protected void onPostExecute(TProtocolType item) {
-                super.onPostExecute(item);
-
-                // Initialisierung abschliessen
-                initializeFromItem(item);
-            }
-        }.execute();
+            });
+        }).start();
     }
 
     @Override
