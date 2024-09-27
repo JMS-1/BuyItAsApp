@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:scrollbars="vertical"
+    >
 
     <TextView
         style="@style/TextStyle"
@@ -47,11 +49,57 @@
         android:textOff="@string/switch_off"
         android:text="@string/editLabel_item_permanent" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/edit_product_from_label"
+            style="@style/TextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/editLabel_item_from" />
+
+        <EditText
+            android:id="@+id/edit_product_from"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            style="@style/TextStyle"
+            android:enabled="false"
+        />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/edit_product_to_label"
+            style="@style/TextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/editLabel_item_to" />
+
+        <EditText
+            android:id="@+id/edit_product_to"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            style="@style/TextStyle"
+            android:enabled="false"
+            />
+    </LinearLayout>
+
     <TextView
         style="@style/TextStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:text="@string/editLabel_item_description" />
 
     <EditText

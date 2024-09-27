@@ -3,4 +3,13 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"></style>
 
     <style name="TextStyle" parent="android:style/TextAppearance.Medium"></style>
+
+    <style name="DatePickerStyle" parent="android:Theme.Material.Dialog">
+        <item name="android:datePickerStyle">@style/DatePicker</item>
+    </style>
+
+    <style name="DatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">calendar</item>
+    </style>
+
 </resources>

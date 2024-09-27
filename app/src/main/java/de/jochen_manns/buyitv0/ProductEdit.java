@@ -1,9 +1,12 @@
 package de.jochen_manns.buyitv0;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -11,11 +14,17 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /*
     Die Aktivität zum Ändern der Daten eines existierenden Produktes respektive
     zum Anlegen eines neuen Produktes.
  */
 public class ProductEdit extends EditActivity<Long, JSONObject> {
+
+    private static final Pattern m_dateReg = Pattern.compile("^(\\d{4})-(\\d{1,2})-(\\d{1,2})$");
 
     // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
@@ -29,6 +38,12 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     // Umschalter für dauerhafte Einträge.
     private Switch m_permanent;
 
+    // Datum (einschließlich) von dem an der Eintrag relevant ist.
+    private EditText m_from;
+
+    // Datum (einschließlich) bis zu dem der Eintrag relevant ist.
+    private EditText m_to;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
@@ -37,6 +52,8 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         m_market = findViewById(R.id.edit_product_market);
         m_description = findViewById(R.id.edit_product_description);
         m_permanent = findViewById(R.id.edit_product_permanent);
+        m_from = findViewById(R.id.edit_product_from);
+        m_to = findViewById(R.id.edit_product_to);
 
         m_market.setText(R.string.editSelect_item_nomarket);
         m_market.setTag(null);
@@ -47,6 +64,59 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 Intent showSelector = new Intent(ProductEdit.this, MarketList.class);
                 showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
                 startActivityForResult(showSelector, RESULT_SELECT_MARKET);
+            }
+        });
+
+        AddDatePicker(R.id.edit_product_from_label, m_from);
+        AddDatePicker(R.id.edit_product_to_label, m_to);
+    }
+
+    private void AddDatePicker(int labelId, EditText edit) {
+        Context me = this;
+
+        TextView label = findViewById(labelId);
+
+        label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(me, R.style.DatePickerStyle);
+
+                datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString( R.string.datepicker_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatePicker picker = datePickerDialog.getDatePicker();
+
+                        edit.setText(MessageFormat.format(
+                                "{0,number,0000}-{1,number,00}-{2,number,00}",
+                                picker.getYear(),
+                                1 + picker.getMonth(),
+                                picker.getDayOfMonth()));
+                    }
+                });
+
+                datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString( R.string.datepicker_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        edit.setText(null);
+                    }
+                });
+
+                try {
+                    String date = edit.getText().toString();
+                    Matcher matcher = m_dateReg.matcher(date);
+
+                    if (matcher.find()) {
+                        int year = Integer.parseInt(matcher.group(1), 10);
+                        int month = Integer.parseInt(matcher.group(2), 10);
+                        int day = Integer.parseInt(matcher.group(3), 10);
+
+                        datePickerDialog.updateDate(year, month - 1, day);
+                    }
+                } catch (Exception e) {
+                    // Alle Fehler einfach ignorieren.
+                }
+
+                datePickerDialog.show();
             }
         });
     }
@@ -85,7 +155,10 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
             // Name und Beschreibung können direkt übernommen werden
             m_description.setText(Products.getDescription(item));
+            m_from.setText(Products.getFrom(item));
+            m_to.setText(Products.getTo(item));
             m_permanent.setChecked(Products.getPermanent(item));
+
             setName(Products.getName(item));
         } catch (Exception e) {
             // Fehler werden letztlich ignoriert
@@ -100,6 +173,8 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         String market = (String) m_market.getTag();
         String name = getName();
         Boolean permanent = m_permanent.isChecked();
+        String from = m_from.getText().toString();
+        String to = m_to.getText().toString();
 
         // Daten in die lokale Datenbank übertragen
         Products.update(
@@ -108,8 +183,8 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 name,
                 description.isEmpty() ? null : description,
                 market,
-                null,
-                null,
+                from,
+                to,
                 null,
                 permanent
         );

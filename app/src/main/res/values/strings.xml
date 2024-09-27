@@ -20,6 +20,9 @@
     <string name="switch_off">Nein</string>
     <string name="switch_on">Ja</string>
 
+    <string name="datepicker_cancel">Löschen</string>
+    <string name="datepicker_ok">Übernehmen</string>
+
     <string name="editLabel_market_name">Name des Marktes:</string>
 
     <string name="dialog_register_label">Anmeldeinformationen:</string>

@@ -347,6 +347,21 @@ class Products {
         return JsonTools.getStringFromJSON(item, Description);
     }
 
+    // Meldet den Startzeitpunkt eines Produktes.
+    public static String getFrom(JSONObject item) throws JSONException {
+        String from = JsonTools.getStringFromJSON(item, ValidFrom);
+
+        return from == null || from.isEmpty() ? null : from;
+    }
+
+    // Meldet den Endzeitpunkt eines Produktes.
+    public static String getTo(JSONObject item) throws JSONException {
+        String to = JsonTools.getStringFromJSON(item, ValidTo);
+
+        return to == null || to.isEmpty() ? null : to;
+    }
+
+    // Meldet, ob es sich um einen Dauereintrag handelt.
     public static Boolean getPermanent(JSONObject item) throws JSONException{
         return item.isNull(Permanent) ? false : item.getInt(Permanent) != 0;
     }
