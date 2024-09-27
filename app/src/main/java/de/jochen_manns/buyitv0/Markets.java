@@ -35,7 +35,12 @@ class Markets {
     private static final String Touched = "touched";
 
     // Der SQL Befehl zum Anlegen der Datenbanktabelle der Märkte.
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Name + " TEXT, " + OriginalName + " TEXT, " + Deleted + " INTEGER, " + Touched + " INTEGER)";
+    public static final String CreateSql =
+            "CREATE TABLE " + Table + "(" +
+                    Name + " TEXT, " +
+                    OriginalName + " TEXT, " +
+                    Deleted + " INTEGER, " +
+                    Touched + " INTEGER)";
 
     // Die für die Liste der Märkte benötigten Eigenschaften respektive Spalten eines Marktes.
     private final static String[] s_MarketListColumns = {Name, OriginalName};
@@ -78,11 +83,8 @@ class Markets {
 
     // Führt eine Suche über die Datenbanktabelle der Märkte aus.
     private static JSONObject[] query(Database database, String[] columns, String selection, String order) throws JSONException {
-        SQLiteDatabase db = database.getReadableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getReadableDatabase()) {
             return build(db.query(Table, columns, selection, null, null, null, order));
-        } finally {
-            db.close();
         }
     }
 
@@ -109,8 +111,7 @@ class Markets {
 
     // Aktualisiert die Daten eines Marktes oder legt einen neuen Markt an
     public static void update(Database database, String originalName, String name) {
-        SQLiteDatabase db = database.getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Auf jeden Fall wird der Name an die Datenbank übertragen
             ContentValues values = new ContentValues();
             values.put(Name, name);
@@ -125,25 +126,20 @@ class Markets {
                 db.insert(Table, null, values);
             } else {
                 // Das Aktualisieren ist hingegen unkritisch
-                db.update(Table, values, OriginalName + "=?", new String[] { originalName });
+                db.update(Table, values, OriginalName + "=?", new String[]{originalName});
             }
-        } finally {
-            db.close();
         }
     }
 
     // Entfernt einen Markt aus der Datenbank
     public static void delete(Database database, String originalName) {
-        SQLiteDatabase db = database.getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Lokal wird niemals wirklich gelöscht, sondern nur eine entsprechende Markierung gesetzt - nur der Web Service darf Märkte wirklich löschen
             ContentValues values = new ContentValues();
             values.put(Touched, 1);
             values.put(Deleted, 1);
 
             db.update(Table, values, OriginalName + "=?", new String[]{originalName});
-        } finally {
-            db.close();
         }
     }
 

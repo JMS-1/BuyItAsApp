@@ -59,8 +59,34 @@ class Products {
     // Der Name der Spalte mit der ursprünglichen Wichtigkeit eines Produktes.
     private static final String OriginalOrder = "originalPriority";
 
+    // Der Name der Spalte (und JSON Eigenschaft) mit der Anfangsdatum.
+    private static final String ValidFrom = "from";
+
+    // Der Name der Spalte (und JSON Eigenschaft) mit der Endsdatum.
+    private static final String ValidTo = "to";
+
+    // Der Name der Spalte (und JSON Eigenschaft) mit der Kennzeichnung dauerhafter Einträge.
+    private static final String Permanent = "permanent";
+
+    // Der Name der Spalte (und JSON Eigenschaft) mit der Kategorie.
+    private static final String Category = "category";
+
     // Der SQL Befehl zum Anlegen der Produkttabelle.
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Identifier + " INTEGER, " + State + " INTEGER, " + Name + " TEXT, " + Description + " TEXT, " + CreateTime + " TEXT, " + BuyTime + " TEXT, " + BuyMarket + " TEXT, " + Order + " INTEGER, " + OriginalOrder + " INTEGER)";
+    public static final String CreateSql =
+            "CREATE TABLE " + Table + "(" +
+                    Identifier + " INTEGER, " +
+                    State + " INTEGER, " +
+                    Name + " TEXT, " +
+                    Description + " TEXT, " +
+                    CreateTime + " TEXT, " +
+                    BuyTime + " TEXT, " +
+                    BuyMarket + " TEXT, " +
+                    "\"" + ValidFrom + "\" TEXT, " +
+                    "\"" + ValidTo + "\" TEXT, " +
+                    Permanent + " INTEGER, " +
+                    Category + " TEXT, " +
+                    Order + " INTEGER, " +
+                    OriginalOrder + " INTEGER)";
 
     // Wertet eine Abfrage an die Produkttabelle aus.
     private static JSONObject[] build(Cursor query) throws JSONException {
@@ -68,15 +94,19 @@ class Products {
             JSONObject[] items = new JSONObject[query.getCount()];
             if (items.length > 0) {
                 // Die laufenden Nummern der Spalten ermitteln - im Allgemeinen werden nicht immer alle Spalten abgerufen
-                int originalOrderColumn = query.getColumnIndex(OriginalOrder);
-                int descriptionColumn = query.getColumnIndex(Description);
-                int createColumn = query.getColumnIndex(CreateTime);
-                int marketColumn = query.getColumnIndex(BuyMarket);
-                int idColumn = query.getColumnIndex(Identifier);
                 int buyColumn = query.getColumnIndex(BuyTime);
-                int orderColumn = query.getColumnIndex(Order);
-                int stateColumn = query.getColumnIndex(State);
+                int categoryColumn = query.getColumnIndex(Category);
+                int createColumn = query.getColumnIndex(CreateTime);
+                int descriptionColumn = query.getColumnIndex(Description);
+                int fromColumn = query.getColumnIndex(ValidFrom);
+                int idColumn = query.getColumnIndex(Identifier);
+                int marketColumn = query.getColumnIndex(BuyMarket);
                 int nameColumn = query.getColumnIndex(Name);
+                int orderColumn = query.getColumnIndex(Order);
+                int originalOrderColumn = query.getColumnIndex(OriginalOrder);
+                int permanentColumn = query.getColumnIndex(Permanent);
+                int stateColumn = query.getColumnIndex(State);
+                int toColumn = query.getColumnIndex(ValidTo);
 
                 for (int i = 0; i < items.length; i++) {
                     query.moveToNext();
@@ -101,6 +131,14 @@ class Products {
                         item.put(State, query.getInt(stateColumn));
                     if (nameColumn >= 0)
                         item.put(Name, query.getString(nameColumn));
+                    if (fromColumn >= 0)
+                        item.put(ValidFrom, query.getString(fromColumn));
+                    if (toColumn >= 0)
+                        item.put(ValidTo, query.getString(toColumn));
+                    if (categoryColumn >= 0)
+                        item.put(Category, query.getString(categoryColumn));
+                    if (permanentColumn >= 0)
+                        item.put(Permanent, query.getInt(permanentColumn));
 
                     items[i] = item;
                 }
@@ -114,12 +152,9 @@ class Products {
 
     // Führt eine Sucht auf der Produkttabelle aus.
     private static JSONObject[] query(Database database, String[] columns, String filter, String[] filterArgs, String order) throws JSONException {
-        SQLiteDatabase db = database.getReadableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getReadableDatabase()) {
             // Abruf der Datensätze und Umwandeln in eine JSON Repräsentation
             return build(db.query(Table, columns, filter, filterArgs, null, null, order));
-        } finally {
-            db.close();
         }
     }
 
@@ -180,13 +215,16 @@ class Products {
 
     // Ändert die Daten eines existierenden Produktes in der lokalen Datenbank - oder legt lokal ein neues Produkt an.
     public static void update(Database database, Long identifier, String name, String description, String market) {
-        SQLiteDatabase db = database.getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Die Eckdaten des Produktes, die verändert werden können
             ContentValues values = new ContentValues();
-            values.put(Name, name);
-            values.put(Description, description);
             values.put(BuyMarket, market);
+            values.put(Category, (String) null);
+            values.put(Description, description);
+            values.put(Name, name);
+            values.put(Permanent, (Integer) null);
+            values.put("\"" + ValidFrom + "\"", (String) null);
+            values.put("\"" + ValidTo + "\"", (String) null);
 
             if (identifier == null) {
                 // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
@@ -195,8 +233,7 @@ class Products {
                 values.put(OriginalOrder, -1);
 
                 // Bei neuen Produken müssen wir noch eine neue eindeutige Identifikation und eine Wichtigket ermitteln
-                Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null);
-                try {
+                try (Cursor findMax = db.query(Table, s_ItemLimitColumns, null, null, null, null, null)) {
                     if (findMax.moveToNext() && (findMax.getLong(0) > 0)) {
                         // Es gibt mindestens ein anders Produkt und wir ordnen uns dahinter an
                         values.put(Order, findMax.getInt(2) + 1);
@@ -208,8 +245,6 @@ class Products {
                         values.put(Order, 0);
                         values.put(Identifier, -1);
                     }
-                } finally {
-                    findMax.close();
                 }
 
                 // Legt das Produkt neu an
@@ -221,45 +256,37 @@ class Products {
                 // Lokale Datenbank geeignet aktualisieren
                 db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
             }
-        } finally {
-            db.close();
         }
     }
 
     // Ein Produkt wird als eingekauft markiert.
     public static void buy(Database database, Long identifier, String market) {
-        SQLiteDatabase db = database.getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Ähnlich wie bei der allgemeinen Änderung eines existierenden Produktes, nur werden hier weniger Informationen verändert
             ContentValues values = new ContentValues();
             values.put(State, ((identifier >= 0) ? ProductStates.Modified : ProductStates.NewlyCreated).ordinal());
             values.put(BuyMarket, market);
 
             // Die Zeit des Einkaufs muss nun allerdings korrekt eingepflegt werden
-            if ((market == null) || (market.length() < 1))
+            if ((market == null) || market.isEmpty())
                 values.put(BuyTime, (String) null);
             else
                 values.put(BuyTime, JsonTools.dateToISOString(Calendar.getInstance().getTime()));
 
             // Die lokalen Datenbank wird schließlich aktualisiert
             db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
-        } finally {
-            db.close();
         }
     }
 
     // Markiert ein existierendes Produkt als gelöscht.
     public static void delete(Database database, long identifier) {
-        SQLiteDatabase db = database.getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Hier setzen wir einfach die Markierung - auch für lokal neu angelegte Produkte, der Web Service ist darauf entsprechend vorbereitet
             ContentValues values = new ContentValues();
             values.put(State, ProductStates.Deleted.ordinal());
 
             // Markierung in der lokalen Datenbank einstellen
             db.update(Table, values, Identifier + "=?", new String[]{Long.toString(identifier)});
-        } finally {
-            db.close();
         }
     }
 
@@ -278,15 +305,20 @@ class Products {
 
             // In der aktuellen Implementierung werden die JSON Eigenschaften einfach als Spalten übernommen
             ContentValues values = new ContentValues();
-            values.put(Identifier, item.getInt(Identifier));
-            values.put(State, item.getInt(State));
-            values.put(Name, JsonTools.getStringFromJSON(item, Name));
-            values.put(Description, JsonTools.getStringFromJSON(item, Description));
-            values.put(CreateTime, JsonTools.getStringFromJSON(item, CreateTime));
-            values.put(BuyTime, JsonTools.getStringFromJSON(item, BuyTime));
             values.put(BuyMarket, JsonTools.getStringFromJSON(item, BuyMarket));
-            values.put(OriginalOrder, item.getInt(Order));
+            values.put(BuyTime, JsonTools.getStringFromJSON(item, BuyTime));
+            values.put(Category, JsonTools.getStringFromJSON(item, Category));
+            values.put(CreateTime, JsonTools.getStringFromJSON(item, CreateTime));
+            values.put(Description, JsonTools.getStringFromJSON(item, Description));
+            values.put(Identifier, item.getInt(Identifier));
+            values.put(Name, JsonTools.getStringFromJSON(item, Name));
             values.put(Order, item.getInt(Order));
+            values.put(OriginalOrder, item.getInt(Order));
+            values.put(OriginalOrder, item.getInt(Order));
+            values.put(Permanent, item.isNull(Permanent) ? null : item.getInt(Permanent));
+            values.put(State, item.getInt(State));
+            values.put("\"" + ValidFrom + "\"", JsonTools.getStringFromJSON(item, ValidFrom));
+            values.put("\"" + ValidTo + "\"", JsonTools.getStringFromJSON(item, ValidTo));
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
             database.insert(Table, null, values);
@@ -307,7 +339,7 @@ class Products {
     public static boolean isBought(JSONObject item) throws JSONException {
         String time = JsonTools.getStringFromJSON(item, BuyTime);
 
-        return ((time != null) && (time.length() > 0));
+        return ((time != null) && !time.isEmpty());
     }
 
     // Meldet die Beschreibung eines Produktes.

@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 class Database extends SQLiteOpenHelper {
     // Die aktuelle Version des Datenbank Schemas.
-    private static final int Sql_Version = 10;
+    private static final int Sql_Version = 11;
 
     // Der Name, unter dem die Datenbank lokal gespeichert wird.
     private static final String Sql_Database = "BuyIt.db";
@@ -63,9 +63,9 @@ class Database extends SQLiteOpenHelper {
     // Entfernt alle Inhalte aus der Datenbank.
     public void reset() {
         // Hier brauchen wir nun wirklich eine Transaktion, um alle Tabellen konsistent zu leeren
-        SQLiteDatabase db = getWritableDatabase();
-        try {
+        try (SQLiteDatabase db = getWritableDatabase()) {
             db.beginTransaction();
+
             try {
                 reset(db);
 
@@ -73,8 +73,6 @@ class Database extends SQLiteOpenHelper {
             } finally {
                 db.endTransaction();
             }
-        } finally {
-            db.close();
         }
     }
 }
