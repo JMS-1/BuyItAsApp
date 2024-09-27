@@ -16,6 +16,7 @@ class Markets {
     private static final String Table = "markets";
 
     // Der SQL Befehl zum Entfernen der Datenbanktabelle der Märkte.
+    // Der SQL Befehl zum Entfernen der Datenbanktabelle der Märkte.
     public static final String DropSql = "DROP TABLE IF EXISTS " + Table;
 
     // Der SQL Befehl zum Entfernen aller Märke aus der Datenbank.
@@ -30,8 +31,11 @@ class Markets {
     // Der Name der Spalte (und der JSON Eigenschaft) mit dem Online bekannten Namen eines Marktes.
     private static final String OriginalName = "originalName";
 
+    // Der Name mit der Spalte (und der JSON Eigenschaft) mit der das Hinzufügen oder Ändern eines Markts gekennzeichnet wird.
+    private static final String Touched = "touched";
+
     // Der SQL Befehl zum Anlegen der Datenbanktabelle der Märkte.
-    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Name + " TEXT, " + OriginalName + " TEXT, " + Deleted + " INTEGER)";
+    public static final String CreateSql = "CREATE TABLE " + Table + "(" + Name + " TEXT, " + OriginalName + " TEXT, " + Deleted + " INTEGER, " + Touched + " INTEGER)";
 
     // Die für die Liste der Märkte benötigten Eigenschaften respektive Spalten eines Marktes.
     private final static String[] s_MarketListColumns = {Name, OriginalName};
@@ -46,6 +50,7 @@ class Markets {
                 int nameColumn = query.getColumnIndex(Name);
                 int originalNameColumn = query.getColumnIndex(OriginalName);
                 int deleteColumn = query.getColumnIndex(Deleted);
+                int touchColumn = query.getColumnIndex(Touched);
 
                 for (int i = 0; i < markets.length; i++) {
                     query.moveToNext();
@@ -58,6 +63,8 @@ class Markets {
                         market.put(OriginalName, query.getString(originalNameColumn));
                     if (deleteColumn >= 0)
                         market.put(Deleted, query.getInt(deleteColumn) != 0);
+                    if (touchColumn >= 0)
+                        market.put(Touched, query.getInt(touchColumn) != 0);
 
                     markets[i] = market;
                 }
@@ -84,7 +91,7 @@ class Markets {
         JSONArray markets = new JSONArray();
 
         // In diesem Fall fordern wir alle Spalten (JSON Eigenschaften) aus der Datenbanktabelle an
-        for (JSONObject market : build(database.query(Table, null, null, null, null, null, null)))
+        for (JSONObject market : build(database.query(Table, null, Touched + "=1", null, null, null, null)))
             markets.put(market);
 
         return markets;
@@ -107,6 +114,7 @@ class Markets {
             // Auf jeden Fall wird der Name an die Datenbank übertragen
             ContentValues values = new ContentValues();
             values.put(Name, name);
+            values.put(Touched, 1);
 
             // Je nach Exisitenz des Marktes müssen wir aber nun unterschiedlich agieren
             if (originalName == null) {
@@ -117,12 +125,11 @@ class Markets {
                 db.insert(Table, null, values);
             } else {
                 // Das Aktualisieren ist hingegen unkritisch
-                db.update(Table, values, OriginalName + "=?", new String[]{originalName});
+                db.update(Table, values, OriginalName + "=?", new String[] { originalName });
             }
         } finally {
             db.close();
         }
-
     }
 
     // Entfernt einen Markt aus der Datenbank
@@ -131,6 +138,7 @@ class Markets {
         try {
             // Lokal wird niemals wirklich gelöscht, sondern nur eine entsprechende Markierung gesetzt - nur der Web Service darf Märkte wirklich löschen
             ContentValues values = new ContentValues();
+            values.put(Touched, 1);
             values.put(Deleted, 1);
 
             db.update(Table, values, OriginalName + "=?", new String[]{originalName});
@@ -148,7 +156,8 @@ class Markets {
             ContentValues values = new ContentValues();
             values.put(Name, JsonTools.getStringFromJSON(market, Name));
             values.put(OriginalName, JsonTools.getStringFromJSON(market, OriginalName));
-            values.put(Deleted, market.getBoolean(Deleted) ? 1 : 0);
+            values.put(Touched, 0);
+            values.put(Deleted, 0);
 
             database.insert(Table, null, values);
         }
