@@ -12,6 +12,13 @@
     <string name="editLabel_item_product">Produkt:</string>
     <string name="editLabel_item_market">Markt:</string>
     <string name="editLabel_item_description">Beschreibung:</string>
+    <string name="editLabel_item_permanent">Dauereintrag</string>
+    <string name="editLabel_item_from">Von:</string>
+    <string name="editLabel_item_to">Bis:</string>
+    <string name="editLabel_item_category">Gruppe:</string>
+
+    <string name="switch_off">Nein</string>
+    <string name="switch_on">Ja</string>
 
     <string name="editLabel_market_name">Name des Marktes:</string>
 

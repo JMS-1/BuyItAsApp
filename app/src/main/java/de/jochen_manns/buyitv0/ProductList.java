@@ -261,11 +261,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                     m_market = data.getStringExtra(MarketList.EXTRA_MARKET_NAME);
 
                     // Nun wird das Produkt in der lokalen Datenbank entsprechend aktulaisiert
-                    Database database = Database.create(this);
-                    try {
+                    try (Database database = Database.create(this)) {
                         Products.buy(database, id, m_market);
-                    } finally {
-                        database.close();
                     }
 
                     // In den meisten Fällen muss die Anzeige aktualisiert werden - TODO: das geht sicher auch eleganter, da ja (aus Sicht des Anwenders) nur die Anzeige eines Produkt verändert wurde
@@ -294,10 +291,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         super.onSwapWithNext(leftPosition);
 
         // Wir nummerieren einmal ganz durch
-        Database database = Database.create(this);
-        try {
-            SQLiteDatabase db = database.getWritableDatabase();
-            try {
+        try (Database database = Database.create(this)) {
+            try (SQLiteDatabase db = database.getWritableDatabase()) {
                 db.beginTransaction();
                 try {
                     ProductAdapter adapter = getListAdapter();
@@ -320,13 +315,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                 } finally {
                     db.endTransaction();
                 }
-            } finally {
-                db.close();
             }
         } catch (Exception e) {
             // Im Moment werden alle Fehler einfach ignoriert
-        } finally {
-            database.close();
         }
 
         // Und danach wird die Anzeige neu aufgebaut

@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -36,11 +37,21 @@
         android:background="@android:drawable/dialog_holo_light_frame"
         android:padding="20dp" />
 
-    <TextView
+    <Switch
+        android:id="@+id/edit_product_permanent"
         style="@style/TextStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:textOn="@string/switch_on"
+        android:textOff="@string/switch_off"
+        android:text="@string/editLabel_item_permanent" />
+
+    <TextView
+        style="@style/TextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:text="@string/editLabel_item_description" />
 
     <EditText

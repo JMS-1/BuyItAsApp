@@ -214,17 +214,17 @@ class Products {
     }
 
     // Ändert die Daten eines existierenden Produktes in der lokalen Datenbank - oder legt lokal ein neues Produkt an.
-    public static void update(Database database, Long identifier, String name, String description, String market) {
+    public static void update(Database database, Long identifier, String name, String description, String market, String from, String to, String category, Boolean permanant) {
         try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Die Eckdaten des Produktes, die verändert werden können
             ContentValues values = new ContentValues();
             values.put(BuyMarket, market);
-            values.put(Category, (String) null);
+            values.put(Category, category);
             values.put(Description, description);
             values.put(Name, name);
-            values.put(Permanent, (Integer) null);
-            values.put("\"" + ValidFrom + "\"", (String) null);
-            values.put("\"" + ValidTo + "\"", (String) null);
+            values.put(Permanent, permanant ? 1 : 0);
+            values.put("\"" + ValidFrom + "\"", from);
+            values.put("\"" + ValidTo + "\"", to);
 
             if (identifier == null) {
                 // Erst einmal kennzeichnen wird das Produkt als ein neues Produkt
@@ -345,6 +345,10 @@ class Products {
     // Meldet die Beschreibung eines Produktes.
     public static String getDescription(JSONObject item) throws JSONException {
         return JsonTools.getStringFromJSON(item, Description);
+    }
+
+    public static Boolean getPermanent(JSONObject item) throws JSONException{
+        return item.isNull(Permanent) ? false : item.getInt(Permanent) != 0;
     }
 
     // Meldet die eindeutige Identifikation eines Produktes.
