@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId = "de.jochen_manns.buyitv0"
-        minSdk = 33
+        minSdk = 29
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.4"
+        versionCode = 7
+        versionName = "1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
