@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 
 /*
     Verwaltet die Liste aller Produkte.
@@ -51,9 +50,9 @@ class ProductAdapter extends ItemAdapter {
         text.setTypeface(null, Products.getPermanent(product) ? Typeface.ITALIC : Typeface.NORMAL);
 
         // Abgelaufene Einträge markieren
-        LocalDate to = Products.parseFromTo(Products.getTo(product));
+        DateOnly to = DateOnly.parse(Products.getTo(product));
 
-        text.setTextColor(to == null || !to.isBefore(LocalDate.now()) ? Color.BLACK : Color.RED);
+        text.setTextColor(to == null || !to.isPast() ? Color.BLACK : Color.RED);
 
         // Produkte können immer verändert werden
         return true;
@@ -61,11 +60,11 @@ class ProductAdapter extends ItemAdapter {
 
     @Override
     protected String getPrefixText(JSONObject item) throws JSONException {
-        LocalDate from = Products.parseFromTo(Products.getFrom(item));
+        DateOnly from = DateOnly.parse(Products.getFrom(item));
 
-        if (from == null || !from.isAfter(LocalDate.now())) return "";
+        if (from == null || !from.isFuture()) return "";
 
-        return MessageFormat.format("{0,number,00}. ", from.getDayOfMonth());
+        return MessageFormat.format("{0,number,00}. ", from.getDay());
     }
 
     @Override

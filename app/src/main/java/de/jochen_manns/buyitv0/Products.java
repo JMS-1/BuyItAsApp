@@ -18,9 +18,6 @@ import java.time.LocalDate;
     Mit den Methoden dieser Hilfsklasse erfolgt die Pflege der Produkte in der lokalen Datenbank.
  */
 class Products {
-    // Regulärer Ausdruck für die Erkennung von Datumswerten.
-    public static final Pattern FromToDateRegEx = Pattern.compile("^(\\d{4})-(\\d{1,2})-(\\d{1,2})$");
-
     // Der Name der Tabelle mit den Produkten.
     private static final String Table = "items";
 
@@ -380,19 +377,5 @@ class Products {
     // Meldet die eindeutige Identifikation eines Produktes.
     public static int getIdentifier(JSONObject item) throws JSONException {
         return item.getInt(Identifier);
-    }
-
-    public static LocalDate parseFromTo(String value) {
-        if (value == null || value.isEmpty()) return null;
-
-        Matcher matcher = Products.FromToDateRegEx.matcher(value);
-
-        if (!matcher.find()) return null;
-
-        int year = Integer.parseInt(matcher.group(1), 10);
-        int month = Integer.parseInt(matcher.group(2), 10);
-        int dayOfMonth = Integer.parseInt(matcher.group(3), 10);
-
-        return LocalDate.of(year, month, dayOfMonth);
     }
 }

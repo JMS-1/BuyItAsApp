@@ -90,20 +90,16 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
             datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.datepicker_ok), (dialog, which) -> {
                 DatePicker picker = datePickerDialog.getDatePicker();
 
-                edit.setText(MessageFormat.format(
-                        "{0,number,0000}-{1,number,00}-{2,number,00}",
-                        picker.getYear(),
-                        1 + picker.getMonth(),
-                        picker.getDayOfMonth()));
+                edit.setText(DateOnly.format(picker.getYear(), 1 + picker.getMonth(), picker.getDayOfMonth()));
             });
 
             datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.datepicker_cancel), (dialog, which) -> edit.setText(null));
 
             try {
-                LocalDate date = Products.parseFromTo(edit.getText().toString());
+                DateOnly date = DateOnly.parse(edit.getText().toString());
 
                 if (date != null) {
-                    datePickerDialog.updateDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
+                    datePickerDialog.updateDate(date.getYear(), date.getMonth() - 1, date.getDay());
                 }
             } catch (Exception e) {
                 // Alle Fehler einfach ignorieren.
