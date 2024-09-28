@@ -1,11 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp"
-    android:scrollbars="vertical"
-    >
+    android:scrollbars="vertical">
 
     <TextView
         style="@style/TextStyle"
@@ -43,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp" >
+        android:layout_marginTop="10dp">
 
         <TextView
             style="@style/TextStyle"
@@ -83,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp" >
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/edit_product_from_label"
@@ -99,15 +97,14 @@
             android:layout_marginLeft="10dp"
             android:textAlignment="center"
             style="@style/TextStyle"
-            android:enabled="false"
-        />
+            android:enabled="false" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp" >
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/edit_product_to_label"
@@ -123,8 +120,7 @@
             android:layout_marginLeft="10dp"
             android:textAlignment="center"
             style="@style/TextStyle"
-            android:enabled="false"
-            />
+            android:enabled="false" />
     </LinearLayout>
 
     <TextView

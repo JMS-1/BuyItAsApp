@@ -2,7 +2,6 @@ package de.jochen_manns.buyitv0;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,7 +115,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_new)  {
+        if (item.getItemId() == R.id.action_new) {
             // Nach Auswahl aus der ActionBar wird das Neuanlegen angestossen
             startEdit(null);
             return true;

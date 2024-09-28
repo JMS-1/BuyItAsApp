@@ -13,18 +13,12 @@ public abstract class BackgroundTask<TResult> {
 
     // Start processing in background using a separate thread.
     public void execute() {
-        new Thread(new Runnable() {
-            public void run() {
-                // Calculate result in separate thread.
-                TResult result = doInBackground();
+        new Thread(() -> {
+            // Calculate result in separate thread.
+            TResult result = doInBackground();
 
-                // But process on the UI thread.
-                Context.runOnUiThread(new Runnable() {
-                    public void run() {
-                        onPostExecute(result);
-                    }
-                });
-            }
+            // But process on the UI thread.
+            Context.runOnUiThread(() -> onPostExecute(result));
         }).start();
     }
 

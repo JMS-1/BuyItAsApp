@@ -19,8 +19,6 @@ import org.json.JSONObject;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /*
     Die Aktivität zum Ändern der Daten eines existierenden Produktes respektive
@@ -64,14 +62,11 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
         m_market.setText(R.string.editSelect_item_nomarket);
         m_market.setTag(null);
-        m_market.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
-                Intent showSelector = new Intent(ProductEdit.this, MarketList.class);
-                showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
-                startActivityForResult(showSelector, RESULT_SELECT_MARKET);
-            }
+        m_market.setOnClickListener(v -> {
+            // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
+            Intent showSelector = new Intent(ProductEdit.this, MarketList.class);
+            showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
+            startActivityForResult(showSelector, RESULT_SELECT_MARKET);
         });
 
         Configuration configuration = getResources().getConfiguration();
@@ -89,43 +84,32 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
         TextView label = findViewById(labelId);
 
-        label.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(me, R.style.DatePickerStyle);
+        label.setOnClickListener(v -> {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(me, R.style.DatePickerStyle);
 
-                datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.datepicker_ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatePicker picker = datePickerDialog.getDatePicker();
+            datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.datepicker_ok), (dialog, which) -> {
+                DatePicker picker = datePickerDialog.getDatePicker();
 
-                        edit.setText(MessageFormat.format(
-                                "{0,number,0000}-{1,number,00}-{2,number,00}",
-                                picker.getYear(),
-                                1 + picker.getMonth(),
-                                picker.getDayOfMonth()));
-                    }
-                });
+                edit.setText(MessageFormat.format(
+                        "{0,number,0000}-{1,number,00}-{2,number,00}",
+                        picker.getYear(),
+                        1 + picker.getMonth(),
+                        picker.getDayOfMonth()));
+            });
 
-                datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.datepicker_cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        edit.setText(null);
-                    }
-                });
+            datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.datepicker_cancel), (dialog, which) -> edit.setText(null));
 
-                try {
-                    LocalDate date = Products.parseFromTo(edit.getText().toString());
+            try {
+                LocalDate date = Products.parseFromTo(edit.getText().toString());
 
-                    if (date != null) {
-                        datePickerDialog.updateDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
-                    }
-                } catch (Exception e) {
-                    // Alle Fehler einfach ignorieren.
+                if (date != null) {
+                    datePickerDialog.updateDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
                 }
-
-                datePickerDialog.show();
+            } catch (Exception e) {
+                // Alle Fehler einfach ignorieren.
             }
+
+            datePickerDialog.show();
         });
     }
 

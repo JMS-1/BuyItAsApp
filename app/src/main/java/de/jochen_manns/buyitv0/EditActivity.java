@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -80,7 +79,7 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         setContentView(layout);
 
         // Das Eingabefeld mit dem Namen der Enttität
-        m_name = (EditText) findViewById(R.id.edit_name);
+        m_name = findViewById(R.id.edit_name);
 
         // Ein Aufruf der Aktivität ist nur (intern) über einen Intent möglich
         Intent startInfo = getIntent();
@@ -118,17 +117,15 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         });
 
         // Der Abruf der Daten für den Vorgang erfolgt asynchron
-        new Thread(() -> {
-            runOnUiThread(() -> {
-                // Zugriff auf die lokale Datenbank vorbereiten
-                try (Database database = Database.create(EditActivity.this)) {
-                    // Initialisierunginformationen abrufen
-                    initializeFromItem(queryItem(database, m_identifier));
-                } catch (Exception e) {
-                    // Alle Fehler werden ignoriert
-                }
-            });
-        }).start();
+        new Thread(() -> runOnUiThread(() -> {
+            // Zugriff auf die lokale Datenbank vorbereiten
+            try (Database database = Database.create(EditActivity.this)) {
+                // Initialisierunginformationen abrufen
+                initializeFromItem(queryItem(database, m_identifier));
+            } catch (Exception e) {
+                // Alle Fehler werden ignoriert
+            }
+        })).start();
     }
 
     @Override

@@ -374,7 +374,7 @@ class Products {
 
     // Meldet, ob es sich um einen Dauereintrag handelt.
     public static boolean getPermanent(JSONObject item) throws JSONException {
-        return item.isNull(Permanent) ? false : item.getInt(Permanent) != 0;
+        return !item.isNull(Permanent) && item.getInt(Permanent) != 0;
     }
 
     // Meldet die eindeutige Identifikation eines Produktes.

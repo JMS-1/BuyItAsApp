@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,10 +47,6 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         return "";
     }
 
-    protected boolean canClick(JSONObject item) throws JSONException {
-        return false;
-    }
-
     // Meldet die Aktivität, in der die Liste der Elemente tatsächlich angezeigt wird..
     protected ListActivity<?, ?, ?> getContext() {
         return (ListActivity<?, ?, ?>) m_inflater.getContext();
@@ -60,6 +57,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         return Database.create(getContext());
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Wird ein neuer View benötigt, so erzeugen wir diesen hier - bei einer Wiederverwendung müssen wir nur initialisieren
@@ -73,9 +71,9 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         JSONObject item = (JSONObject) getItem(position);
 
         // Jedes visuelle Element weiß, mit welchem Element es verbunden ist
-        fromView.setTag(Integer.valueOf(position));
-        textView.setTag(Integer.valueOf(position));
-        editView.setTag(Integer.valueOf(position));
+        fromView.setTag(position);
+        textView.setTag(position);
+        editView.setTag(position);
 
         // Das Anhängen der Listener könnte man auch nur einmalig machen, aber schaden tut es kaum
         textView.setOnClickListener(this);

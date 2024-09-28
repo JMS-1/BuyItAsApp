@@ -1,8 +1,6 @@
 package de.jochen_manns.buyitv0;
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /*
@@ -40,7 +39,7 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
             throw new NullPointerException("stream");
 
         // Wir sammeln erst einmal alle Häppchen
-        ArrayList<byte[]> response = new ArrayList<byte[]>();
+        ArrayList<byte[]> response = new ArrayList<>();
         int total = 0;
 
         for (; ; ) {
@@ -77,7 +76,7 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
         }
 
         // Und das Ganze als Zeichenkette - da wir den Web Service kennen verlassen wir uns einfach einmal darauf, dass die Antwort als UTF-8 codierte Zeichenkette gemeldet wird
-        return new String(all, "UTF-8");
+        return new String(all, StandardCharsets.UTF_8);
     }
 
     // Bereitet die Aufrufdaten vor.
@@ -113,7 +112,7 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
 
                 // Aufrufdaten übertragen
                 try (OutputStream out = conn.getOutputStream()) {
-                    out.write(postData.toString().getBytes("UTF-8"));
+                    out.write(postData.toString().getBytes(StandardCharsets.UTF_8));
                 }
 
                 // Aufruf an den Web Service durchführen

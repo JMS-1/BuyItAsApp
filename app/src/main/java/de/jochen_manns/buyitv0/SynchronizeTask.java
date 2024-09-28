@@ -1,7 +1,6 @@
 package de.jochen_manns.buyitv0;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.json.JSONException;

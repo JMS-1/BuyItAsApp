@@ -41,7 +41,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     @Override
     protected Long getIdentifier(JSONObject item) throws JSONException {
         // Einfach die Kennung aus der Datenbank auslesen
-        return new Long(Products.getIdentifier(item));
+        return Long.valueOf(Products.getIdentifier(item));
     }
 
     @Override
@@ -58,12 +58,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         // Wenn der Anwender sich neu anmeldet, dann müssen wir alle Daten neu anfordern
         getSharedPreferences(User.PREFERENCES_NAME, 0)
                 .registerOnSharedPreferenceChangeListener(
-                        new SharedPreferences.OnSharedPreferenceChangeListener() {
-                            @Override
-                            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                                updateUser();
-                            }
-                        });
+                        (sharedPreferences, key) -> updateUser());
 
         // Listenverwaltung einrichten
         setListAdapter(new ProductAdapter(this));
@@ -185,7 +180,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
         // Ansonsten erscheint der Anmeldedialog immer mit der aktuellen Registrierung im Eingabefeld
         AlertDialog alert = (AlertDialog) dialog;
-        EditText userid = (EditText) alert.findViewById(R.id.dialog_register_userid);
+        EditText userid = alert.findViewById(R.id.dialog_register_userid);
 
         userid.setText(user.Identifier);
     }
@@ -198,18 +193,15 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                         // Wir verwenden eine eigene Gestaltung des Anmeldedialogs
                         new AlertDialog.Builder(this)
                                 .setView(getLayoutInflater().inflate(R.layout.dialog_register_user, null))
-                                .setPositiveButton(R.string.button_register, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Eingabe des Anwenders auslesen
-                                        AlertDialog alert = (AlertDialog) dialog;
-                                        EditText key = (EditText) alert.findViewById(R.id.dialog_register_userid);
+                                .setPositiveButton(R.string.button_register, (dialog, which) -> {
+                                    // Eingabe des Anwenders auslesen
+                                    AlertDialog alert = (AlertDialog) dialog;
+                                    EditText key = (EditText) alert.findViewById(R.id.dialog_register_userid);
 
-                                        // Und auf dieser Basis asynchron den zugehörigen Web Service aufrufen
-                                        new LogonTask(ProductList.this, key.getText().toString()).start();
+                                    // Und auf dieser Basis asynchron den zugehörigen Web Service aufrufen
+                                    new LogonTask(ProductList.this, key.getText().toString()).start();
 
-                                        dialog.dismiss();
-                                    }
+                                    dialog.dismiss();
                                 })
                                 .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
                                     @Override
@@ -277,7 +269,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
             Intent selectMarket = new Intent(this, MarketList.class);
             selectMarket.putExtra(MarketList.EXTRA_MARKET_NAME, m_market);
-            selectMarket.putExtra(MarketList.EXTRA_PRODUCT_IDENTIFIER, new Long(Products.getIdentifier(product)));
+            selectMarket.putExtra(MarketList.EXTRA_PRODUCT_IDENTIFIER, Long.valueOf(Products.getIdentifier(product)));
             startActivityForResult(selectMarket, RESULT_SELECT_MARKET);
         } catch (Exception e) {
             // Im Moment ignorieren wir alle Fehler
@@ -356,10 +348,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_title_rest)
                 .setMessage(R.string.error_sync)
-                .setPositiveButton(R.string.error_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
+                .setPositiveButton(R.string.error_ok, (dialog, which) -> {
                 })
                 .show();
 
