@@ -119,16 +119,13 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
         // Der Abruf der Daten für den Vorgang erfolgt asynchron
         new Thread(() -> {
-            runOnUiThread(()->{
+            runOnUiThread(() -> {
                 // Zugriff auf die lokale Datenbank vorbereiten
-                Database database = Database.create(EditActivity.this);
-                try {
+                try (Database database = Database.create(EditActivity.this)) {
                     // Initialisierunginformationen abrufen
                     initializeFromItem(queryItem(database, m_identifier));
                 } catch (Exception e) {
                     // Alle Fehler werden ignoriert
-                } finally {
-                    database.close();
                 }
             });
         }).start();
@@ -137,11 +134,10 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Das Erzeugen der Datenbankhilfsklasse ist unkritisch, solange wir keine Operationen ausführen
-        Database database = Database.create(EditActivity.this);
-        try {
-            int itemId =item.getItemId();
+        try (Database database = Database.create(EditActivity.this)) {
+            int itemId = item.getItemId();
 
-            if(itemId == R.id.action_save)
+            if (itemId == R.id.action_save)
                 // Anlegen oder Ändern
                 updateItem(database, m_identifier);
             else if (itemId == R.id.action_delete)
@@ -150,8 +146,6 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
             else
                 // Alles was wir nicht kennen
                 return super.onOptionsItemSelected(item);
-        } finally {
-            database.close();
         }
 
         // Vermutlich wurde eine Änderung durchgeführt - TODO: das könnte man im Zusammenspiel mit der Aktualisierung der Anzeige sicher noch optimieren

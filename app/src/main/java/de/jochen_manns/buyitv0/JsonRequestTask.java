@@ -93,7 +93,8 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
 
     // Führt eine Nachbearbeitung aus.
     @Override
-    protected void onPostExecute(JSONObject jsonObject) { }
+    protected void onPostExecute(JSONObject jsonObject) {
+    }
 
     @Override
     protected JSONObject doInBackground() {
@@ -111,16 +112,12 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
                 conn.setDoOutput(true);
 
                 // Aufrufdaten übertragen
-                OutputStream out = conn.getOutputStream();
-                try {
+                try (OutputStream out = conn.getOutputStream()) {
                     out.write(postData.toString().getBytes("UTF-8"));
-                } finally {
-                    out.close();
                 }
 
                 // Aufruf an den Web Service durchführen
-                InputStream in = conn.getInputStream();
-                try {
+                try (InputStream in = conn.getInputStream()) {
                     // Antwortdaten in JSON wandeln
                     String responseString = responseStreamToString(in);
                     JSONObject response = (JSONObject) new JSONTokener(responseString).nextValue();
@@ -130,8 +127,6 @@ abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
                         processResponse(response);
 
                     return response;
-                } finally {
-                    in.close();
                 }
             } finally {
                 conn.disconnect();

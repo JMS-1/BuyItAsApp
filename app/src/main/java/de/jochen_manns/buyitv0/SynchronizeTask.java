@@ -32,11 +32,8 @@ abstract class SynchronizeTask extends JsonRequestTask {
     protected JSONObject doInBackground() {
         // Falls der Benutzer seine Anmeldung verändert hat löschen wir auf jeden Fall die Datenbank
         if (m_clear) {
-            Database database = Database.create(Context);
-            try {
+            try (Database database = Database.create(Context)) {
                 database.reset();
-            } finally {
-                database.close();
             }
         }
 
@@ -50,11 +47,9 @@ abstract class SynchronizeTask extends JsonRequestTask {
         postData.put(REQUEST_USER, (user == null) ? null : user.Identifier);
 
         // Zugriffsinstanz auf die lokale Datenbank erstellen
-        Database database = Database.create(Context);
-        try {
+        try (Database database = Database.create(Context)) {
             // Zum Auslesen verwenden wir eine Lesetransaktion
-            SQLiteDatabase db = database.getReadableDatabase();
-            try {
+            try (SQLiteDatabase db = database.getReadableDatabase()) {
                 db.beginTransaction();
                 try {
                     // Die JSON Eigenschaften der Anfrage mit den benötigten Liste füllen
@@ -63,21 +58,15 @@ abstract class SynchronizeTask extends JsonRequestTask {
                 } finally {
                     db.endTransaction();
                 }
-            } finally {
-                db.close();
             }
-        } finally {
-            database.close();
         }
     }
 
     // Verarbeitet die Antwort des Web Service.
     protected void processResponse(JSONObject postReply) throws JSONException {
         // Die Datenbank wir in einer Transaktion konsistent befüllt
-        Database database = Database.create(Context);
-        try {
-            SQLiteDatabase db = database.getWritableDatabase();
-            try {
+        try (Database database = Database.create(Context)) {
+            try (SQLiteDatabase db = database.getWritableDatabase()) {
                 db.beginTransaction();
                 try {
                     // Nach dem Leeren der Tabellen werden Märkte und Produkte unverändert in die lokale Datenbank übertragen
@@ -89,11 +78,7 @@ abstract class SynchronizeTask extends JsonRequestTask {
                 } finally {
                     db.endTransaction();
                 }
-            } finally {
-                db.close();
             }
-        } finally {
-            database.close();
         }
     }
 }

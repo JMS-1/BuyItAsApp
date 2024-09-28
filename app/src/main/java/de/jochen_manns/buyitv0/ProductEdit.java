@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +27,6 @@ import java.util.regex.Pattern;
     zum Anlegen eines neuen Produktes.
  */
 public class ProductEdit extends EditActivity<Long, JSONObject> {
-
-    private static final Pattern m_dateReg = Pattern.compile("^(\\d{4})-(\\d{1,2})-(\\d{1,2})$");
 
     // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
@@ -95,7 +94,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(me, R.style.DatePickerStyle);
 
-                datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString( R.string.datepicker_ok), new DialogInterface.OnClickListener() {
+                datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.datepicker_ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DatePicker picker = datePickerDialog.getDatePicker();
@@ -108,7 +107,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                     }
                 });
 
-                datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString( R.string.datepicker_cancel), new DialogInterface.OnClickListener() {
+                datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.datepicker_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         edit.setText(null);
@@ -116,15 +115,10 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 });
 
                 try {
-                    String date = edit.getText().toString();
-                    Matcher matcher = m_dateReg.matcher(date);
+                    LocalDate date = Products.parseFromTo(edit.getText().toString());
 
-                    if (matcher.find()) {
-                        int year = Integer.parseInt(matcher.group(1), 10);
-                        int month = Integer.parseInt(matcher.group(2), 10);
-                        int day = Integer.parseInt(matcher.group(3), 10);
-
-                        datePickerDialog.updateDate(year, month - 1, day);
+                    if (date != null) {
+                        datePickerDialog.updateDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
                     }
                 } catch (Exception e) {
                     // Alle Fehler einfach ignorieren.

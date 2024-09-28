@@ -80,15 +80,12 @@ class MarketAdapter extends ItemAdapter {
     @Override
     public JSONObject[] load(String order) {
         // Zugriff auf die lokale Datenhaltung vorbereiten
-        Database database = createDatabase();
-        try {
+        try (Database database = createDatabase()) {
             // Die Liste aller aktuell bekannten Märkte einlesen
             return Markets.query(database, order);
         } catch (Exception e) {
             // Alle Fehler werden ignoriert
             return null;
-        } finally {
-            database.close();
         }
     }
 }

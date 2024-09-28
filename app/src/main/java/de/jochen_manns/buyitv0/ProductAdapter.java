@@ -5,6 +5,9 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
+import java.time.LocalDate;
+
 /*
     Verwaltet die Liste aller Produkte.
  */
@@ -29,7 +32,7 @@ class ProductAdapter extends ItemAdapter {
         int res = 0;
         if (Products.isBought(product))
             res = R.string.product_suffix_bought;
-        else if ((market != null) && (market.length() > 0))
+        else if ((market != null) && !market.isEmpty())
             res = R.string.product_prefix_market;
 
         // Im einfachsten Fall wird nur der Name des Produktes ausgegeben, ansonsten muss der Markt noch geeignet eingemischt werden
@@ -40,6 +43,13 @@ class ProductAdapter extends ItemAdapter {
 
         // Produkte können immer verändert werden
         return true;
+    }
+
+    @Override
+    protected String getPrefixText(JSONObject item) throws JSONException {
+        LocalDate from = Products.parseFromTo(Products.getFrom(item));
+
+        return from == null ? "" : MessageFormat.format("{0,number,00}. ", from.getDayOfMonth());
     }
 
     @Override
@@ -61,15 +71,12 @@ class ProductAdapter extends ItemAdapter {
     @Override
     public JSONObject[] load(String order) {
         // Verbindung zu Datenbank herstellen
-        Database database = createDatabase();
-        try {
+        try (Database database = createDatabase()) {
             // Die Liste aller Produkte aus der lokalen Datenbank auslesen
             return Products.query(database, true, order);
         } catch (Exception e) {
             // Fehler werden ignoriert
             return null;
-        } finally {
-            database.close();
         }
     }
 }

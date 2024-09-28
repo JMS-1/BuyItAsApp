@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -49,6 +50,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         return true;
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.menu.menu_product_list, savedInstanceState);
@@ -106,10 +108,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         JSONObject[] items = getListAdapter().load(Products.MarketOrder);
 
         // Wir nummerieren einmal ganz durch
-        Database database = Database.create(this);
-        try {
-            SQLiteDatabase db = database.getWritableDatabase();
-            try {
+        try (Database database = Database.create(this)) {
+            try (SQLiteDatabase db = database.getWritableDatabase()) {
                 db.beginTransaction();
                 try {
                     for (int i = 0; i < items.length; i++) {
@@ -120,13 +120,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                 } finally {
                     db.endTransaction();
                 }
-            } finally {
-                db.close();
             }
         } catch (Exception e) {
             // Im Moment werden alle Fehler einfach ignoriert
-        } finally {
-            database.close();
         }
 
         // Und danach wird die Anzeige neu aufgebaut

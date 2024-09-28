@@ -48,10 +48,10 @@
 
 	$delete = $con->prepare('DELETE FROM buyList WHERE userid = ? AND id = ?');
 	$delete->bind_param('si', $userid, $id);
-
+	
 	$update = $con->prepare('UPDATE buyList SET item = ?, description = ?, bought = FROM_UNIXTIME(?), `where` = ?, `priority` = ?, `validFrom` = ?, `validTo` = ?, `category` = ?, `permanent` = ? WHERE userid = ? AND id = ? AND bought IS NULL');
 	$update->bind_param('ssisisssisi', $name, $description, $bought, $marketname, $priority, $from, $to, $category, $permanent, $userid, $id);
-
+	
 	$updateOrder = $con->prepare('UPDATE buyList SET `priority` = ? WHERE userid = ? AND id = ? AND bought IS NULL');
 	$updateOrder->bind_param('isi', $priority, $userid, $id);
 
@@ -75,7 +75,12 @@
 		$state = $item['state'];
 		$to = $item['to'];
 
-		// Ein JSON Datum wird hier in der internen Zahldarstellung verwendet, ist aber optional
+		if($from == "")
+			$from = null;
+		if($to == "")
+			$to = null;
+
+			// Ein JSON Datum wird hier in der internen Zahldarstellung verwendet, ist aber optional
 		if($bought != null)
 			$bought = strtotime($bought);
 
@@ -85,7 +90,7 @@
 				$insert->execute();
 				break;
 			}
-
+			
 			case ItemState::Deleted:{
 				$delete->execute();
 				break;

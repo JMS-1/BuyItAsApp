@@ -41,6 +41,11 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     // Bereitet ein visuelles Element zur Anzeige vor.
     protected abstract boolean initializeTextView(TextView text, JSONObject item) throws JSONException;
 
+    // Ermittelt einen optionalen Text vor der eigentlichen Bezeichnung.
+    protected String getPrefixText(JSONObject item) throws JSONException {
+        return "";
+    }
+
     // Meldet die Aktivität, in der die Liste der Elemente tatsächlich angezeigt wird..
     protected ListActivity<?, ?, ?> getContext() {
         return (ListActivity<?, ?, ?>) m_inflater.getContext();
@@ -58,22 +63,31 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
             convertView = m_inflater.inflate(R.layout.editable_list_item, parent, false);
 
         // Zielansichten und Quelldaten ermitteln
-        TextView textView = (TextView) convertView.findViewById(R.id.listitem_text);
+        TextView textView = convertView.findViewById(R.id.listitem_text);
+        TextView fromView = convertView.findViewById(R.id.listitem_from);
         View editView = convertView.findViewById(R.id.listitem_edit);
         JSONObject item = (JSONObject) getItem(position);
 
         // Jedes visuelle Element weiß, mit welchem Element es verbunden ist
+        fromView.setTag(Integer.valueOf(position));
         textView.setTag(Integer.valueOf(position));
         editView.setTag(Integer.valueOf(position));
 
         // Das Anhängen der Listener könnte man auch nur einmalig machen, aber schaden tut es kaum
         textView.setOnClickListener(this);
+        fromView.setOnClickListener(this);
         editView.setOnClickListener(this);
         editView.setOnTouchListener(this);
 
         // Daten in die Anzeige übertragen und bei Bedarf die Änderungsoption ausblenden
         try {
-            editView.setVisibility(initializeTextView(textView, item) ? View.VISIBLE : View.INVISIBLE);
+            int visible = initializeTextView(textView, item) ? View.VISIBLE : View.INVISIBLE;
+
+            editView.setVisibility(visible);
+
+            if (visible == View.VISIBLE) {
+                fromView.setText(getPrefixText(item));
+            }
         } catch (Exception e) {
             // Fehler werden letztlich alle ignoriert
             textView.setText("### ERROR ###");

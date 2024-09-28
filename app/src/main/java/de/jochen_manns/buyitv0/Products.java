@@ -9,11 +9,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import java.time.LocalDate;
 
 /*
     Mit den Methoden dieser Hilfsklasse erfolgt die Pflege der Produkte in der lokalen Datenbank.
  */
 class Products {
+    // Regulärer Ausdruck für die Erkennung von Datumswerten.
+    public static final Pattern FromToDateRegEx = Pattern.compile("^(\\d{4})-(\\d{1,2})-(\\d{1,2})$");
+
     // Der Name der Tabelle mit den Produkten.
     private static final String Table = "items";
 
@@ -44,12 +51,6 @@ class Products {
     // Der Name der Spalte (und JSON Eigenschaft) mit dem Markt, in dem ein Produkt gekauft werden soll oder sogar gekauft wurde.
     private static final String BuyMarket = "market";
 
-    // Die Sortierordnung bei der gruppierung nach dem Markt.
-    public static final String MarketOrder = "ifnull(" + BuyMarket + ", '') COLLATE NOCASE," + Name + " COLLATE NOCASE";
-
-    // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
-    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime};
-
     // Der Name der Spalte (und JSON Eigenschaft) mit der Wichtigkeit eines Produktes.
     private static final String Order = "priority";
 
@@ -70,6 +71,15 @@ class Products {
 
     // Der Name der Spalte (und JSON Eigenschaft) mit der Kategorie.
     private static final String Category = "category";
+
+    // Die Sortierordnung bei der Gruppierung nach dem Markt.
+    public static final String MarketOrder = "" +
+            "ifnull(\"" + ValidFrom + "\", '')," +
+            "ifnull(" + BuyMarket + ", '') COLLATE NOCASE," +
+            Name + " COLLATE NOCASE";
+
+    // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
+    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", Category, Permanent};
 
     // Der SQL Befehl zum Anlegen der Produkttabelle.
     public static final String CreateSql =
@@ -317,8 +327,8 @@ class Products {
             values.put(OriginalOrder, item.getInt(Order));
             values.put(Permanent, item.isNull(Permanent) ? null : item.getInt(Permanent));
             values.put(State, item.getInt(State));
-            values.put("\"" + ValidFrom + "\"", JsonTools.getStringFromJSON(item, ValidFrom));
-            values.put("\"" + ValidTo + "\"", JsonTools.getStringFromJSON(item, ValidTo));
+            values.put("\"" + ValidFrom + "\"", getFrom(item));
+            values.put("\"" + ValidTo + "\"", getTo(item));
 
             // Vor dem Abgleich wird die Produktabelle vollständig geleert, so dass wir hier einfach einfügen müssen - der Online Datenbestand ist immer die volle Wahrheit!
             database.insert(Table, null, values);
@@ -337,9 +347,9 @@ class Products {
 
     // Prüft und meldet, ob ein Produkt bereits eingekauft wurde.
     public static boolean isBought(JSONObject item) throws JSONException {
-        String time = JsonTools.getStringFromJSON(item, BuyTime);
+        String time = JsonTools.getStringFromJSON(item, BuyTime, true);
 
-        return ((time != null) && !time.isEmpty());
+        return time != null && !time.isEmpty();
     }
 
     // Meldet die Beschreibung eines Produktes.
@@ -354,25 +364,35 @@ class Products {
 
     // Meldet den Startzeitpunkt eines Produktes.
     public static String getFrom(JSONObject item) throws JSONException {
-        String from = JsonTools.getStringFromJSON(item, ValidFrom);
-
-        return from == null || from.isEmpty() ? null : from;
+        return JsonTools.getStringFromJSON(item, ValidFrom, true);
     }
 
     // Meldet den Endzeitpunkt eines Produktes.
     public static String getTo(JSONObject item) throws JSONException {
-        String to = JsonTools.getStringFromJSON(item, ValidTo);
-
-        return to == null || to.isEmpty() ? null : to;
+        return JsonTools.getStringFromJSON(item, ValidTo, true);
     }
 
     // Meldet, ob es sich um einen Dauereintrag handelt.
-    public static Boolean getPermanent(JSONObject item) throws JSONException{
+    public static Boolean getPermanent(JSONObject item) throws JSONException {
         return item.isNull(Permanent) ? false : item.getInt(Permanent) != 0;
     }
 
     // Meldet die eindeutige Identifikation eines Produktes.
     public static int getIdentifier(JSONObject item) throws JSONException {
         return item.getInt(Identifier);
+    }
+
+    public static LocalDate parseFromTo(String value) {
+        if (value == null || value.isEmpty()) return null;
+
+        Matcher matcher = Products.FromToDateRegEx.matcher(value);
+
+        if (!matcher.find()) return null;
+
+        int year = Integer.parseInt(matcher.group(1), 10);
+        int month = Integer.parseInt(matcher.group(2), 10);
+        int dayOfMonth = Integer.parseInt(matcher.group(3), 10);
+
+        return LocalDate.of(year, month, dayOfMonth);
     }
 }
