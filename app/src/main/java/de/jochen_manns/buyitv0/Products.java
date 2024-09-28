@@ -9,10 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import java.time.LocalDate;
 
 /*
     Mit den Methoden dieser Hilfsklasse erfolgt die Pflege der Produkte in der lokalen Datenbank.
@@ -68,12 +64,6 @@ class Products {
 
     // Der Name der Spalte (und JSON Eigenschaft) mit der Kategorie.
     private static final String Category = "category";
-
-    // Die Sortierordnung bei der Gruppierung nach dem Markt.
-    public static final String MarketOrder = "" +
-            "ifnull(\"" + ValidFrom + "\", '')," +
-            "ifnull(" + BuyMarket + ", '') COLLATE NOCASE," +
-            Name + " COLLATE NOCASE";
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent};

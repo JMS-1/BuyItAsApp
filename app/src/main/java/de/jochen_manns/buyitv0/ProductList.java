@@ -17,6 +17,8 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 /*
     Die primäre Aktivitität zeigt die Liste der Produkte und erlaubt den Einstieg
     in alle anderen Bereiche der Anwendung. Sie ist der Einzige Zugangspunkt in
@@ -100,7 +102,48 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     }
 
     private void onGroupByMarket() {
-        JSONObject[] items = getListAdapter().load(Products.MarketOrder);
+        JSONObject[] items = getListAdapter().load(null);
+        String now = DateOnly.now().toString();
+
+        Arrays.sort(items, (l, r) -> {
+            try {
+                String leftFrom = Products.getFrom(l);
+                String rightFrom = Products.getFrom(r);
+
+                if (leftFrom != null && leftFrom.compareTo(now) <= 0) leftFrom = null;
+                if (rightFrom != null && rightFrom.compareTo(now) <= 0) rightFrom = null;
+
+                if (leftFrom == null) {
+                    if (rightFrom != null) return -1;
+                } else if (rightFrom == null)
+                    return +1;
+                else {
+                    int delta = leftFrom.compareTo(rightFrom);
+
+                    if (delta != 0) return delta;
+                }
+
+                String leftMarket = Products.getMarket(l);
+                String rightMarket = Products.getMarket(r);
+
+                if (leftMarket == null) leftMarket = "";
+                if (rightMarket == null) rightMarket = "";
+
+                int delta = leftMarket.compareToIgnoreCase(rightMarket);
+
+                if (delta != 0) return delta;
+
+                String leftName = Products.getName(l);
+                String rightName = Products.getName(r);
+
+                if (leftName == null) leftName = "";
+                if (rightName == null) rightName = "";
+
+                return leftName.compareToIgnoreCase(rightName);
+            } catch (JSONException e) {
+                return 0;
+            }
+        });
 
         // Wir nummerieren einmal ganz durch
         try (Database database = Database.create(this)) {

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -16,8 +15,6 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.util.Locale;
 
 /*

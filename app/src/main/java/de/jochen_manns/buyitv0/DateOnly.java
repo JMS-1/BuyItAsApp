@@ -1,5 +1,7 @@
 package de.jochen_manns.buyitv0;
 
+import androidx.annotation.NonNull;
+
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
@@ -8,10 +10,14 @@ import java.util.regex.Pattern;
 public class DateOnly {
     private static final Pattern DateRegEx = Pattern.compile("^(\\d{4})-(\\d{1,2})-(\\d{1,2})$");
 
-    private LocalDate _date;
+    private final LocalDate _date;
 
     private DateOnly(LocalDate date) {
         _date = date;
+    }
+
+    public static DateOnly now() {
+        return new DateOnly(LocalDate.now());
     }
 
     public static DateOnly parse(String value) {
@@ -35,6 +41,7 @@ public class DateOnly {
         return _date.isBefore(LocalDate.now());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return format(_date.getYear(), _date.getMonthValue(), _date.getDayOfMonth());
