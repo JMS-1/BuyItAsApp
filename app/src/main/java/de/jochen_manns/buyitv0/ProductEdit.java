@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
@@ -15,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,6 +68,12 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                 startActivityForResult(showSelector, RESULT_SELECT_MARKET);
             }
         });
+
+        Configuration configuration = getResources().getConfiguration();
+        configuration.setLocale(Locale.GERMANY);
+        configuration.setLayoutDirection(Locale.GERMANY);
+
+        createConfigurationContext(configuration);
 
         AddDatePicker(R.id.edit_product_from_label, m_from);
         AddDatePicker(R.id.edit_product_to_label, m_to);

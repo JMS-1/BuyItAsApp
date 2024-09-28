@@ -67,6 +67,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textAlignment="center"
             style="@style/TextStyle"
             android:enabled="false"
         />
@@ -90,6 +91,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textAlignment="center"
             style="@style/TextStyle"
             android:enabled="false"
             />
