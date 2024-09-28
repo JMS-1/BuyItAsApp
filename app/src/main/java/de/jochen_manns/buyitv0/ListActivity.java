@@ -127,17 +127,15 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
     // Liest die Liste der Elemente aus der lokalen Datenbank.
     protected void load() {
-        new AsyncTask<Void, Void, JSONObject[]>() {
+        new BackgroundTask<JSONObject[]>(this) {
             @Override
-            protected JSONObject[] doInBackground(Void... params) {
+            protected JSONObject[] doInBackground() {
                 // Daten aus der lokalen Datenbank auslesen
                 return getListAdapter().load(null);
             }
 
             @Override
             protected void onPostExecute(JSONObject[] items) {
-                super.onPostExecute(items);
-
                 // Daten in die Oberfläche übernehmen
                 getListAdapter().refresh(items);
 

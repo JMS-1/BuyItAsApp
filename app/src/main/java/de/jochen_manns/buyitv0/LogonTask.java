@@ -28,7 +28,7 @@ class LogonTask extends JsonRequestTask {
     protected void processResponse(JSONObject postReply) throws JSONException {
         // Wird kein Name gemeldet, so ist kein Benutzer zur Registrierung bekannt
         String userName = JsonTools.getStringFromJSON(postReply, User.Name_Name);
-        if ((userName == null) || (userName.length() < 1))
+        if ((userName == null) || userName.isEmpty())
             return;
 
         // Der Name eines bekannten Anwenders wird peristent gespeichert

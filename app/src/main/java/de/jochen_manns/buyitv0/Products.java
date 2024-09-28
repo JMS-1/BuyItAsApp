@@ -347,6 +347,11 @@ class Products {
         return JsonTools.getStringFromJSON(item, Description);
     }
 
+    // Meldet die Gruppe des Produktes.
+    public static String getCategory(JSONObject item) throws JSONException {
+        return JsonTools.getStringFromJSON(item, Category);
+    }
+
     // Meldet den Startzeitpunkt eines Produktes.
     public static String getFrom(JSONObject item) throws JSONException {
         String from = JsonTools.getStringFromJSON(item, ValidFrom);

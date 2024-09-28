@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,6 +47,10 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     // Datum (einschließlich) bis zu dem der Eintrag relevant ist.
     private EditText m_to;
 
+    // Optionale Gruppe zu dem der Eintrag gehört.
+    private EditText m_category;
+
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
@@ -56,6 +61,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         m_permanent = findViewById(R.id.edit_product_permanent);
         m_from = findViewById(R.id.edit_product_from);
         m_to = findViewById(R.id.edit_product_to);
+        m_category = findViewById(R.id.edit_product_category);
 
         m_market.setText(R.string.editSelect_item_nomarket);
         m_market.setTag(null);
@@ -166,6 +172,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
             m_from.setText(Products.getFrom(item));
             m_to.setText(Products.getTo(item));
             m_permanent.setChecked(Products.getPermanent(item));
+            m_category.setText(Products.getCategory(item));
 
             setName(Products.getName(item));
         } catch (Exception e) {
@@ -178,23 +185,18 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     protected void updateItem(Database database, Long identifier) {
         // Daten aus der Oberfläche auslesen - man beachte, dass für den Markt der Anzeigename vom gespeicherten Namen abweicht, wenn kein Markt zugeordnet wurde
         String description = m_description.getText().toString();
-        String market = (String) m_market.getTag();
-        String name = getName();
-        Boolean permanent = m_permanent.isChecked();
-        String from = m_from.getText().toString();
-        String to = m_to.getText().toString();
 
         // Daten in die lokale Datenbank übertragen
         Products.update(
                 database,
                 identifier,
-                name,
+                getName(),
                 description.isEmpty() ? null : description,
-                market,
-                from,
-                to,
-                null,
-                permanent
+                (String) m_market.getTag(),
+                m_from.getText().toString(),
+                m_to.getText().toString(),
+                m_category.getText().toString(),
+                m_permanent.isChecked()
         );
     }
 

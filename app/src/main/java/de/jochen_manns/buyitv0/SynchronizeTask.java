@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -21,14 +22,14 @@ abstract class SynchronizeTask extends JsonRequestTask {
     private final boolean m_clear;
 
     // Initialisiert die Aufgabe.
-    protected SynchronizeTask(Context context, boolean alwaysClearDatabase) {
-        super(context, "sync.php");
+    protected SynchronizeTask(Activity activity, boolean alwaysClearDatabase) {
+        super(activity, "sync.php");
 
         m_clear = alwaysClearDatabase;
     }
 
     @Override
-    protected JSONObject doInBackground(Void... urls) {
+    protected JSONObject doInBackground() {
         // Falls der Benutzer seine Anmeldung verändert hat löschen wir auf jeden Fall die Datenbank
         if (m_clear) {
             Database database = Database.create(Context);
@@ -40,7 +41,7 @@ abstract class SynchronizeTask extends JsonRequestTask {
         }
 
         // Nun erst wird der Web Service aufgerufen
-        return super.doInBackground(urls);
+        return super.doInBackground();
     }
 
     protected void fillRequest(JSONObject postData) throws JSONException {

@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -18,21 +19,18 @@ import java.util.ArrayList;
     Mit Hilfe dieser Basisklasse werden alle Zugriff auf den Web Service der
     App abgewickelt.
  */
-abstract class JsonRequestTask extends AsyncTask<Void, Void, JSONObject> {
+abstract class JsonRequestTask extends BackgroundTask<JSONObject> {
     // Alle Aufrufe müssen den Registrierungsscchlüssel des Anwenders über eine JSON Eigenschaft mit diesem Namen übermitteln.
     protected final static String REQUEST_USER = "userid";
-
-    // Die Aktivität zum Aufruf.
-    protected final Context Context;
 
     // Der Name des zu verwendenden Web Services.
     private final String m_endPoint;
 
     // Initialisiert einen neuen Web Service Aufruf.
-    protected JsonRequestTask(Context context, String webService) {
-        m_endPoint = "http://mobile.psimarron.net/BuyIt/" + webService;
+    protected JsonRequestTask(Activity activity, String webService) {
+        super(activity);
 
-        Context = context;
+        m_endPoint = "http://mobile.psimarron.net/BuyIt/" + webService;
     }
 
     // Wandelt die Antwort eines Web Services in eine Zeichenkette.
@@ -93,8 +91,12 @@ abstract class JsonRequestTask extends AsyncTask<Void, Void, JSONObject> {
         execute();
     }
 
+    // Führt eine Nachbearbeitung aus.
     @Override
-    protected JSONObject doInBackground(Void... urls) {
+    protected void onPostExecute(JSONObject jsonObject) { }
+
+    @Override
+    protected JSONObject doInBackground() {
         try {
             // Aufrufdaten vorbereiten
             JSONObject postData = new JSONObject();
