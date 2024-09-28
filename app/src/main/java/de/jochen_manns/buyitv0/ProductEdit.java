@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +26,9 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
     // Die Ergebniskennung für die Auswahl eines Marktes.
     private static final int RESULT_SELECT_MARKET = 1;
+
+    // Die Ergebniskennung für die Auswahl einer Gruppe.
+    private static final int RESULT_SELECT_CATEGORY = 2;
 
     // Das Eingabefeld mit der Beschreibung des Produktes.
     private EditText m_description;
@@ -44,6 +48,9 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     // Optionale Gruppe zu dem der Eintrag gehört.
     private EditText m_category;
 
+    // Auswahlliste für Gruppen öffnen.
+    private ImageView m_categorySelector;
+
     @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +63,20 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         m_from = findViewById(R.id.edit_product_from);
         m_to = findViewById(R.id.edit_product_to);
         m_category = findViewById(R.id.edit_product_category);
+        m_categorySelector = findViewById(R.id.edit_product_category_icon);
 
         m_market.setText(R.string.editSelect_item_nomarket);
         m_market.setTag(null);
         m_market.setOnClickListener(v -> {
             // Ruft die Aktivität zur Auswahl eines Marktes aus - die aktuelle Auswahl wird dabei mit übergeben
-            Intent showSelector = new Intent(ProductEdit.this, MarketList.class);
+            Intent showSelector = new Intent(this, MarketList.class);
             showSelector.putExtra(MarketList.EXTRA_MARKET_NAME, (String) m_market.getTag());
             startActivityForResult(showSelector, RESULT_SELECT_MARKET);
+        });
+
+        m_categorySelector.setOnClickListener(v -> {
+            Intent showSelector = new Intent(this, CategoryList.class);
+            startActivityForResult(showSelector, RESULT_SELECT_CATEGORY);
         });
 
         Configuration configuration = getResources().getConfiguration();

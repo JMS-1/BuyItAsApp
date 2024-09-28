@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /*
@@ -47,7 +48,7 @@ class Products {
     // Der Name der Spalte (und JSON Eigenschaft) mit der Wichtigkeit eines Produktes.
     private static final String Order = "priority";
 
-    // Die berechneten Spalten, die zur Festlegung der Eckdaten eines lokal neu angelegten produktes benötigt werden.
+    // Die berechneten Spalten, die zur Festlegung der Eckdaten eines lokal neu angelegten Produktes benötigt werden.
     private final static String[] s_ItemLimitColumns = {"COUNT(*)", "MIN(" + Identifier + ")", "MAX(" + Order + ")"};
 
     // Der Name der Spalte mit der ursprünglichen Wichtigkeit eines Produktes.
@@ -67,6 +68,9 @@ class Products {
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent};
+
+    // Die Liste der Spalten (respektive JSON Eigenschaften) bei dem Nachschlagen der Kategorien.
+    private final static String[] s_CategorySelector = {Category, "count(*)"};
 
     // Der SQL Befehl zum Anlegen der Produkttabelle.
     public static final String CreateSql =
@@ -208,6 +212,29 @@ class Products {
         JSONObject[] items = query(database, null, Identifier + "=?", new String[]{Long.toString(id)}, null);
 
         return (items.length == 1) ? items[0] : null;
+    }
+
+    // Ermittelt alle bekannten Gruppen.
+
+    public static String[] queryCategories(Database database) throws JSONException {
+        ArrayList<String> categories = new ArrayList<>();
+
+        try (SQLiteDatabase db = database.getReadableDatabase()) {
+            try (Cursor cursor = db.query(Table, s_CategorySelector, null, null, Category, null, Category + " COLLATE NOCASE")) {
+                int categoryIndex = cursor.getColumnIndex(Category);
+
+                while (cursor.moveToNext()) {
+                    String category = cursor.getString(categoryIndex);
+
+                    if (category != null && !category.isEmpty())
+                        categories.add(category);
+                }
+            }
+        }
+
+        categories.sort((l, r) -> l.compareToIgnoreCase(r));
+
+        return categories.toArray(new String[0]);
     }
 
     // Ändert die Daten eines existierenden Produktes in der lokalen Datenbank - oder legt lokal ein neues Produkt an.
