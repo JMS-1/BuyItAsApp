@@ -92,11 +92,11 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         // Alle Aktionen werden über die ActionBar angestossen
         int itemId = item.getItemId();
 
-        if(itemId == R.id.action_synchronize)
+        if (itemId == R.id.action_synchronize)
             onSynchronize();
-        else if(itemId == R.id.action_logon)
+        else if (itemId == R.id.action_logon)
             onLogon();
-        else if(itemId == R.id.action_sortmarket)
+        else if (itemId == R.id.action_sortmarket)
             onGroupByMarket();
         else
             return super.onOptionsItemSelected(item);
@@ -273,6 +273,8 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
     public void onClick(JSONObject product) {
         // Bei der Auswahl des Marktes übergeben wir auch die eindeutige Identifikation des ausgewählten Produktes
         try {
+            if (Products.getPermanent(product)) return;
+
             Intent selectMarket = new Intent(this, MarketList.class);
             selectMarket.putExtra(MarketList.EXTRA_MARKET_NAME, m_market);
             selectMarket.putExtra(MarketList.EXTRA_PRODUCT_IDENTIFIER, new Long(Products.getIdentifier(product)));

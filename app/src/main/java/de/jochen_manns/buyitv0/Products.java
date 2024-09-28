@@ -79,7 +79,7 @@ class Products {
             Name + " COLLATE NOCASE";
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
-    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", Category, Permanent};
+    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent};
 
     // Der SQL Befehl zum Anlegen der Produkttabelle.
     public static final String CreateSql =
@@ -224,7 +224,7 @@ class Products {
     }
 
     // Ändert die Daten eines existierenden Produktes in der lokalen Datenbank - oder legt lokal ein neues Produkt an.
-    public static void update(Database database, Long identifier, String name, String description, String market, String from, String to, String category, Boolean permanant) {
+    public static void update(Database database, Long identifier, String name, String description, String market, String from, String to, String category, boolean permanant) {
         try (SQLiteDatabase db = database.getWritableDatabase()) {
             // Die Eckdaten des Produktes, die verändert werden können
             ContentValues values = new ContentValues();
@@ -373,7 +373,7 @@ class Products {
     }
 
     // Meldet, ob es sich um einen Dauereintrag handelt.
-    public static Boolean getPermanent(JSONObject item) throws JSONException {
+    public static boolean getPermanent(JSONObject item) throws JSONException {
         return item.isNull(Permanent) ? false : item.getInt(Permanent) != 0;
     }
 

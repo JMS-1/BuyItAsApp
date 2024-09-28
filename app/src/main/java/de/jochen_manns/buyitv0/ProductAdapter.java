@@ -1,5 +1,8 @@
 package de.jochen_manns.buyitv0;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.provider.CalendarContract;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -27,6 +30,10 @@ class ProductAdapter extends ItemAdapter {
         // Name des Produktes und des optionalen Marktes ermitteln
         String market = Products.getMarket(product);
         String name = Products.getName(product);
+        String category = Products.getCategory(product);
+
+        // Gruppe berücksichtigen
+        if (category != null && !category.isEmpty()) name += " [" + category + "]";
 
         // Abhängig vom Einkaufsstand kann die Anzeige leicht variieren
         int res = 0;
@@ -41,6 +48,14 @@ class ProductAdapter extends ItemAdapter {
         else
             text.setText(name);
 
+        // Dauereinträge markieren
+        text.setTypeface(null, Products.getPermanent(product) ? Typeface.ITALIC : Typeface.NORMAL);
+
+        // Abgelaufene Einträge markieren
+        LocalDate to = Products.parseFromTo(Products.getTo(product));
+
+        text.setTextColor(to == null || to.compareTo(LocalDate.now()) >= 0 ? Color.BLACK : Color.RED);
+
         // Produkte können immer verändert werden
         return true;
     }
@@ -49,7 +64,9 @@ class ProductAdapter extends ItemAdapter {
     protected String getPrefixText(JSONObject item) throws JSONException {
         LocalDate from = Products.parseFromTo(Products.getFrom(item));
 
-        return from == null ? "" : MessageFormat.format("{0,number,00}. ", from.getDayOfMonth());
+        if (from == null || from.compareTo(LocalDate.now()) <= 0) return "";
+
+        return MessageFormat.format("{0,number,00}. ", from.getDayOfMonth());
     }
 
     @Override

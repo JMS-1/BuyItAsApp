@@ -46,6 +46,10 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         return "";
     }
 
+    protected boolean canClick(JSONObject item) throws JSONException {
+        return false;
+    }
+
     // Meldet die Aktivität, in der die Liste der Elemente tatsächlich angezeigt wird..
     protected ListActivity<?, ?, ?> getContext() {
         return (ListActivity<?, ?, ?>) m_inflater.getContext();

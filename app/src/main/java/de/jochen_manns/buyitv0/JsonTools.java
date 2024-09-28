@@ -34,7 +34,7 @@ class JsonTools {
     }
 
     // Ermittelt eine Zeichenkette aus der JSON Repräsentation, wobei korrekt null Werte berücksichtigt werden.
-    public static String getStringFromJSON(JSONObject json, String name, Boolean emptyAsNull) throws JSONException {
+    public static String getStringFromJSON(JSONObject json, String name, boolean emptyAsNull) throws JSONException {
         return json.isNull(name) || (emptyAsNull && name.isEmpty()) ? null : json.getString(name);
     }
 
