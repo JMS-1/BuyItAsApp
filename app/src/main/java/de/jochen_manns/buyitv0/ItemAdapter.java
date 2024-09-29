@@ -28,7 +28,11 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     }
 
     // Fordert eine Aktualisierung der Liste gemäß dem aktuellen Stand der Datenbank an.
-    public abstract JSONObject[] load(String order);
+    public JSONObject[] load(String order) {
+        return load(order, null, null);
+    }
+
+    public abstract JSONObject[] load(String order, String filterField, String filterValue);
 
     // Übernimmt die neuen Elemente.
     public void refresh(JSONObject[] items) {

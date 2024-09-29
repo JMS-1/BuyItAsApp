@@ -124,4 +124,12 @@ public class CategoryList extends Activity implements View.OnClickListener {
 
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+
+        finish();
+    }
 }

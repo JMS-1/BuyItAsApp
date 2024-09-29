@@ -64,7 +64,7 @@ class Products {
     private static final String Permanent = "permanent";
 
     // Der Name der Spalte (und JSON Eigenschaft) mit der Kategorie.
-    private static final String Category = "category";
+    public static final String Category = "category";
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
     private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent};
@@ -191,18 +191,37 @@ class Products {
     }
 
     // Ermittelt alle Produkte zur Anzeige in der Hauptaktivität.
-    public static JSONObject[] query(Database database, boolean all, String order) throws JSONException {
+    public static JSONObject[] query(Database database, boolean all, String order, String filterField, String filterValue) throws JSONException {
         // Wir können theoretisch auch alle Produkte ausblenden, die bereits eingekauft wurden - TODO: das kann in der Oberfläche noch nicht umgeschaltet werden
-        String filter = State + "<>?";
+        String where = State + "<>?";
+
         if (!all)
-            filter += " AND " + BuyTime + " IS NULL";
+            where += " AND " + BuyTime + " IS NULL";
+
+        if (filterField != null)
+            if (filterValue == null)
+                where += " AND (\"" + filterField + "\" IS NULL OR \"" + filterField + "\"='')";
+            else
+                where += " AND \"" + filterField + "\"=?";
 
         // Voreinstellung verwenden
         if (order == null)
             order = Order;
 
         // Grundsätzlich werden alle nicht als gelöscht markierten Produkte gemeldet
-        return query(database, s_ItemListColumns, filter, new String[]{Integer.toString(ProductStates.Deleted.ordinal())}, order);
+        String status = Integer.toString(ProductStates.Deleted.ordinal());
+
+        return query(
+                database,
+                s_ItemListColumns,
+                where,
+                filterField == null || filterValue == null ? new String[]{status} : new String[]{status, filterValue},
+                order
+        );
+    }
+
+    public static JSONObject[] query(Database database, boolean all, String order) throws JSONException {
+        return query(database, all, order, null, null);
     }
 
     // Ermittelt ein einzelnes Produkt.
@@ -232,7 +251,7 @@ class Products {
             }
         }
 
-        categories.sort((l, r) -> l.compareToIgnoreCase(r));
+        categories.sort(String::compareToIgnoreCase);
 
         return categories.toArray(new String[0]);
     }

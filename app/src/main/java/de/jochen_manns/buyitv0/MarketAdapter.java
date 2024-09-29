@@ -78,7 +78,7 @@ class MarketAdapter extends ItemAdapter {
     }
 
     @Override
-    public JSONObject[] load(String order) {
+    public JSONObject[] load(String order, String filterField, String filterValue) {
         // Zugriff auf die lokale Datenhaltung vorbereiten
         try (Database database = createDatabase()) {
             // Die Liste aller aktuell bekannten Märkte einlesen

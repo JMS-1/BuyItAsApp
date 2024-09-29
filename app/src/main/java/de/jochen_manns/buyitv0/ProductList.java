@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,6 +26,8 @@ import java.util.Arrays;
 public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter> {
     // Die Antwortkennung bei der Auswahl eine Marktes, bei dem ein Produkt eingekauft wurde.
     private static final int RESULT_SELECT_MARKET = 1;
+
+    private static final int RESULT_FILTER_BY_CATEGORY = 2;
 
     // Die laufende Nummer des Anmeldetdialogs.
     private static final int DIALOG_LOGON = 1;
@@ -95,10 +96,19 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
             onLogon();
         else if (itemId == R.id.action_sortmarket)
             onGroupByMarket();
+        else if (itemId == R.id.action_filter_by_category)
+            onCategoryFilter();
         else
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    private void onCategoryFilter() {
+        Intent showSelector = new Intent(this, CategoryList.class);
+        showSelector.putExtra(CategoryList.PRESELECTED_CATEGORY, "");
+
+        startActivityForResult(showSelector, RESULT_FILTER_BY_CATEGORY);
     }
 
     private void onGroupByMarket() {
@@ -299,6 +309,17 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                     // In den meisten Fällen muss die Anzeige aktualisiert werden - TODO: das geht sicher auch eleganter, da ja (aus Sicht des Anwenders) nur die Anzeige eines Produkt verändert wurde
                     load();
                 }
+
+                break;
+            case RESULT_FILTER_BY_CATEGORY:
+                // Nur, wenn auch eine Auswahl stattgefunden hat
+                if (resultCode == RESULT_OK)
+                    if (data.hasExtra(CategoryList.PRESELECTED_CATEGORY)) {
+                        String category = data.getStringExtra(CategoryList.PRESELECTED_CATEGORY);
+
+                        load(category == null ? "" : category);
+                    } else
+                        load();
 
                 break;
         }

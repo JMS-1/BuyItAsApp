@@ -1,30 +1,38 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@id/action_new"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="100"
-        android:showAsAction="always|withText"
-        android:title="@string/action_new" />
+        android:title="@string/action_new"
+        android:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_synchronize"
         android:icon="@drawable/ic_action_refresh"
         android:orderInCategory="101"
-        android:showAsAction="always|withText"
-        android:title="@string/action_sync" />
+        android:title="@string/action_sync"
+        android:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_sortmarket"
         android:icon="@drawable/ic_menu_paste_holo_dark"
         android:orderInCategory="102"
-        android:showAsAction="never|withText"
-        android:title="@string/action_sortmarket" />
+        android:title="@string/action_sortmarket"
+        android:showAsAction="never|withText" />
+
+    <item
+        android:id="@+id/action_filter_by_category"
+        android:icon="@drawable/ic_menu_paste_holo_dark"
+        android:orderInCategory="102"
+        android:title="@string/action_category"
+        android:showAsAction="never|withText" />
 
     <item
         android:id="@+id/action_logon"
         android:icon="@drawable/ic_action_person"
         android:orderInCategory="103"
-        android:showAsAction="never|withText"
-        android:title="@string/action_logon" />
+        android:title="@string/action_logon"
+        android:showAsAction="never|withText" />
 </menu>

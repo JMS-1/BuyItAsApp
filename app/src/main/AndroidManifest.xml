@@ -10,9 +10,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".CategoryList"
-            android:exported="false" />
         <!-- Der einzige externe Einstiegspunkt -->
         <activity
             android:name=".ProductList"
@@ -26,6 +23,7 @@
         <activity android:name=".ProductEdit" />
         <activity android:name=".MarketList" />
         <activity android:name=".MarketEdit" />
+        <activity android:name=".CategoryList" />
     </application>
 
 </manifest>

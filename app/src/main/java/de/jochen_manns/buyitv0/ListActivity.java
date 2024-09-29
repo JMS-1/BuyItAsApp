@@ -126,11 +126,19 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
     // Liest die Liste der Elemente aus der lokalen Datenbank.
     protected void load() {
+        load(null);
+    }
+
+    protected void load(String category) {
         new BackgroundTask<JSONObject[]>(this) {
             @Override
             protected JSONObject[] doInBackground() {
                 // Daten aus der lokalen Datenbank auslesen
-                return getListAdapter().load(null);
+                return getListAdapter().load(
+                        null,
+                        category != null ? Products.Category : null,
+                        category != null && category.isEmpty() ? null : category
+                );
             }
 
             @Override
