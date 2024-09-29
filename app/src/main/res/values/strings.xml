@@ -51,4 +51,7 @@
     <string name="error_title_rest">Web Zugriff</string>
     <string name="error_sync">Zurzeit ist eine Synchronisation leider nicht möglich.</string>
     <string name="error_ok">Schade</string>
+
+    <string name="group_title">Gruppe auswählen</string>
+    <string name="group_no_group">(ohne Gruppe)</string>
 </resources>

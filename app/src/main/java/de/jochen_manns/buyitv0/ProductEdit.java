@@ -76,6 +76,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
 
         m_categorySelector.setOnClickListener(v -> {
             Intent showSelector = new Intent(this, CategoryList.class);
+            showSelector.putExtra(CategoryList.PRESELECTED_CATEGORY, m_category.getText().toString());
             startActivityForResult(showSelector, RESULT_SELECT_CATEGORY);
         });
 
@@ -211,6 +212,17 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
                         m_market.setText(R.string.editSelect_item_nomarket);
                     else
                         m_market.setText(market);
+                }
+                break;
+            case RESULT_SELECT_CATEGORY:
+                // Wenn eine Auswahl stattgefunden hat, müssen wir diese respektieren
+                if (resultCode == RESULT_OK) {
+                    String category = data.getStringExtra(CategoryList.PRESELECTED_CATEGORY);
+
+                    if (category == null)
+                        m_category.setText("");
+                    else
+                        m_category.setText(category);
                 }
                 break;
         }
