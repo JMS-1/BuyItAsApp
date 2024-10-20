@@ -2,6 +2,7 @@ package de.jochen_manns.buyitv0;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -21,6 +22,18 @@ class ProductAdapter extends ItemAdapter {
     @Override
     public int getCount() {
         return (m_items == null) ? 0 : m_items.length;
+    }
+
+    @Override
+    protected void initializeEditView(ImageView edit, JSONObject product) throws JSONException {
+        super.initializeEditView(edit, product);
+
+        String description = Products.getDescription(product);
+
+        if (description != null && !description.isEmpty())
+            edit.setBackground(getContext().getDrawable(R.drawable.circle));
+        else
+            edit.setBackground(null);
     }
 
     @Override

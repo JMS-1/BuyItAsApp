@@ -67,7 +67,7 @@ class Products {
     public static final String Category = "category";
 
     // Die Liste der Spalten (respektive JSON Eigenschaften), die zur Anzeige der Liste der Produkte benötigt wird.
-    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent};
+    private final static String[] s_ItemListColumns = {Identifier, Name, BuyMarket, BuyTime, "\"" + ValidFrom + "\"", "\"" + ValidTo + "\"", Category, Permanent, Description};
 
     // Die Liste der Spalten (respektive JSON Eigenschaften) bei dem Nachschlagen der Kategorien.
     private final static String[] s_CategorySelector = {Category, "count(*)"};
@@ -220,10 +220,6 @@ class Products {
         );
     }
 
-    public static JSONObject[] query(Database database, boolean all, String order) throws JSONException {
-        return query(database, all, order, null, null);
-    }
-
     // Ermittelt ein einzelnes Produkt.
 
     public static JSONObject query(Database database, long id) throws JSONException {
@@ -235,7 +231,7 @@ class Products {
 
     // Ermittelt alle bekannten Gruppen.
 
-    public static String[] queryCategories(Database database) throws JSONException {
+    public static String[] queryCategories(Database database) {
         ArrayList<String> categories = new ArrayList<>();
 
         try (SQLiteDatabase db = database.getReadableDatabase()) {

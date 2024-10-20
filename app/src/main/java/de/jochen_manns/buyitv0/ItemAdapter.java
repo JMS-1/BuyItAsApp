@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,9 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
     // Bereitet ein visuelles Element zur Anzeige vor.
     protected abstract boolean initializeTextView(TextView text, JSONObject item) throws JSONException;
 
+    protected void initializeEditView(ImageView edit, JSONObject item) throws JSONException {
+    }
+
     // Ermittelt einen optionalen Text vor der eigentlichen Bezeichnung.
     protected String getPrefixText(JSONObject item) throws JSONException {
         return "";
@@ -71,7 +75,7 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
         // Zielansichten und Quelldaten ermitteln
         TextView textView = convertView.findViewById(R.id.listitem_text);
         TextView fromView = convertView.findViewById(R.id.listitem_from);
-        View editView = convertView.findViewById(R.id.listitem_edit);
+        ImageView editView = convertView.findViewById(R.id.listitem_edit);
         JSONObject item = (JSONObject) getItem(position);
 
         // Jedes visuelle Element weiß, mit welchem Element es verbunden ist
@@ -93,6 +97,8 @@ abstract class ItemAdapter extends BaseAdapter implements View.OnClickListener, 
 
             if (visible == View.VISIBLE) {
                 fromView.setText(getPrefixText(item));
+
+                initializeEditView(editView, item);
             }
         } catch (Exception e) {
             // Fehler werden letztlich alle ignoriert
