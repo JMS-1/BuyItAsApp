@@ -319,7 +319,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
                         load(category == null ? "" : category);
                     } else
-                        load();
+                        load(null);
 
                 break;
         }

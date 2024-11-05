@@ -124,12 +124,16 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         return super.onOptionsItemSelected(item);
     }
 
+    private String activeCategory = null;
+
     // Liest die Liste der Elemente aus der lokalen Datenbank.
     protected void load() {
-        load(null);
+        load(activeCategory);
     }
 
     protected void load(String category) {
+        activeCategory = category;
+
         new BackgroundTask<JSONObject[]>(this) {
             @Override
             protected JSONObject[] doInBackground() {
