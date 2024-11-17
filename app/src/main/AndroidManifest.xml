@@ -20,7 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Die interne Struktur der Anwendung, die Titel werden dynamisch je nach Aufrufkontext gesetzt -->
-        <activity android:name=".ProductEdit" />
+        <activity
+            android:name=".ProductEdit"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".MarketList" />
         <activity android:name=".MarketEdit" />
         <activity android:name=".CategoryList" />
