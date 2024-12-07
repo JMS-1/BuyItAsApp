@@ -9,9 +9,9 @@ android {
     defaultConfig {
         applicationId = "de.jochen_manns.buyitv0"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 17
-        versionName = "2.7"
+        targetSdk = 35
+        versionCode = 18
+        versionName = "2.8"
     }
 
     buildTypes {
