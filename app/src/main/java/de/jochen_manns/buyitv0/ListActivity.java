@@ -86,7 +86,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
     }
 
     // Ändert ein existierendes Element oder legt ein neues an.
-    protected boolean startEdit(TIdentifierType id) {
+    protected void startEdit(TIdentifierType id) {
         // Die Art der Aktivität zum Ändern, extrahiert aus den generischen Parametern der Basisklasse
         Class editActivity = (Class) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 
@@ -96,8 +96,6 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         // Aktivität zum Ändern starten
         startActivityForResult(openForEdit, RESULT_EDIT_ITEM);
-
-        return true;
     }
 
     @Override
@@ -124,7 +122,7 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
         return super.onOptionsItemSelected(item);
     }
 
-    private String activeCategory = null;
+    private String activeCategory = "";
 
     // Liest die Liste der Elemente aus der lokalen Datenbank.
     protected void load() {
