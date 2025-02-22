@@ -29,7 +29,9 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
 
     private static final int RESULT_FILTER_BY_CATEGORY = 2;
 
-    // Die laufende Nummer des Anmeldetdialogs.
+    private static final int RESULT_COPY_CATEGORY = 3;
+
+    // Die laufende Nummer des Anmeldedialogs.
     private static final int DIALOG_LOGON = 1;
 
     // Der Name des aktuellen Marktes.
@@ -97,18 +99,21 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
         else if (itemId == R.id.action_sortmarket)
             onGroupByMarket();
         else if (itemId == R.id.action_filter_by_category)
-            onCategoryFilter();
+            onCategoryFilter(RESULT_FILTER_BY_CATEGORY);
+        else if (itemId == R.id.action_copy_category)
+            onCategoryFilter(RESULT_COPY_CATEGORY);
         else
             return super.onOptionsItemSelected(item);
 
         return true;
     }
 
-    private void onCategoryFilter() {
+    private void onCategoryFilter(int result) {
         Intent showSelector = new Intent(this, CategoryList.class);
         showSelector.putExtra(CategoryList.PRESELECTED_CATEGORY, "");
+        showSelector.putExtra(CategoryList.FOR_COPY, result == RESULT_COPY_CATEGORY);
 
-        startActivityForResult(showSelector, RESULT_FILTER_BY_CATEGORY);
+        startActivityForResult(showSelector, result);
     }
 
     private void onGroupByMarket() {
@@ -322,7 +327,29 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                         load(null);
 
                 break;
+            case RESULT_COPY_CATEGORY:
+                // Nur, wenn auch eine Auswahl stattgefunden hat
+                if (resultCode == RESULT_OK) {
+                    if (data.hasExtra(CategoryList.PRESELECTED_CATEGORY)) {
+                        String category = data.getStringExtra(CategoryList.PRESELECTED_CATEGORY);
+
+                        if (category != null && !category.isEmpty()) {
+                            copyCategoryItemsToUngrouped(category);
+
+                            load("");
+                        }
+                    }
+                }
+
+                break;
         }
+    }
+
+    private void copyCategoryItemsToUngrouped(String category) {
+        ProductAdapter adapter = getListAdapter();
+
+        for (JSONObject item : adapter.load(null, Products.Category, category))
+            adapter.copyToUngrouped(item);
     }
 
     @Override

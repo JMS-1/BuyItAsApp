@@ -107,4 +107,21 @@ class ProductAdapter extends ItemAdapter {
             return null;
         }
     }
+
+    public void copyToUngrouped(JSONObject item) {
+        try (Database database = createDatabase()) {
+            // Kopie ohne Kategorie erstellen.
+            Products.update(
+                    database,
+                    null,
+                    Products.getName(item),
+                    Products.getDescription(item),
+                    Products.getMarket(item),
+                    Products.getFrom(item),
+                    Products.getTo(item),
+                    null,
+                    Products.getPermanent(item));
+        } catch (Exception e) {
+        }
+    }
 }

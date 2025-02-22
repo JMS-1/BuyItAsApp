@@ -30,6 +30,13 @@
         android:showAsAction="never|withText" />
 
     <item
+        android:id="@+id/action_copy_category"
+        android:icon="@drawable/ic_menu_paste_holo_dark"
+        android:orderInCategory="102"
+        android:title="@string/action_copy_category"
+        android:showAsAction="never|withText" />
+
+    <item
         android:id="@+id/action_logon"
         android:icon="@drawable/ic_action_person"
         android:orderInCategory="103"

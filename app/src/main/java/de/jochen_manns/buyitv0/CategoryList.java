@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CategoryList extends Activity implements View.OnClickListener {
-    private class CategoryAdaptzer extends BaseAdapter {
+    private class CategoryAdapter extends BaseAdapter {
 
         private ArrayList<String> m_categories = new ArrayList<>();
 
@@ -21,9 +21,12 @@ public class CategoryList extends Activity implements View.OnClickListener {
 
         private final CategoryList m_list;
 
-        public CategoryAdaptzer(CategoryList list, String preselect) {
+        private final boolean m_forCopy;
+
+        public CategoryAdapter(CategoryList list, String preselect, boolean forCopy) {
             super();
 
+            m_forCopy = forCopy;
             m_list = list;
             m_inflater = LayoutInflater.from(list);
 
@@ -32,13 +35,13 @@ public class CategoryList extends Activity implements View.OnClickListener {
                 try (Database database = Database.create(list)) {
                     m_categories = new ArrayList<>();
 
-                    m_categories.add(getString(R.string.group_no_group));
+                    if (!m_forCopy) m_categories.add(getString(R.string.group_no_group));
                     m_categories.addAll(Arrays.asList(Products.queryCategories(database)));
 
                     notifyDataSetChanged();
 
                     if (preselect != null && !preselect.isEmpty()) {
-                        for (int i = 1; i < m_categories.size(); i++)
+                        for (int i = m_forCopy ? 0 : 1; i < m_categories.size(); i++)
                             if (m_categories.get(i).compareTo(preselect) == 0) {
                                 m_view.smoothScrollToPosition(i);
 
@@ -74,10 +77,10 @@ public class CategoryList extends Activity implements View.OnClickListener {
             TextView textView = convertView.findViewById(R.id.listitem_text);
             View editView = convertView.findViewById(R.id.listitem_edit);
 
-            editView.setTag(position);
+            editView.setTag(m_forCopy ? position + 1 : position);
             editView.setVisibility(View.INVISIBLE);
 
-            textView.setTag(position);
+            textView.setTag(m_forCopy ? position + 1 : position);
             textView.setText(m_categories.get(position));
 
             editView.setOnClickListener(m_list);
@@ -88,6 +91,8 @@ public class CategoryList extends Activity implements View.OnClickListener {
     }
 
     public final static String PRESELECTED_CATEGORY = "category";
+
+    public final static String FOR_COPY = "copy";
 
     private TouchableListView m_view;
 
@@ -104,9 +109,10 @@ public class CategoryList extends Activity implements View.OnClickListener {
         }
 
         String preSelect = startInfo.getStringExtra(PRESELECTED_CATEGORY);
+        boolean forCopy = startInfo.getBooleanExtra(FOR_COPY, false);
 
         m_view = (TouchableListView) getLayoutInflater().inflate(R.layout.list, null);
-        m_view.setAdapter(new CategoryAdaptzer(this, preSelect));
+        m_view.setAdapter(new CategoryAdapter(this, preSelect, forCopy));
 
         setContentView(m_view);
 
