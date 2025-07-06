@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "de.jochen_manns.buyitv0"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "de.jochen_manns.buyitv0"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 19
-        versionName = "2.9"
+        versionName = "2.10"
     }
 
     buildTypes {
