@@ -10,8 +10,8 @@ android {
         applicationId = "de.jochen_manns.buyitv0"
         minSdk = 26
         targetSdk = 36
-        versionCode = 20
-        versionName = "2.11"
+        versionCode = 21
+        versionName = "2.12"
     }
 
     buildTypes {
