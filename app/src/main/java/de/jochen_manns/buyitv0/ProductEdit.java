@@ -40,10 +40,10 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     private Switch m_permanent;
 
     // Datum (einschließlich) von dem an der Eintrag relevant ist.
-    private EditText m_from;
+    private TextView m_from;
 
     // Datum (einschließlich) bis zu dem der Eintrag relevant ist.
-    private EditText m_to;
+    private TextView m_to;
 
     // Optionale Gruppe zu dem der Eintrag gehört.
     private EditText m_category;
@@ -90,7 +90,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
         AddDatePicker(R.id.edit_product_to_label, m_to);
     }
 
-    private void AddDatePicker(int labelId, EditText edit) {
+    private void AddDatePicker(int labelId, TextView edit) {
         Context me = this;
 
         TextView label = findViewById(labelId);

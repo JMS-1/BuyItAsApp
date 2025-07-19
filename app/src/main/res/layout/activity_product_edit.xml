@@ -90,14 +90,13 @@
             android:layout_height="wrap_content"
             android:text="@string/editLabel_item_from" />
 
-        <EditText
+        <TextView
             android:id="@+id/edit_product_from"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:textAlignment="center"
-            style="@style/TextStyle"
-            android:enabled="false" />
+            style="@style/TextStyle" />
     </LinearLayout>
 
     <LinearLayout
@@ -113,14 +112,13 @@
             android:layout_height="wrap_content"
             android:text="@string/editLabel_item_to" />
 
-        <EditText
+        <TextView
             android:id="@+id/edit_product_to"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:textAlignment="center"
-            style="@style/TextStyle"
-            android:enabled="false" />
+            style="@style/TextStyle" />
     </LinearLayout>
 
     <TextView
