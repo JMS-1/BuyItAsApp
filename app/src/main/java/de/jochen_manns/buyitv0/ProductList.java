@@ -254,7 +254,7 @@ public class ProductList extends ListActivity<Long, ProductEdit, ProductAdapter>
                                 .setPositiveButton(R.string.button_register, (dialog, which) -> {
                                     // Eingabe des Anwenders auslesen
                                     AlertDialog alert = (AlertDialog) dialog;
-                                    EditText key = (EditText) alert.findViewById(R.id.dialog_register_userid);
+                                    EditText key = alert.findViewById(R.id.dialog_register_userid);
 
                                     // Und auf dieser Basis asynchron den zugehörigen Web Service aufrufen
                                     new LogonTask(ProductList.this, key.getText().toString()).start();

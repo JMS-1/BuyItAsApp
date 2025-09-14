@@ -3,7 +3,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp"
-    android:scrollbars="vertical">
+    android:scrollbars="vertical"
+    android:id="@+id/product_root">
 
     <TextView
         style="@style/TextStyle"

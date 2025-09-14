@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -36,6 +37,7 @@ public class MarketList extends ListActivity<String, MarketEdit, MarketAdapter> 
         return identifier != null;
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(R.menu.menu_market_list, savedInstanceState);

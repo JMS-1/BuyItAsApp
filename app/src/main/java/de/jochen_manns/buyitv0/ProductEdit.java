@@ -54,7 +54,7 @@ public class ProductEdit extends EditActivity<Long, JSONObject> {
     @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(R.layout.activity_product_edit, R.menu.menu_product_edit, savedInstanceState);
+        super.onCreate(R.layout.activity_product_edit, R.id.product_root, R.menu.menu_product_edit, savedInstanceState);
 
         // Der Markt wird ausgewählt, nicht eingegeben
         m_market = findViewById(R.id.edit_product_market);

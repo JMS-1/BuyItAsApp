@@ -39,6 +39,9 @@ public abstract class ListActivity<TIdentifierType extends Serializable, TEditTy
 
         // Liste erzeugen und verwenden
         setContentView(m_view = (TouchableListView) getLayoutInflater().inflate(R.layout.list, null));
+
+        // Titelzeile berücksichtigen.
+        EditActivity.RespectTitleBar(this, R.id.list_root);
     }
 
     // Meldet die Anzeige der Liste.

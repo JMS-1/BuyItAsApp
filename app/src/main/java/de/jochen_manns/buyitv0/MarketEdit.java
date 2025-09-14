@@ -1,5 +1,6 @@
 package de.jochen_manns.buyitv0;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import org.json.JSONException;
@@ -15,9 +16,10 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
     // Die Namen aller anderen Märkte - hiermit wird sichergestellt, dass der Name eines Marktes eindeutig ist
     private final HashSet<String> m_forbiddenNames = new HashSet<String>();
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(R.layout.activity_market_edit, R.menu.menu_market_edit, savedInstanceState);
+        super.onCreate(R.layout.activity_market_edit, R.id.market_root, R.menu.menu_market_edit, savedInstanceState);
     }
 
     @Override
@@ -29,7 +31,7 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
     @Override
     protected boolean isValidName(String newName) {
         // Der Name eines Marktes darf nicht leer sein UND es darf keinen anderen Markt mit demselben Namen geben
-        return ((newName.length() > 0) && !m_forbiddenNames.contains(newName.toUpperCase()));
+        return !newName.isEmpty() && !m_forbiddenNames.contains(newName.toUpperCase());
     }
 
     @Override
@@ -61,7 +63,7 @@ public class MarketEdit extends EditActivity<String, JSONObject[]> {
 
     @Override
     protected void updateItem(Database database, String market) {
-        Markets.update(database, market, getName().toString());
+        Markets.update(database, market, getName());
     }
 
     @Override

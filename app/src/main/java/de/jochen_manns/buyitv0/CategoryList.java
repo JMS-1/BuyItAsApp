@@ -117,6 +117,9 @@ public class CategoryList extends Activity implements View.OnClickListener {
         setContentView(m_view);
 
         setTitle(R.string.group_title);
+
+        // Titelzeile berücksichtigen.
+        EditActivity.RespectTitleBar(this, R.id.list_root);
     }
 
     @Override

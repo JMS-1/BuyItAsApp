@@ -5,12 +5,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.json.JSONException;
 
@@ -67,8 +73,24 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
         return m_identifier;
     }
 
+    public static void RespectTitleBar(Activity activity, int id) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
+                
+        WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
+
+        View root = activity.findViewById(id);
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+
+            v.setPadding(v.getPaddingLeft(), statusBarHeight, v.getPaddingRight(), v.getPaddingBottom());
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+    }
+
     // Initialisiert eine neue Aktivität.
-    protected void onCreate(int layout, int menu, Bundle savedInstanceState) {
+    protected void onCreate(int layout, int layoutId, int menu, Bundle savedInstanceState) {
         // ActionBar vermerken
         m_menu = menu;
 
@@ -99,6 +121,9 @@ public abstract class EditActivity<TIdentifierType extends Serializable, TProtoc
 
         // Abhängig von der eindeutigen Identifikation wird die Überschrift der Aktivität festgelegt
         setTitle(getTitle(m_identifier == null));
+
+        // Titelzeile berücksichtigen.
+        RespectTitleBar(this, layoutId);
 
         // Änderungen des Namens schlagen sich in den Menüpunkten der ActionBar nieder
         m_name.addTextChangedListener(new TextWatcher() {
